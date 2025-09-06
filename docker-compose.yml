@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  postgres-db:
+    image: postgres:16
+    container_name: local-trade-db
+    environment:
+      POSTGRES_DB: ${DB_NAME}       # Czyta z dev.env
+      POSTGRES_USER: ${DB_USER}      # Czyta z dev.env
+      POSTGRES_PASSWORD: ${DB_PASSWORD} # Czyta z dev.env
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    env_file:
+      - dev.env
+
+  backend-app:
+    build: ./local-trade
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-db:5432/${DB_NAME}
+      SPRING_DATASOURCE_USERNAME: ${DB_USER}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD} # Przekazujemy hasło do aplikacji
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres-db
+
+volumes:
+  postgres_data:
