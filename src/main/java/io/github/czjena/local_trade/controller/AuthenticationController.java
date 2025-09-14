@@ -1,16 +1,23 @@
 package io.github.czjena.local_trade.controller;
 
 import io.github.czjena.local_trade.dto.LoginDto;
+import io.github.czjena.local_trade.dto.RefreshTokenRequest;
 import io.github.czjena.local_trade.dto.RegisterUsersDto;
+import io.github.czjena.local_trade.model.RefreshToken;
 import io.github.czjena.local_trade.model.Users;
+
+import io.github.czjena.local_trade.repository.RefreshTokenRepository;
 import io.github.czjena.local_trade.response.LoginResponse;
 import io.github.czjena.local_trade.service.AuthenticationService;
 import io.github.czjena.local_trade.service.JwtService;
+import io.github.czjena.local_trade.service.RefreshTokenService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Optional;
 
 @RequestMapping("/auth")
 @RestController
@@ -19,9 +26,14 @@ public class AuthenticationController {
 
     private final AuthenticationService authenticationService;
 
-    public AuthenticationController(JwtService jwtService, AuthenticationService authenticationService) {
+    private final RefreshTokenService refreshTokenService;
+    private final RefreshTokenRepository refreshTokenRepository;
+
+    public AuthenticationController(JwtService jwtService, AuthenticationService authenticationService, RefreshTokenService refreshTokenService, RefreshTokenRepository refreshTokenRepository) {
         this.jwtService = jwtService;
         this.authenticationService = authenticationService;
+        this.refreshTokenService = refreshTokenService;
+        this.refreshTokenRepository = refreshTokenRepository;
     }
 
     @PostMapping("/signup")
@@ -32,15 +44,35 @@ public class AuthenticationController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> authenticate(@RequestBody LoginDto loginUserDto) {
+    public LoginResponse authenticate(@RequestBody LoginDto loginUserDto) {
         Users authenticatedUser = authenticationService.authenticate(loginUserDto);
-
+        RefreshToken refreshToken = refreshTokenService.createRefreshToken(authenticatedUser.getName());
         String jwtToken = jwtService.generateToken(authenticatedUser);
 
-        LoginResponse loginResponse = new LoginResponse();
-        loginResponse.setToken(jwtToken);
-        loginResponse.setExpiresIn(jwtService.getExpirationTime());
 
-        return ResponseEntity.ok(loginResponse);
+        return LoginResponse.builder()
+                .token(jwtToken)
+                .expiresIn(jwtService.getExpirationTime())
+                .refreshToken(refreshToken.getToken()).build();
+    }
+    @PostMapping("/refreshToken")
+    public LoginResponse refreshToken(@RequestBody RefreshTokenRequest refreshTokenRequest) {
+      return refreshTokenService.findByToken(refreshTokenRequest.getToken())
+                .map(refreshTokenService::verifyExpiry)
+                .map(RefreshToken::getUsers)
+                .map(Users -> {
+                   String accesstoken = jwtService.generateToken(Users);
+                   return LoginResponse.builder()
+                           .token(accesstoken)
+                           .refreshToken(refreshTokenRequest.getToken())
+                           .build();
+
+                }).orElseThrow(()-> new RuntimeException("Refresh token not found"));
+
+    }
+    @PostMapping("/logout")
+    public ResponseEntity<?> logOut(@RequestBody RefreshTokenRequest refreshTokenRequest) {
+        refreshTokenService.revokeRefreshToken(refreshTokenRequest.getToken());
+        return ResponseEntity.ok().build();
     }
 }
