@@ -19,9 +19,8 @@ public class RefreshToken {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    private String token;
+    private String  token;
     private Instant expires;
-    private boolean revoked;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "users_id", nullable = false)// FK do tej encj

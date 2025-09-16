@@ -1,5 +1,6 @@
 package io.github.czjena.local_trade.response;
 
+import io.github.czjena.local_trade.model.RefreshToken;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

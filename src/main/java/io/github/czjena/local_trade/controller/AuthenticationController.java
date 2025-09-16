@@ -57,14 +57,14 @@ public class AuthenticationController {
     }
     @PostMapping("/refreshToken")
     public LoginResponse refreshToken(@RequestBody RefreshTokenRequest refreshTokenRequest) {
-      return refreshTokenService.findByToken(refreshTokenRequest.getToken())
+      return refreshTokenService.findByToken((refreshTokenRequest.getToken()))
                 .map(refreshTokenService::verifyExpiry)
                 .map(RefreshToken::getUsers)
                 .map(Users -> {
                    String accesstoken = jwtService.generateToken(Users);
                    return LoginResponse.builder()
                            .token(accesstoken)
-                           .refreshToken(refreshTokenRequest.getToken())
+                           .refreshToken((refreshTokenRequest.getToken()))
                            .build();
 
                 }).orElseThrow(()-> new RuntimeException("Refresh token not found"));

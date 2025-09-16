@@ -1,4 +1,4 @@
-package io.github.czjena.local_trade;
+package io.github.czjena.local_trade.integration;
 
 import io.github.czjena.local_trade.dto.UpdateUserDto;
 import io.github.czjena.local_trade.exceptions.UserNotFoundException;

@@ -1,5 +1,6 @@
 package io.github.czjena.local_trade.dto;
 
+import io.github.czjena.local_trade.model.RefreshToken;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
