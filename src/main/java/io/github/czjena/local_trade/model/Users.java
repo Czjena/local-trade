@@ -6,6 +6,7 @@ import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.Date;
@@ -23,6 +24,7 @@ public class Users implements UserDetails {
     @Email
     private String email;
     private String password;
+    private String role = "ROLE_USER";
 
     @CreationTimestamp
     @Column(updatable = false, name ="created_at")
@@ -34,7 +36,7 @@ public class Users implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();
+        return List.of(new SimpleGrantedAuthority(role));
     }
 
     @Override

@@ -5,14 +5,14 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+
 import java.security.Key;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 @Data
@@ -28,17 +28,27 @@ public class JwtService {
         return extractClaim(token, Claims::getSubject);
     }
 
+
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
     }
+
 
     public String generateToken(UserDetails userDetails) {
         return generateToken(new HashMap<>(), userDetails);
     }
 
     public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
+        List<String> roles = getRoles(userDetails);
+        extraClaims.put("roles", roles);
         return buildToken(extraClaims, userDetails, jwtExpiration);
+    }
+
+    public List<String> getRoles(UserDetails userDetails) {
+        List<String> listOfRoles = new ArrayList<>();
+        userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).forEach(listOfRoles::add);
+        return listOfRoles;
     }
 
     public long getExpirationTime() {

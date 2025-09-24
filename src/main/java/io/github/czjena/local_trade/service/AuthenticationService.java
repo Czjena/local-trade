@@ -7,8 +7,15 @@ import io.github.czjena.local_trade.model.Users;
 import io.github.czjena.local_trade.repository.UsersRepository;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 @Service
 public class AuthenticationService {
@@ -44,8 +51,14 @@ public class AuthenticationService {
                         dto.getPassword()
                 )
         );
-
         return userRepository.findByEmail(dto.getEmail())
                 .orElseThrow();
+    }
+    public List<String> getAuthenticatedRoles() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Users currentUser = (Users) auth.getPrincipal();
+        List<String> listOfRoles = new ArrayList<>();
+        currentUser.getAuthorities().stream().map(GrantedAuthority::getAuthority).forEach(listOfRoles::add);
+        return listOfRoles;
     }
 }

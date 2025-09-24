@@ -26,5 +26,4 @@ public class RefreshToken {
     @JoinColumn(name = "users_id", nullable = false)// FK do tej encj
     private Users users;
 
-
 }
