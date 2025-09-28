@@ -9,6 +9,7 @@ import io.github.czjena.local_trade.repository.UsersRepository;
 import io.github.czjena.local_trade.service.AdvertisementService;
 
 import io.github.czjena.local_trade.service.AuthenticationService;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 
@@ -40,10 +41,11 @@ public class AdvertisementController {
         Advertisement created = advertisementService.addAd(ad,user);
         return ResponseEntity.ok(created);
     }
-    @PreAuthorize("hasRole('USER')")
     @GetMapping("/get/{id}")
+    @Operation(summary = "Get advertisement by advertisement id")
     public ResponseEntity<Advertisement> getAdd(@PathVariable Integer id) {
         Advertisement advertisement = advertisementService.getAdvertisementById(id);
         return ResponseEntity.ok(advertisement);
     }
+
 }

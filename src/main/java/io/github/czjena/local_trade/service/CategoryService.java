@@ -39,4 +39,7 @@ public class CategoryService {
                 .orElseThrow(() -> new EntityNotFoundException("Category not found"));
 
     }
+    public List<Category> getAllCategories() {
+        return categoryRepository.findAll();
+    }
 }

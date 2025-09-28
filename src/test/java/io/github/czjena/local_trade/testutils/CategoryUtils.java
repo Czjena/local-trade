@@ -11,4 +11,11 @@ public class CategoryUtils {
         category.setParentCategory("test");
         return category;
     }
+    public static Category createCategoryForIntegrationTests() {
+        Category category = new Category();
+        category.setName("test");
+        category.setDescription("test");
+        category.setParentCategory("test");
+        return category;
+    }
 }

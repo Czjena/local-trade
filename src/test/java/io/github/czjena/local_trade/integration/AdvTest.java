@@ -3,10 +3,14 @@ package io.github.czjena.local_trade.integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.czjena.local_trade.dto.AdvertisementDto;
+import io.github.czjena.local_trade.model.Advertisement;
 import io.github.czjena.local_trade.model.Category;
 import io.github.czjena.local_trade.model.Users;
+import io.github.czjena.local_trade.repository.AdvertisementRepository;
 import io.github.czjena.local_trade.repository.CategoryRepository;
 import io.github.czjena.local_trade.repository.UsersRepository;
+import io.github.czjena.local_trade.testutils.AdUtils;
+import io.github.czjena.local_trade.testutils.CategoryUtils;
 import io.github.czjena.local_trade.testutils.UserUtils;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 
@@ -26,6 +30,7 @@ import resources.AbstractIntegrationTest;
 
 import java.math.BigDecimal;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -45,6 +50,8 @@ public class AdvTest extends AbstractIntegrationTest {
     private UsersRepository usersRepository;
     @Autowired
     private CategoryRepository categoryRepository;
+    @Autowired
+    private AdvertisementRepository advertisementRepository;
 
 
     @Test
@@ -82,4 +89,20 @@ public class AdvTest extends AbstractIntegrationTest {
 
 
     }
-}
+    @Test
+    @Transactional
+    @WithMockUser(username = "test@test.com")
+    public void postAdvertisementId_thenAdvertisementIsReturned() throws Exception {
+        Users user = UserUtils.createUserRoleUser();
+        usersRepository.save(user);
+        Category category = CategoryUtils.createCategoryForIntegrationTests();
+        categoryRepository.save(category);
+        Advertisement ad = AdUtils.createAdvertisementRoleUserForIntegrationTests(category,user);
+        advertisementRepository.save(ad);
+
+        mockMvc.perform(get("/get/" + ad.getId()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.title").value("test"))
+                .andExpect(jsonPath("$.category.name").value("test"));
+    }
+    }

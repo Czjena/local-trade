@@ -11,6 +11,7 @@ import io.github.czjena.local_trade.response.LoginResponse;
 import io.github.czjena.local_trade.service.AuthenticationService;
 import io.github.czjena.local_trade.service.JwtService;
 import io.github.czjena.local_trade.service.RefreshTokenService;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -27,13 +28,11 @@ public class AuthenticationController {
     private final AuthenticationService authenticationService;
 
     private final RefreshTokenService refreshTokenService;
-    private final RefreshTokenRepository refreshTokenRepository;
 
-    public AuthenticationController(JwtService jwtService, AuthenticationService authenticationService, RefreshTokenService refreshTokenService, RefreshTokenRepository refreshTokenRepository) {
+    public AuthenticationController(JwtService jwtService, AuthenticationService authenticationService, RefreshTokenService refreshTokenService) {
         this.jwtService = jwtService;
         this.authenticationService = authenticationService;
         this.refreshTokenService = refreshTokenService;
-        this.refreshTokenRepository = refreshTokenRepository;
     }
 
     @PostMapping("/signup")
@@ -56,6 +55,7 @@ public class AuthenticationController {
                 .refreshToken(refreshToken.getToken()).build();
     }
     @PostMapping("/refreshToken")
+    @Operation(summary = "Refresh token for users when jwt token expires")
     public LoginResponse refreshToken(@RequestBody RefreshTokenRequest refreshTokenRequest) {
       return refreshTokenService.findByToken((refreshTokenRequest.getToken()))
                 .map(refreshTokenService::verifyExpiry)
