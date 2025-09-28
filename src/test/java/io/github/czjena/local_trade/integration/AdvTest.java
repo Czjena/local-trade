@@ -3,7 +3,9 @@ package io.github.czjena.local_trade.integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.czjena.local_trade.dto.AdvertisementDto;
+import io.github.czjena.local_trade.model.Category;
 import io.github.czjena.local_trade.model.Users;
+import io.github.czjena.local_trade.repository.CategoryRepository;
 import io.github.czjena.local_trade.repository.UsersRepository;
 import io.github.czjena.local_trade.testutils.UserUtils;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -18,6 +20,7 @@ import org.springframework.http.*;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import resources.AbstractIntegrationTest;
 
@@ -40,16 +43,26 @@ public class AdvTest extends AbstractIntegrationTest {
     private ObjectMapper objectMapper;
     @Autowired
     private UsersRepository usersRepository;
+    @Autowired
+    private CategoryRepository categoryRepository;
 
 
     @Test
     @WithMockUser(username = "test@test.com")
+    @Transactional
     public void whenUserHasRoleUser_thenAdIsAdded() throws Exception {
         Users user = UserUtils.createUserRoleUser();
         usersRepository.save(user);
 
+        Category category = Category.builder()
+                .name("Car")
+                .description("Car")
+                .parentCategory("Vehicle")
+                .build();
+        categoryRepository.save(category);
+
         AdvertisementDto ad = new AdvertisementDto(
-                "Car",
+                category.getId(),
                 new BigDecimal("149.99"),
                 "Audi A4 B6",
                 "audi_a4.jpg",
@@ -65,9 +78,8 @@ public class AdvTest extends AbstractIntegrationTest {
                         .content(adJson))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.title").value("Audi A4 B6"))
-                .andExpect(jsonPath("$.category").value("Car"));
+                .andExpect(jsonPath("$.category.name").value("Car"));
+
+
     }
-
-
-
 }

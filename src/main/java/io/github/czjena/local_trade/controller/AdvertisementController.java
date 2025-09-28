@@ -15,10 +15,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.web.bind.annotation.*;
 
 
 @RestController("/advertisement")
@@ -42,5 +39,11 @@ public class AdvertisementController {
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
         Advertisement created = advertisementService.addAd(ad,user);
         return ResponseEntity.ok(created);
+    }
+    @PreAuthorize("hasRole('USER')")
+    @GetMapping("/get/{id}")
+    public ResponseEntity<Advertisement> getAdd(@PathVariable Integer id) {
+        Advertisement advertisement = advertisementService.getAdvertisementById(id);
+        return ResponseEntity.ok(advertisement);
     }
 }

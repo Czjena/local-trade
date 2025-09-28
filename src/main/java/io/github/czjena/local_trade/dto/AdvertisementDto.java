@@ -3,7 +3,7 @@ package io.github.czjena.local_trade.dto;
 import java.math.BigDecimal;
 
 public record AdvertisementDto(
-        String category,
+        Integer categoryId,
         BigDecimal price,
         String title,
         String image,

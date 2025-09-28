@@ -2,8 +2,11 @@ package io.github.czjena.local_trade.service;
 
 import io.github.czjena.local_trade.dto.AdvertisementDto;
 import io.github.czjena.local_trade.model.Advertisement;
+import io.github.czjena.local_trade.model.Category;
 import io.github.czjena.local_trade.model.Users;
 import io.github.czjena.local_trade.repository.AdvertisementRepository;
+import io.github.czjena.local_trade.repository.CategoryRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
 
@@ -11,14 +14,16 @@ import org.springframework.stereotype.Service;
 public class AdvertisementService {
 
     private final AdvertisementRepository advertisementRepository;
+    private final CategoryRepository categoryRepository;
 
-    public AdvertisementService(AdvertisementRepository advertisementRepository) {
+    public AdvertisementService(AdvertisementRepository advertisementRepository, CategoryRepository categoryRepository) {
         this.advertisementRepository = advertisementRepository;
+        this.categoryRepository = categoryRepository;
     }
 
     public Advertisement addAd(AdvertisementDto dto, Users user) {
         Advertisement ad = Advertisement.builder()
-                .category(dto.category())
+                .category(categoryRepository.findById(dto.categoryId()).orElseThrow(() -> new EntityNotFoundException("Category not found")))
                 .price(dto.price())
                 .title(dto.title())
                 .image(dto.image())
@@ -30,4 +35,10 @@ public class AdvertisementService {
 
         return advertisementRepository.save(ad);
     }
+
+    public Advertisement getAdvertisementById(Integer advertisementId) {
+        return advertisementRepository.findById(advertisementId)
+                .orElseThrow(() -> new EntityNotFoundException("Advertisement not found"));
+    }
+
 }
