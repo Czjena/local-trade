@@ -1,6 +1,8 @@
 package io.github.czjena.local_trade.service;
 
 import io.github.czjena.local_trade.dto.AdvertisementDto;
+import io.github.czjena.local_trade.dto.AdvertisementUpdateDto;
+import io.github.czjena.local_trade.mappers.AdvertisementMapper;
 import io.github.czjena.local_trade.model.Advertisement;
 import io.github.czjena.local_trade.model.Category;
 import io.github.czjena.local_trade.model.Users;
@@ -15,10 +17,12 @@ public class AdvertisementService {
 
     private final AdvertisementRepository advertisementRepository;
     private final CategoryRepository categoryRepository;
+    private final AdvertisementMapper advertisementMapper;
 
-    public AdvertisementService(AdvertisementRepository advertisementRepository, CategoryRepository categoryRepository) {
+    public AdvertisementService(AdvertisementRepository advertisementRepository, CategoryRepository categoryRepository,AdvertisementMapper advertisementMapper) {
         this.advertisementRepository = advertisementRepository;
         this.categoryRepository = categoryRepository;
+        this.advertisementMapper = advertisementMapper;
     }
 
     public Advertisement addAd(AdvertisementDto dto, Users user) {
@@ -40,5 +44,9 @@ public class AdvertisementService {
         return advertisementRepository.findById(advertisementId)
                 .orElseThrow(() -> new EntityNotFoundException("Advertisement not found"));
     }
-
-}
+    public Advertisement changeAdvertisement(AdvertisementUpdateDto dto, Users user, Integer advertisementId) {
+        Advertisement ad = advertisementRepository.findByUserAndId(user, advertisementId)
+                        .orElseThrow(() -> new EntityNotFoundException("Advertisement not found"));
+        advertisementMapper.updateAdvertisementFromDtoSkipNull(dto, ad);
+        return advertisementRepository.save(ad);}
+    }

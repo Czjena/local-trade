@@ -1,17 +1,23 @@
 package io.github.czjena.local_trade.unit;
 
 import io.github.czjena.local_trade.dto.AdvertisementDto;
+import io.github.czjena.local_trade.dto.AdvertisementUpdateDto;
+import io.github.czjena.local_trade.mappers.AdvertisementMapper;
 import io.github.czjena.local_trade.model.Advertisement;
 import io.github.czjena.local_trade.model.Category;
 import io.github.czjena.local_trade.model.Users;
 import io.github.czjena.local_trade.repository.AdvertisementRepository;
 import io.github.czjena.local_trade.repository.CategoryRepository;
+import io.github.czjena.local_trade.repository.UsersRepository;
 import io.github.czjena.local_trade.service.AdvertisementService;
 import io.github.czjena.local_trade.testutils.AdUtils;
+import io.github.czjena.local_trade.testutils.CategoryUtils;
 import io.github.czjena.local_trade.testutils.UserUtils;
 import jakarta.persistence.EntityNotFoundException;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mapstruct.factory.Mappers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -26,16 +32,23 @@ import static org.mockito.Mockito.*;
 
 
 @ExtendWith(MockitoExtension.class)
-class AdUnitTests {
+public class AdUnitTests {
 
     @Mock
     private AdvertisementRepository advertisementRepository;
     @Mock
     private CategoryRepository categoryRepository;
-
+    @Mock
+    private UsersRepository usersRepository;
 
     @InjectMocks
     private AdvertisementService advertisementService;
+
+    @Mock
+    private AdvertisementMapper advertisementMapper;
+
+
+
 
     @Test
     void createAdvertisement_thenAdvertisementIsCreated() {
@@ -100,4 +113,17 @@ class AdUnitTests {
         when(advertisementRepository.findById(id)).thenReturn(Optional.empty());
         assertThrows(EntityNotFoundException.class, () -> advertisementService.getAdvertisementById(id));
     }
+    @Test
+    void changeAdvertisement_callsMapperAndSaves() {
+        Users user = UserUtils.createUserRoleUser();
+        Advertisement ad = AdUtils.createAdvertisement();
+        AdvertisementUpdateDto dto = new AdvertisementUpdateDto(null, null, null, null, null);
+        when(advertisementRepository.findByUserAndId(user, ad.getId()))
+                .thenReturn(Optional.of(ad));
+        advertisementService.changeAdvertisement(dto, user, ad.getId());
+        verify(advertisementMapper).updateAdvertisementFromDtoSkipNull(dto, ad);
+        verify(advertisementRepository).save(ad);
+    }
+
+
 }

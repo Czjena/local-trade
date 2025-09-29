@@ -1,20 +1,21 @@
 package io.github.czjena.local_trade.mappers;
 
-import io.github.czjena.local_trade.dto.AdvertisementDto;
+import io.github.czjena.local_trade.dto.AdvertisementUpdateDto;
 import io.github.czjena.local_trade.model.Advertisement;
+import org.mapstruct.BeanMapping;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 
-import java.math.BigDecimal;
+@Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+public interface AdvertisementMapper {
 
-public class AdvertisementMapper {
-    public static Advertisement toEntity(Advertisement dto) {
-        Advertisement ad = new Advertisement();
-        ad.setId(dto.getId());
-        ad.setDescription(dto.getDescription());
-        ad.setTitle(dto.getTitle());
-        ad.setPrice(dto.getPrice());
-        ad.setCategory(dto.getCategory());
-        ad.setLocation(dto.getLocation());
-        return ad;
-
-    }
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @Mapping(target = "title", source = "title")
+    @Mapping(target = "description", source = "description")
+    @Mapping(target = "location", source = "location")
+    @Mapping(target = "image", source = "image")
+    @Mapping(target = "price", source = "price")
+    void updateAdvertisementFromDtoSkipNull(AdvertisementUpdateDto dto, @MappingTarget Advertisement entity);
 }

@@ -1,12 +1,14 @@
 package io.github.czjena.local_trade.repository;
 
 import io.github.czjena.local_trade.model.Advertisement;
-import jakarta.persistence.criteria.CriteriaBuilder;
+import io.github.czjena.local_trade.model.Users;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface AdvertisementRepository extends JpaRepository<Advertisement, Integer> {
     List<Advertisement> findByCategoryId(Integer categoryId);
 
+    Optional<Advertisement> findByUserAndId(Users user, Integer advertisementId);
 }

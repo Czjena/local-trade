@@ -26,6 +26,8 @@ public class Users implements UserDetails {
     private String password;
     private String role = "ROLE_USER";
 
+
+
     @CreationTimestamp
     @Column(updatable = false, name ="created_at")
     private Date createdAt;
