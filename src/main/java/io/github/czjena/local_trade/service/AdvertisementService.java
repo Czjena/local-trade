@@ -9,6 +9,7 @@ import io.github.czjena.local_trade.model.Users;
 import io.github.czjena.local_trade.repository.AdvertisementRepository;
 import io.github.czjena.local_trade.repository.CategoryRepository;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 
@@ -44,9 +45,22 @@ public class AdvertisementService {
         return advertisementRepository.findById(advertisementId)
                 .orElseThrow(() -> new EntityNotFoundException("Advertisement not found"));
     }
+
     public Advertisement changeAdvertisement(AdvertisementUpdateDto dto, Users user, Integer advertisementId) {
         Advertisement ad = advertisementRepository.findByUserAndId(user, advertisementId)
-                        .orElseThrow(() -> new EntityNotFoundException("Advertisement not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Advertisement not found"));
+        if (!ad.getUser().equals(user)) {
+            throw new AccessDeniedException("Access denied");
+        }
         advertisementMapper.updateAdvertisementFromDtoSkipNull(dto, ad);
-        return advertisementRepository.save(ad);}
+        return advertisementRepository.save(ad);
     }
+    public void deleteAdvertisement(Users user, Integer advertisementId) {
+        Advertisement ad = advertisementRepository.findByUserAndId(user, advertisementId)
+                .orElseThrow(() -> new EntityNotFoundException("Advertisement not found"));
+        if (!ad.getUser().equals(user)) {
+            throw new AccessDeniedException("Access denied");
+        }
+        advertisementRepository.delete(ad);
+    }
+}

@@ -25,11 +25,11 @@ public class AdUtils {
     public static Advertisement createAdvertisementRoleUserForIntegrationTests(Category category, Users user) {
         BigDecimal price = new BigDecimal("149.99");
         return Advertisement.builder()
-                .title("test")
-                .description("test")
+                .title("title test")
+                .description("description test")
                 .price(price)
                 .active(true)
-                .location("test")
+                .location("location test")
                 .user(user)
                 .category(category)
                 .build();
@@ -37,6 +37,6 @@ public class AdUtils {
 
     public static AdvertisementUpdateDto createAdvertisementUpdateDto() {
         BigDecimal price = new BigDecimal("149.99");
-        return new AdvertisementUpdateDto(price, "test", "test", "test", "test");
+        return new AdvertisementUpdateDto(price, "title update test", "title description test", "location test ", "image test");
     }
 }

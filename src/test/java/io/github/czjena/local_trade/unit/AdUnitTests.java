@@ -11,16 +11,14 @@ import io.github.czjena.local_trade.repository.CategoryRepository;
 import io.github.czjena.local_trade.repository.UsersRepository;
 import io.github.czjena.local_trade.service.AdvertisementService;
 import io.github.czjena.local_trade.testutils.AdUtils;
-import io.github.czjena.local_trade.testutils.CategoryUtils;
 import io.github.czjena.local_trade.testutils.UserUtils;
 import jakarta.persistence.EntityNotFoundException;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mapstruct.factory.Mappers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.access.AccessDeniedException;
 
 
 import java.math.BigDecimal;
@@ -46,7 +44,6 @@ public class AdUnitTests {
 
     @Mock
     private AdvertisementMapper advertisementMapper;
-
 
 
 
@@ -117,12 +114,40 @@ public class AdUnitTests {
     void changeAdvertisement_callsMapperAndSaves() {
         Users user = UserUtils.createUserRoleUser();
         Advertisement ad = AdUtils.createAdvertisement();
+        ad.setUser(user);
         AdvertisementUpdateDto dto = new AdvertisementUpdateDto(null, null, null, null, null);
         when(advertisementRepository.findByUserAndId(user, ad.getId()))
                 .thenReturn(Optional.of(ad));
         advertisementService.changeAdvertisement(dto, user, ad.getId());
         verify(advertisementMapper).updateAdvertisementFromDtoSkipNull(dto, ad);
         verify(advertisementRepository).save(ad);
+    }
+    @Test
+    void deleteAdvertisement_callsRepository() {
+        Users user = UserUtils.createUserRoleUser();
+        Advertisement ad = AdUtils.createAdvertisement();
+        ad.setUser(user);
+        when(advertisementRepository.findByUserAndId(user, ad.getId()))
+                .thenReturn(Optional.of(ad));
+        advertisementService.deleteAdvertisement(user, ad.getId());
+        verify(advertisementRepository).delete(ad);
+    }
+    @Test
+    void deleteAdvertisement_throwsEntityNotFoundException() {
+        Users user = UserUtils.createUserRoleUser();
+        int id = 999;
+        when(advertisementRepository.findByUserAndId(user, id)).thenReturn(Optional.empty());
+        assertThrows(EntityNotFoundException.class, () -> advertisementService.deleteAdvertisement(user, id));
+    }
+    @Test
+    void deleteAdvertisement_throwsAccessDeniedException() {
+        Users user = UserUtils.createUserRoleUser();
+        Advertisement ad = AdUtils.createAdvertisement();
+        ad.setUser(user);
+        Users attacker = UserUtils.createUserRoleAdmin();
+        when(advertisementRepository.findByUserAndId(any(Users.class), eq(ad.getId())))
+                .thenReturn(Optional.of(ad));
+        assertThrows(AccessDeniedException.class, () -> advertisementService.deleteAdvertisement(attacker, ad.getId()));
     }
 
 

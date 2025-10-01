@@ -1,7 +1,10 @@
 package io.github.czjena.local_trade.repository;
 
+import io.github.czjena.local_trade.dto.AdvertisementFilterDto;
 import io.github.czjena.local_trade.model.Advertisement;
 import io.github.czjena.local_trade.model.Users;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -11,4 +14,6 @@ public interface AdvertisementRepository extends JpaRepository<Advertisement, In
     List<Advertisement> findByCategoryId(Integer categoryId);
 
     Optional<Advertisement> findByUserAndId(Users user, Integer advertisementId);
+
+    Page<Advertisement> findAll(AdvertisementFilterDto advertisementFilterDto, Pageable pageable);
 }

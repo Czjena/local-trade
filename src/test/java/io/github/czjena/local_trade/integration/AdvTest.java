@@ -3,6 +3,7 @@ package io.github.czjena.local_trade.integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.czjena.local_trade.dto.AdvertisementDto;
+import io.github.czjena.local_trade.dto.AdvertisementUpdateDto;
 import io.github.czjena.local_trade.model.Advertisement;
 import io.github.czjena.local_trade.model.Category;
 import io.github.czjena.local_trade.model.Users;
@@ -30,8 +31,7 @@ import resources.AbstractIntegrationTest;
 
 import java.math.BigDecimal;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -102,7 +102,54 @@ public class AdvTest extends AbstractIntegrationTest {
 
         mockMvc.perform(get("/get/" + ad.getId()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.title").value("test"))
+                .andExpect(jsonPath("$.title").value("title test"))
                 .andExpect(jsonPath("$.category.name").value("test"));
     }
+    @Test
+    @Transactional
+    @WithMockUser(username = "test@test.com")
+    public void updateAdvertisementEndpoint_thenAdvertisementIsUpdated() throws Exception {
+        Users user = UserUtils.createUserRoleUser();
+        usersRepository.save(user);
+        Category category = CategoryUtils.createCategoryForIntegrationTests();
+        categoryRepository.save(category);
+        Advertisement ad = AdUtils.createAdvertisementRoleUserForIntegrationTests(category,user);
+        advertisementRepository.save(ad);
+        AdvertisementUpdateDto updatedDto = new AdvertisementUpdateDto(ad.getPrice(), "changedtext", "changedtext", ad.getImage(), ad.getImage());
+        String updatedDtoJson = objectMapper.writeValueAsString(updatedDto);
+
+        mockMvc.perform(put("/update/" + ad.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(updatedDtoJson))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.title").value("changedtext"))
+                .andExpect(jsonPath("$.description").value("changedtext"));
+    }
+    @Test
+    @Transactional
+    @WithMockUser(username = "testadmin@test.com")
+    public void updateAdvertisementWithBadData_thenAdvertisementIsNotUpdated() throws Exception {
+        Users user = UserUtils.createUserRoleUser();
+        usersRepository.save(user);
+        Users user2 = UserUtils.createUserRoleAdmin();
+        usersRepository.save(user2);
+        Category category = CategoryUtils.createCategoryForIntegrationTests();
+        categoryRepository.save(category);
+        Advertisement ad = AdUtils.createAdvertisementRoleUserForIntegrationTests(category,user);
+        advertisementRepository.save(ad);
+        AdvertisementUpdateDto updatedDto = new AdvertisementUpdateDto(ad.getPrice(), "changedtext", "changedtext", ad.getImage(), ad.getImage());
+        String updatedDtoJson = objectMapper.writeValueAsString(updatedDto);
+
+        mockMvc.perform(put("/update/" + ad.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(updatedDtoJson))
+                .andExpect(status().isNotFound());
+    }
+    @Test
+    @Transactional
+    public void tryToUpdateButNotLoggedIn_thenUnauthorized() throws Exception {
+        mockMvc.perform(put("/update/1"))
+                .andExpect(status().isForbidden());
+    }
+
     }

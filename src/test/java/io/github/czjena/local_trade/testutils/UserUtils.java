@@ -18,6 +18,15 @@ public class UserUtils {
         user.setRole("ROLE_USER");
         return user;
     }
+
+    public static Users createUserRoleAdmin() {
+        Users user = new Users();
+        user.setName("test admin");
+        user.setEmail("testadmin@test.com");
+        user.setPassword("password");
+        user.setRole("ROLE_ADMIN");
+        return user;
+    }
     public static LoginDto createLoginDto() {
         LoginDto loginDto = new LoginDto();
         loginDto.setEmail(createLoginDto().getEmail());
