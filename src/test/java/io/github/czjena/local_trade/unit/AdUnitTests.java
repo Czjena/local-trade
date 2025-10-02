@@ -150,5 +150,4 @@ public class AdUnitTests {
         assertThrows(AccessDeniedException.class, () -> advertisementService.deleteAdvertisement(attacker, ad.getId()));
     }
 
-
 }
