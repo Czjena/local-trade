@@ -55,6 +55,7 @@ public class AdvertisementService {
         advertisementMapper.updateAdvertisementFromDtoSkipNull(dto, ad);
         return advertisementRepository.save(ad);
     }
+
     public void deleteAdvertisement(Users user, Integer advertisementId) {
         Advertisement ad = advertisementRepository.findByUserAndId(user, advertisementId)
                 .orElseThrow(() -> new EntityNotFoundException("Advertisement not found"));

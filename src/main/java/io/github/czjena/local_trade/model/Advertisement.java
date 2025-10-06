@@ -13,6 +13,8 @@ import jakarta.persistence.Id;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Data
@@ -23,6 +25,11 @@ public class Advertisement {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
+    @OneToMany(mappedBy = "advertisement", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Image> images;
+
+    private UUID advertisementId =  UUID.randomUUID();
 
     @NotBlank
     private String title;

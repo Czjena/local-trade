@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
-import static io.github.czjena.local_trade.enums.AdvertisementSortField.CREATED_AT;
 
 
 @Service

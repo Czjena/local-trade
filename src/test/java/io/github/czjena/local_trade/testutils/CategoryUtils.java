@@ -2,6 +2,8 @@ package io.github.czjena.local_trade.testutils;
 
 import io.github.czjena.local_trade.model.Category;
 
+import java.util.UUID;
+
 public class CategoryUtils {
     public static Category createCategory() {
         Category category = new Category();
@@ -16,6 +18,7 @@ public class CategoryUtils {
         category.setName("test");
         category.setDescription("test");
         category.setParentCategory("test");
+        category.setCategoryId(UUID.randomUUID());
         return category;
     }
 }

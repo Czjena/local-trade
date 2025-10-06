@@ -6,6 +6,7 @@ import io.github.czjena.local_trade.model.Category;
 import io.github.czjena.local_trade.model.Users;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 public class AdUtils {
     public static Advertisement createAdvertisement() {
@@ -32,6 +33,7 @@ public class AdUtils {
                 .location("location test")
                 .user(user)
                 .category(category)
+                .advertisementId(UUID.randomUUID())
                 .build();
     }
 

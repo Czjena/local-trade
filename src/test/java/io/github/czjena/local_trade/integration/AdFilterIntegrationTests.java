@@ -1,7 +1,10 @@
 package io.github.czjena.local_trade.integration;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.czjena.local_trade.dto.AdvertisementDto;
 import io.github.czjena.local_trade.dto.AdvertisementFilterDto;
+import io.github.czjena.local_trade.enums.SortDirection;
 import io.github.czjena.local_trade.model.Advertisement;
 import io.github.czjena.local_trade.model.Category;
 import io.github.czjena.local_trade.model.Users;
@@ -19,18 +22,24 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.shaded.com.fasterxml.jackson.core.type.TypeReference;
 import resources.AbstractIntegrationTest;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.IntStream;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -72,18 +81,19 @@ public class AdFilterIntegrationTests extends AbstractIntegrationTest {
         String advertisementFilterDtoJson = objectMapper.writeValueAsString(advertisementFilterDto);
 
         mockMvc.perform(
-                post("/filter")
-                        .with(csrf())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(advertisementFilterDtoJson)
-                        .param("page", String.valueOf(pageable.getPageNumber()))
-                        .param("size",String.valueOf(pageable.getPageSize())))
+                        post("/filter")
+                                .with(csrf())
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(advertisementFilterDtoJson)
+                                .param("page", String.valueOf(pageable.getPageNumber()))
+                                .param("size", String.valueOf(pageable.getPageSize())))
 
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content.length()").value(advertisements.size()))
                 .andExpect(jsonPath("$.number").value(pageable.getPageNumber()))
                 .andExpect(jsonPath("$.size").value(pageable.getPageSize()));
     }
+
     @Test
     @Transactional
     public void filterByTitleAndPageAdvertisements_thenReturnPageOfAdvertisements() throws Exception {
@@ -108,13 +118,14 @@ public class AdFilterIntegrationTests extends AbstractIntegrationTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(advertisementFilterDtoJson)
                                 .param("page", String.valueOf(pageable.getPageNumber()))
-                                .param("size",String.valueOf(pageable.getPageSize())))
+                                .param("size", String.valueOf(pageable.getPageSize())))
 
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content.length()").value(advertisements.size()))
                 .andExpect(jsonPath("$.number").value(pageable.getPageNumber()))
                 .andExpect(jsonPath("$.size").value(pageable.getPageSize()));
     }
+
     @Test
     @Transactional
     public void filterAndPageAdvertisements_thenReturnPageOfAdvertisements() throws Exception {
@@ -139,16 +150,17 @@ public class AdFilterIntegrationTests extends AbstractIntegrationTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(advertisementFilterDtoJson)
                                 .param("page", String.valueOf(pageable.getPageNumber()))
-                                .param("size",String.valueOf(pageable.getPageSize())))
+                                .param("size", String.valueOf(pageable.getPageSize())))
 
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content.length()").value(0))
                 .andExpect(jsonPath("$.number").value(pageable.getPageNumber()))
                 .andExpect(jsonPath("$.size").value(pageable.getPageSize()));
     }
+
     @Test
     @Transactional
-    public void filterByCategoryIdAndFilterForTitlePageAdvertisements_thenReturnPage() throws Exception   {
+    public void filterByCategoryIdAndFilterForTitlePageAdvertisements_thenReturnPage() throws Exception {
         Users user = UserUtils.createUserRoleUser();
         usersRepository.save(user);
         Category category = CategoryUtils.createCategoryForIntegrationTests();
@@ -160,7 +172,7 @@ public class AdFilterIntegrationTests extends AbstractIntegrationTest {
                         .toList()
         );
         Pageable pageable = PageRequest.of(0, 10);
-        AdvertisementFilterDto advertisementFilterDto = AdFiltersUtils.filterByTitleAndCategoryAndMaxPrice(advertisements.get(0).getTitle(),advertisements.get(0).getPrice(),category.getId());
+        AdvertisementFilterDto advertisementFilterDto = AdFiltersUtils.filterByTitleAndCategoryAndMaxPrice(advertisements.get(0).getTitle(), advertisements.get(0).getPrice(), category.getId());
         String advertisementFilterDtoJson = objectMapper.writeValueAsString(advertisementFilterDto);
 
         mockMvc.perform(
@@ -169,16 +181,17 @@ public class AdFilterIntegrationTests extends AbstractIntegrationTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(advertisementFilterDtoJson)
                                 .param("page", String.valueOf(pageable.getPageNumber()))
-                                .param("size",String.valueOf(pageable.getPageSize())))
+                                .param("size", String.valueOf(pageable.getPageSize())))
 
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content.length()").value(10))
                 .andExpect(jsonPath("$.number").value(pageable.getPageNumber()))
                 .andExpect(jsonPath("$.size").value(pageable.getPageSize()));
     }
+
     @Test
     @Transactional
-    public void filterByCategoryIdAndFilterForTitlePageAdvertisements_when_PriceIsBeyondAdverts_thenReturnPageWithNoMatches() throws Exception   {
+    public void filterByCategoryIdAndFilterForTitlePageAdvertisements_when_PriceIsBeyondAdverts_thenReturnPageWithNoMatches() throws Exception {
         Users user = UserUtils.createUserRoleUser();
         usersRepository.save(user);
         Category category = CategoryUtils.createCategoryForIntegrationTests();
@@ -199,7 +212,7 @@ public class AdFilterIntegrationTests extends AbstractIntegrationTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(advertisementFilterDtoJson)
                                 .param("page", String.valueOf(pageable.getPageNumber()))
-                                .param("size",String.valueOf(pageable.getPageSize())))
+                                .param("size", String.valueOf(pageable.getPageSize())))
 
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content.length()").value(0))
@@ -207,6 +220,86 @@ public class AdFilterIntegrationTests extends AbstractIntegrationTest {
                 .andExpect(jsonPath("$.size").value(pageable.getPageSize()));
     }
 
+    @Test
+    @Transactional
+    public void filterByCategoryIdAndTitleSortDirectionASCAndSortByPrice_thenReturnPage() throws Exception {
+        Users user = UserUtils.createUserRoleUser();
+        usersRepository.save(user);
+        Category category = CategoryUtils.createCategoryForIntegrationTests();
+        categoryRepository.save(category);
 
+        List<Advertisement> advertisements = advertisementRepository.saveAll(
+                IntStream.range(0, 10)
+                        .mapToObj(i -> AdUtils.createAdvertisementRoleUserForIntegrationTests(category, user))
+                        .toList()
+        );
+        Pageable pageable = PageRequest.of(0, 10);
+        AdvertisementFilterDto advertisementFilterDto = AdFiltersUtils.filterByTitleAndCategoryAndMaxPrice(advertisements.get(0).getTitle(), new BigDecimal("99999"), category.getId());
+        String advertisementFilterDtoJson = objectMapper.writeValueAsString(advertisementFilterDto);
 
+        MvcResult result = mockMvc.perform(
+                post("/filter")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(advertisementFilterDtoJson)
+                        .param("page", String.valueOf(pageable.getPageNumber()))
+                        .param("size", String.valueOf(pageable.getPageSize()))
+                        .param("SortBy", "PRICE")
+                        .param("SortDirection", String.valueOf(SortDirection.ASC)))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String json = result.getResponse().getContentAsString();
+
+        JsonNode root = objectMapper.readTree(json);
+
+        List<BigDecimal> prices = new ArrayList<>();
+        root.get("content").forEach(node -> prices.add(node.get("price").decimalValue()));
+
+        List<BigDecimal> sorted = new ArrayList<>(prices);
+        sorted.sort(Comparator.naturalOrder());
+
+        assertThat(prices).isEqualTo(sorted);
+    }
+    @Test
+    @Transactional
+    public void filterByCategoryIdAndTitleSortDirectionDESCAndSortByTitle_thenReturnPage() throws Exception {
+        Users user = UserUtils.createUserRoleUser();
+        usersRepository.save(user);
+        Category category = CategoryUtils.createCategoryForIntegrationTests();
+        categoryRepository.save(category);
+
+        List<Advertisement> advertisements = advertisementRepository.saveAll(
+                IntStream.range(0, 10)
+                        .mapToObj(i -> AdUtils.createAdvertisementRoleUserForIntegrationTests(category, user))
+                        .toList()
+        );
+        Pageable pageable = PageRequest.of(0, 10);
+        AdvertisementFilterDto advertisementFilterDto = AdFiltersUtils.filterByTitleAndCategoryAndMaxPrice(advertisements.get(0).getTitle(), new BigDecimal("99999"), category.getId());
+        String advertisementFilterDtoJson = objectMapper.writeValueAsString(advertisementFilterDto);
+
+        MvcResult result = mockMvc.perform(
+                        post("/filter")
+                                .with(csrf())
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(advertisementFilterDtoJson)
+                                .param("page", String.valueOf(pageable.getPageNumber()))
+                                .param("size", String.valueOf(pageable.getPageSize()))
+                                .param("SortBy", "TITLE")
+                                .param("SortDirection", String.valueOf(SortDirection.DESC)))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String json = result.getResponse().getContentAsString();
+
+        JsonNode root = objectMapper.readTree(json);
+
+        List<String> titles = new ArrayList<>();
+        root.get("content").forEach(node -> titles.add(node.get("title").asText()));
+
+        List<String> sorted = new ArrayList<>(titles);
+        sorted.sort(Comparator.reverseOrder());
+
+        assertThat(titles).isEqualTo(sorted);
+    }
 }

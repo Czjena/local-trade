@@ -105,6 +105,7 @@ public class AdvTest extends AbstractIntegrationTest {
                 .andExpect(jsonPath("$.title").value("title test"))
                 .andExpect(jsonPath("$.category.name").value("test"));
     }
+
     @Test
     @Transactional
     @WithMockUser(username = "test@test.com")
