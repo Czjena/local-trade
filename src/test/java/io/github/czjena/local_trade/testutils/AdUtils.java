@@ -4,11 +4,14 @@ import io.github.czjena.local_trade.dto.AdvertisementUpdateDto;
 import io.github.czjena.local_trade.model.Advertisement;
 import io.github.czjena.local_trade.model.Category;
 import io.github.czjena.local_trade.model.Users;
+import io.github.czjena.local_trade.service.AdvertisementService;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigDecimal;
 import java.util.UUID;
 
 public class AdUtils {
+
     public static Advertisement createAdvertisement() {
         BigDecimal price = new BigDecimal("149.99");
         return Advertisement.builder()
@@ -21,6 +24,21 @@ public class AdUtils {
                 .location("test")
                 .build();
 
+    }
+    public static Advertisement createAdWithUserAndCategoryAutomaticRoleUser() {
+        Category category = CategoryUtils.createCategoryForIntegrationTests();
+        Users user = UserUtils.createUserRoleUser();
+        BigDecimal price = new BigDecimal("149.99");
+        return Advertisement.builder()
+                .title("title test")
+                .description("description test")
+                .price(price)
+                .active(true)
+                .location("location test")
+                .user(user)
+                .category(category)
+                .advertisementId(UUID.randomUUID())
+                .build();
     }
 
     public static Advertisement createAdvertisementRoleUserForIntegrationTests(Category category, Users user) {

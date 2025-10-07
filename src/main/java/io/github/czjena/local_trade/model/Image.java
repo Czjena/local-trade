@@ -38,6 +38,6 @@ public class Image {
     private String contentType;
 
     private Long size;
-
+    @Column(name = "image_id")
     private UUID imageId = UUID.randomUUID();
 }

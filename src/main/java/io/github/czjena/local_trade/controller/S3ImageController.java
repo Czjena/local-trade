@@ -37,7 +37,7 @@ public class S3ImageController {
     }
     @GetMapping()
     @Operation(description = "Get list of all images that are saved for one advertisement")
-    public ResponseEntity<List<Image>> getAllImages(@RequestParam UUID advertisementId) {
+    public ResponseEntity<List<ImageDto>> getAllImages(@RequestParam UUID advertisementId) {
        return ResponseEntity.ok(s3Service.listFiles(advertisementId));
     }
     @GetMapping("/presigned/{key}")
