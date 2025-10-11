@@ -7,9 +7,9 @@ import io.github.czjena.local_trade.model.Image;
 import io.github.czjena.local_trade.repository.AdvertisementRepository;
 import io.github.czjena.local_trade.repository.ImageRepository;
 import jakarta.annotation.Nullable;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.imgscalr.Scalr;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,7 +26,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
+
 @Slf4j
 @Service
 public class S3Service {
@@ -54,7 +56,8 @@ public class S3Service {
     }
 
     public Image uploadFile(UUID advertisementId, MultipartFile file) throws IOException {
-        Advertisement ad = advertisementRepository.findByAdvertisementId(advertisementId);
+        Advertisement ad = advertisementRepository.findByAdvertisementId(advertisementId)
+                .orElseThrow(() -> new EntityNotFoundException("Advertisement not found"));
         Image image = new Image();
         image.setAdvertisement(ad);
         String fileName = UUID.randomUUID() + "." + FilenameUtils.getExtension(file.getOriginalFilename());
@@ -77,7 +80,6 @@ public class S3Service {
         image.setThumbnailUrl(generatePresignedUrl(thumbnailKey, Duration.ofHours(1)));
         image.setImageId(UUID.randomUUID());
         imageRepository.save(image);
-
         return image;
     }
 
@@ -98,8 +100,9 @@ public class S3Service {
     }
 
     public List<ImageDto> listFiles(UUID advertisementId) {
-        Advertisement ad = advertisementRepository.findByAdvertisementId(advertisementId);
-        List<Image> images = imageRepository.findAllByAdvertisement(ad); // <- pobierasz z bazy
+        Advertisement ad = advertisementRepository.findByAdvertisementId(advertisementId)
+                .orElseThrow(() -> new EntityNotFoundException("Advertisement not found"));
+        List<Image> images = imageRepository.findAllByAdvertisement(ad);
 
         return images.stream().map(image -> {
             String thumbnailKey = image.getKey().replace("full/", "thumbnail/");
@@ -132,5 +135,4 @@ public class S3Service {
         presigner.close();
         return presignedRequest.url().toString();
     }
-
 }

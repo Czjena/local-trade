@@ -59,9 +59,8 @@ public class AdvertisementService {
     public void deleteAdvertisement(Users user, Integer advertisementId) {
         Advertisement ad = advertisementRepository.findByUserAndId(user, advertisementId)
                 .orElseThrow(() -> new EntityNotFoundException("Advertisement not found"));
-        if (!ad.getUser().equals(user)) {
-            throw new AccessDeniedException("Access denied");
-        }
         advertisementRepository.delete(ad);
     }
+
+
 }

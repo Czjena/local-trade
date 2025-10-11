@@ -2,6 +2,9 @@ package io.github.czjena.local_trade.testutils;
 
 import io.github.czjena.local_trade.dto.AdvertisementFilterDto;
 import io.github.czjena.local_trade.enums.SortDirection;
+import io.github.czjena.local_trade.model.Advertisement;
+import io.github.czjena.local_trade.model.Category;
+import io.github.czjena.local_trade.model.Users;
 
 import java.math.BigDecimal;
 
@@ -10,7 +13,7 @@ import static java.lang.Long.valueOf;
 
 public class AdFiltersUtils {
     public static AdvertisementFilterDto getAdvertisementFilterDto() {
-        return new AdvertisementFilterDto(3,new BigDecimal(3),new BigDecimal(1000),"test location","test title", "test description",true,null,null);
+        return new AdvertisementFilterDto(3,new BigDecimal(3),new BigDecimal(1000),"test location","test title", true);
     }
     public static AdvertisementFilterDto filterByCategory(Integer categoryId) {
         return new AdvertisementFilterDto(
@@ -18,9 +21,6 @@ public class AdFiltersUtils {
                 null,
                 null,
                 null,
-                null,
-                null,
-                true,
                 null,
                 null
         );
@@ -32,9 +32,6 @@ public class AdFiltersUtils {
                 null,
                 null,
                 title,
-                null,
-                true,
-                null,
                 null
         );
     }
@@ -45,11 +42,17 @@ public class AdFiltersUtils {
                 maxPrice,
                 null,
                 title,
-                null,
-                true,
-                null,
                 null
         );
+    }
+    public static Advertisement createAdvertisementWithIndex(Category category, Users user, int index) {
+        return Advertisement.builder()
+                .title("Test Advertisement " + index) // Każdy tytuł będzie unikalny
+                .description("Some description")
+                .price(BigDecimal.valueOf(100 + index * 10L)) // Każda cena będzie inna
+                .category(category)
+                .user(user)
+                .build();
     }
 }
 

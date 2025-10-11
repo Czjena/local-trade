@@ -20,7 +20,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 
-@RestController("/advertisement")
+@RestController
+@RequestMapping("/advertisements")
 public class AdvertisementController {
 
     private final AdvertisementService advertisementService;
@@ -31,7 +32,7 @@ public class AdvertisementController {
         this.usersRepository = usersRepository;
     }
 
-    @PreAuthorize("hasRole('USER')&&hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole()")
     @PostMapping("/add")
     public ResponseEntity<Advertisement> createAdd(@RequestBody AdvertisementDto ad, @AuthenticationPrincipal UserDetails userDetails) {
         Users user = usersRepository.findByEmail(userDetails.getUsername())
@@ -46,7 +47,7 @@ public class AdvertisementController {
         return ResponseEntity.ok(advertisement);
     }
     @PutMapping("/update/{id}")
-    @PreAuthorize("hasRole('USER')&&hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole()")
     @Operation(summary = "Update advertisement by advertisement id and user")
     public ResponseEntity<AdvertisementUpdateDto> updateAdd(@PathVariable Integer id, @RequestBody AdvertisementUpdateDto ad, @AuthenticationPrincipal UserDetails userDetails) {
         Users user = usersRepository.findByEmail(userDetails.getUsername())
@@ -55,7 +56,7 @@ public class AdvertisementController {
         AdvertisementUpdateDto updatedDto = AdvertisementMapperToAdvertisementUpdateDto.toDto(updated);
         return ResponseEntity.ok(updatedDto);
     }
-    @PreAuthorize("hasRole('USER'&&hasRole('ADMIN'))")
+    @PreAuthorize("hasRole('ADMIN')or @advertisementSecurityService.isOwner(authentication,id)")
     @DeleteMapping("/delete/{id}")
     @Operation(summary = "Delete advertisement by advertisement id and user")
     public ResponseEntity<Void> deleteAdd(@PathVariable Integer id, @AuthenticationPrincipal UserDetails userDetails) {

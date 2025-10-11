@@ -59,4 +59,5 @@ public class AdUtils {
         BigDecimal price = new BigDecimal("149.99");
         return new AdvertisementUpdateDto(price, "title update test", "title description test", "location test ", "image test");
     }
+
 }

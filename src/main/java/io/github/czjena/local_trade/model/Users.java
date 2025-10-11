@@ -8,10 +8,8 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+
+import java.util.*;
 
 
 @Data
@@ -27,6 +25,9 @@ public class Users implements UserDetails {
     private String password;
     private String role = "ROLE_USER";
     private UUID userId =  UUID.randomUUID();
+
+    @ManyToMany(mappedBy = "favoritedByUsers", fetch = FetchType.LAZY )
+    private Set<Advertisement> favoritedAdvertisements;
 
 
     @CreationTimestamp

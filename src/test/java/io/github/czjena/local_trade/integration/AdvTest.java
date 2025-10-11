@@ -80,7 +80,7 @@ public class AdvTest extends AbstractIntegrationTest {
 
         String adJson = objectMapper.writeValueAsString(ad);
 
-        mockMvc.perform(post("/add")
+        mockMvc.perform(post("/advertisements/add")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(adJson))
                 .andExpect(status().isOk())
@@ -100,7 +100,7 @@ public class AdvTest extends AbstractIntegrationTest {
         Advertisement ad = AdUtils.createAdvertisementRoleUserForIntegrationTests(category,user);
         advertisementRepository.save(ad);
 
-        mockMvc.perform(get("/get/" + ad.getId()))
+        mockMvc.perform(get("/advertisements/get/" + ad.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.title").value("title test"))
                 .andExpect(jsonPath("$.category.name").value("test"));
@@ -119,7 +119,7 @@ public class AdvTest extends AbstractIntegrationTest {
         AdvertisementUpdateDto updatedDto = new AdvertisementUpdateDto(ad.getPrice(), "changedtext", "changedtext", ad.getImage(), ad.getImage());
         String updatedDtoJson = objectMapper.writeValueAsString(updatedDto);
 
-        mockMvc.perform(put("/update/" + ad.getId())
+        mockMvc.perform(put("/advertisements/update/" + ad.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(updatedDtoJson))
                 .andExpect(status().isOk())
@@ -141,7 +141,7 @@ public class AdvTest extends AbstractIntegrationTest {
         AdvertisementUpdateDto updatedDto = new AdvertisementUpdateDto(ad.getPrice(), "changedtext", "changedtext", ad.getImage(), ad.getImage());
         String updatedDtoJson = objectMapper.writeValueAsString(updatedDto);
 
-        mockMvc.perform(put("/update/" + ad.getId())
+        mockMvc.perform(put("/advertisements/update/" + ad.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(updatedDtoJson))
                 .andExpect(status().isNotFound());
@@ -149,7 +149,7 @@ public class AdvTest extends AbstractIntegrationTest {
     @Test
     @Transactional
     public void tryToUpdateButNotLoggedIn_thenUnauthorized() throws Exception {
-        mockMvc.perform(put("/update/1"))
+        mockMvc.perform(put("/advertisements/update/1"))
                 .andExpect(status().isForbidden());
     }
 

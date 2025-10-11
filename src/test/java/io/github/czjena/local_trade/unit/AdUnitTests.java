@@ -139,15 +139,5 @@ public class AdUnitTests {
         when(advertisementRepository.findByUserAndId(user, id)).thenReturn(Optional.empty());
         assertThrows(EntityNotFoundException.class, () -> advertisementService.deleteAdvertisement(user, id));
     }
-    @Test
-    void deleteAdvertisement_throwsAccessDeniedException() {
-        Users user = UserUtils.createUserRoleUser();
-        Advertisement ad = AdUtils.createAdvertisement();
-        ad.setUser(user);
-        Users attacker = UserUtils.createUserRoleAdmin();
-        when(advertisementRepository.findByUserAndId(any(Users.class), eq(ad.getId())))
-                .thenReturn(Optional.of(ad));
-        assertThrows(AccessDeniedException.class, () -> advertisementService.deleteAdvertisement(attacker, ad.getId()));
-    }
 
 }

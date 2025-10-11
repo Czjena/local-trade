@@ -13,7 +13,9 @@ import jakarta.persistence.Id;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -52,6 +54,9 @@ public class Advertisement {
 
     @CreationTimestamp
     private LocalDateTime createdAt;
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "advertisement_favorites", joinColumns = @JoinColumn(name = "advertisement_id"), inverseJoinColumns = @JoinColumn(name = "user_id"))
+    private Set<Users> favoritedByUsers = new HashSet<>();
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;

@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RequestMapping("/users")
 @RestController
+@RequestMapping("/users")
 public class UsersController {
     private final UsersService usersService;
     private final UsersRepository usersRepository;

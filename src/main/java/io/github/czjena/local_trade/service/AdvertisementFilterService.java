@@ -71,37 +71,9 @@ public class AdvertisementFilterService {
         };
     }
 
-
     public Page<AdvertisementDto> filterAndPageAdvertisements(AdvertisementFilterDto advertisementFilterDto,Pageable pageable) {
         Specification<Advertisement> spec = getSpecification(advertisementFilterDto);
-
-        Sort.Direction direction = advertisementFilterDto.sortDirection() == SortDirection.ASC
-                ? Sort.Direction.ASC : Sort.Direction.DESC;
-
-        List<AdvertisementSortField> fieldsToSort =
-                (advertisementFilterDto.sortBy() != null && !advertisementFilterDto.sortBy().isEmpty())
-                        ? advertisementFilterDto.sortBy()
-                        : List.of(AdvertisementSortField.CREATED_AT);
-
-        List<Sort.Order> orders = fieldsToSort.stream()
-                    .map(field -> new Sort.Order(direction,
-                            switch (field) {
-                                case PRICE -> "price";
-                                case TITLE -> "title";
-                                case CREATED_AT -> "createdAt";
-                            }))
-                    .toList();
-
-
-        Sort sort = Sort.by(orders);
-
-        Pageable pageableWithSort = PageRequest.of(
-                pageable.getPageNumber(),
-                pageable.getPageSize(),
-                sort
-        );
-
-        Page<Advertisement> advertisements = advertisementRepository.findAll(spec,pageableWithSort);
+        Page<Advertisement> advertisements = advertisementRepository.findAll(spec,pageable);
         return advertisements.map(AdvertisementMapperToAdvertisementDto::toDto);
     }
 }

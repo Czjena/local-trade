@@ -41,6 +41,7 @@ import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -76,22 +77,18 @@ public class AdFilterIntegrationTests extends AbstractIntegrationTest {
                         .toList()
         );
         Integer categoryId = category.getId();
-        Pageable pageable = PageRequest.of(0, 10);
-        AdvertisementFilterDto advertisementFilterDto = AdFiltersUtils.filterByCategory(categoryId);
-        String advertisementFilterDtoJson = objectMapper.writeValueAsString(advertisementFilterDto);
 
         mockMvc.perform(
-                        post("/filter")
+                        get("/advertisements/search")
                                 .with(csrf())
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(advertisementFilterDtoJson)
-                                .param("page", String.valueOf(pageable.getPageNumber()))
-                                .param("size", String.valueOf(pageable.getPageSize())))
-
+                                .param("categoryId", String.valueOf(categoryId))
+                                .param("page", "0")
+                                .param("size", "10")
+                )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content.length()").value(advertisements.size()))
-                .andExpect(jsonPath("$.number").value(pageable.getPageNumber()))
-                .andExpect(jsonPath("$.size").value(pageable.getPageSize()));
+                .andExpect(jsonPath("$.number").value(0))
+                .andExpect(jsonPath("$.size").value(10));
     }
 
     @Test
@@ -108,22 +105,19 @@ public class AdFilterIntegrationTests extends AbstractIntegrationTest {
                         .toList()
         );
         String title = advertisements.get(0).getTitle();
-        Pageable pageable = PageRequest.of(0, 10);
-        AdvertisementFilterDto advertisementFilterDto = AdFiltersUtils.filterByTitle(title);
-        String advertisementFilterDtoJson = objectMapper.writeValueAsString(advertisementFilterDto);
+
 
         mockMvc.perform(
-                        post("/filter")
+                        get("/advertisements/search")
                                 .with(csrf())
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(advertisementFilterDtoJson)
-                                .param("page", String.valueOf(pageable.getPageNumber()))
-                                .param("size", String.valueOf(pageable.getPageSize())))
+                                .param("title", title)
+                                .param("page", "0")
+                                .param("size", "10"))
 
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content.length()").value(advertisements.size()))
-                .andExpect(jsonPath("$.number").value(pageable.getPageNumber()))
-                .andExpect(jsonPath("$.size").value(pageable.getPageSize()));
+                .andExpect(jsonPath("$.number").value(0))
+                .andExpect(jsonPath("$.size").value(10));
     }
 
     @Test
@@ -140,22 +134,17 @@ public class AdFilterIntegrationTests extends AbstractIntegrationTest {
                         .toList()
         );
 
-        Pageable pageable = PageRequest.of(0, 10);
-        AdvertisementFilterDto advertisementFilterDto = AdFiltersUtils.getAdvertisementFilterDto();
-        String advertisementFilterDtoJson = objectMapper.writeValueAsString(advertisementFilterDto);
 
         mockMvc.perform(
-                        post("/filter")
+                        get("/advertisements/search")
                                 .with(csrf())
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(advertisementFilterDtoJson)
-                                .param("page", String.valueOf(pageable.getPageNumber()))
-                                .param("size", String.valueOf(pageable.getPageSize())))
+                                .param("page","0")
+                                .param("size", "10"))
 
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content.length()").value(0))
-                .andExpect(jsonPath("$.number").value(pageable.getPageNumber()))
-                .andExpect(jsonPath("$.size").value(pageable.getPageSize()));
+                .andExpect(jsonPath("$.content.length()").value(advertisements.size()))
+                .andExpect(jsonPath("$.number").value(0))
+                .andExpect(jsonPath("$.size").value(10));
     }
 
     @Test
@@ -171,22 +160,20 @@ public class AdFilterIntegrationTests extends AbstractIntegrationTest {
                         .mapToObj(i -> AdUtils.createAdvertisementRoleUserForIntegrationTests(category, user))
                         .toList()
         );
-        Pageable pageable = PageRequest.of(0, 10);
-        AdvertisementFilterDto advertisementFilterDto = AdFiltersUtils.filterByTitleAndCategoryAndMaxPrice(advertisements.get(0).getTitle(), advertisements.get(0).getPrice(), category.getId());
-        String advertisementFilterDtoJson = objectMapper.writeValueAsString(advertisementFilterDto);
+
 
         mockMvc.perform(
-                        post("/filter")
+                        get("/advertisements/search")
                                 .with(csrf())
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(advertisementFilterDtoJson)
-                                .param("page", String.valueOf(pageable.getPageNumber()))
-                                .param("size", String.valueOf(pageable.getPageSize())))
+                                .param("categoryId", String.valueOf(advertisements.get(0).getCategory().getId()))
+                                .param("title", String.valueOf(advertisements.get(0).getTitle()))
+                                .param("page", "0")
+                                .param("size", "10"))
 
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content.length()").value(10))
-                .andExpect(jsonPath("$.number").value(pageable.getPageNumber()))
-                .andExpect(jsonPath("$.size").value(pageable.getPageSize()));
+                .andExpect(jsonPath("$.content.length()").value(advertisements.size()))
+                .andExpect(jsonPath("$.number").value(0))
+                .andExpect(jsonPath("$.size").value(10));
     }
 
     @Test
@@ -202,22 +189,20 @@ public class AdFilterIntegrationTests extends AbstractIntegrationTest {
                         .mapToObj(i -> AdUtils.createAdvertisementRoleUserForIntegrationTests(category, user))
                         .toList()
         );
-        Pageable pageable = PageRequest.of(0, 10);
-        AdvertisementFilterDto advertisementFilterDto = AdFiltersUtils.filterByTitleAndCategoryAndMaxPrice(advertisements.get(0).getTitle(), new BigDecimal("1"), category.getId());
-        String advertisementFilterDtoJson = objectMapper.writeValueAsString(advertisementFilterDto);
 
         mockMvc.perform(
-                        post("/filter")
+                        get("/advertisements/search")
                                 .with(csrf())
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(advertisementFilterDtoJson)
-                                .param("page", String.valueOf(pageable.getPageNumber()))
-                                .param("size", String.valueOf(pageable.getPageSize())))
+                                .param("categoryId", String.valueOf(advertisements.get(0).getCategory().getId()))
+                                .param("title", String.valueOf(advertisements.get(0).getTitle()))
+                                .param("minPrice", "9999999")
+                                .param("page", "0")
+                                .param("size", "0"))
 
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content.length()").value(0))
-                .andExpect(jsonPath("$.number").value(pageable.getPageNumber()))
-                .andExpect(jsonPath("$.size").value(pageable.getPageSize()));
+                .andExpect(jsonPath("$.number").value(0))
+                .andExpect(jsonPath("$.size").value(10));
     }
 
     @Test
@@ -230,22 +215,16 @@ public class AdFilterIntegrationTests extends AbstractIntegrationTest {
 
         List<Advertisement> advertisements = advertisementRepository.saveAll(
                 IntStream.range(0, 10)
-                        .mapToObj(i -> AdUtils.createAdvertisementRoleUserForIntegrationTests(category, user))
+                        .mapToObj(i -> AdFiltersUtils.createAdvertisementWithIndex(category,user,i))
                         .toList()
         );
-        Pageable pageable = PageRequest.of(0, 10);
-        AdvertisementFilterDto advertisementFilterDto = AdFiltersUtils.filterByTitleAndCategoryAndMaxPrice(advertisements.get(0).getTitle(), new BigDecimal("99999"), category.getId());
-        String advertisementFilterDtoJson = objectMapper.writeValueAsString(advertisementFilterDto);
 
         MvcResult result = mockMvc.perform(
-                post("/filter")
+                get("/advertisements/search")
                         .with(csrf())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(advertisementFilterDtoJson)
-                        .param("page", String.valueOf(pageable.getPageNumber()))
-                        .param("size", String.valueOf(pageable.getPageSize()))
-                        .param("SortBy", "PRICE")
-                        .param("SortDirection", String.valueOf(SortDirection.ASC)))
+                        .param("page", "0")
+                        .param("size", "10")
+                        .param("sort", "price,asc"))
                 .andExpect(status().isOk())
                 .andReturn();
 
@@ -271,22 +250,16 @@ public class AdFilterIntegrationTests extends AbstractIntegrationTest {
 
         List<Advertisement> advertisements = advertisementRepository.saveAll(
                 IntStream.range(0, 10)
-                        .mapToObj(i -> AdUtils.createAdvertisementRoleUserForIntegrationTests(category, user))
+                        .mapToObj(i -> AdFiltersUtils.createAdvertisementWithIndex(category,user,i))
                         .toList()
         );
-        Pageable pageable = PageRequest.of(0, 10);
-        AdvertisementFilterDto advertisementFilterDto = AdFiltersUtils.filterByTitleAndCategoryAndMaxPrice(advertisements.get(0).getTitle(), new BigDecimal("99999"), category.getId());
-        String advertisementFilterDtoJson = objectMapper.writeValueAsString(advertisementFilterDto);
 
         MvcResult result = mockMvc.perform(
-                        post("/filter")
+                        get("/advertisements/search")
                                 .with(csrf())
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(advertisementFilterDtoJson)
-                                .param("page", String.valueOf(pageable.getPageNumber()))
-                                .param("size", String.valueOf(pageable.getPageSize()))
-                                .param("SortBy", "TITLE")
-                                .param("SortDirection", String.valueOf(SortDirection.DESC)))
+                                .param("page", "0")
+                                .param("size", "10")
+                                .param("sort", "title,desc"))
                 .andExpect(status().isOk())
                 .andReturn();
 
