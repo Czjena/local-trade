@@ -1,8 +1,6 @@
 package io.github.czjena.local_trade.repository;
 
-import io.github.czjena.local_trade.dto.AdvertisementFilterDto;
 import io.github.czjena.local_trade.model.Advertisement;
-import io.github.czjena.local_trade.model.Image;
 import io.github.czjena.local_trade.model.Users;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

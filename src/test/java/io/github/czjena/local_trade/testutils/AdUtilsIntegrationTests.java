@@ -9,6 +9,7 @@ import io.github.czjena.local_trade.repository.UsersRepository;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.util.HashSet;
 import java.util.UUID;
 
 @Component
@@ -34,6 +35,7 @@ public class AdUtilsIntegrationTests {
                 .user(user)
                 .category(category)
                 .advertisementId(UUID.randomUUID())
+                .favoritedByUsers(new HashSet<>())
                 .build());
     }
 }

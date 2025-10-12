@@ -3,6 +3,7 @@ package io.github.czjena.local_trade.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.security.core.GrantedAuthority;
@@ -14,12 +15,14 @@ import java.util.*;
 
 @Data
 @Entity
+@EqualsAndHashCode(exclude = "favoritedAdvertisements")
 public class Users implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String name;
+    private String username;
     @Email
     private String email;
     private String password;
@@ -27,7 +30,7 @@ public class Users implements UserDetails {
     private UUID userId =  UUID.randomUUID();
 
     @ManyToMany(mappedBy = "favoritedByUsers", fetch = FetchType.LAZY )
-    private Set<Advertisement> favoritedAdvertisements;
+    private Set<Advertisement> favoritedAdvertisements = new HashSet<>();
 
 
     @CreationTimestamp
@@ -37,6 +40,7 @@ public class Users implements UserDetails {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private Date updatedAt;
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -63,6 +67,20 @@ public class Users implements UserDetails {
     public boolean isEnabled(){
         return true;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Users user)) return false;
+        if (userId == null || user.userId == null) return false;
+        return userId.equals(user.userId);
+    }
+    @Override
+    public int hashCode() {
+        return userId != null ? userId.hashCode() : 0;
+    }
+
+
 
 
 }

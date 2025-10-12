@@ -10,6 +10,8 @@ import io.github.czjena.local_trade.repository.UsersRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -35,13 +37,18 @@ public class FavoriteAdvertisementService {
                         .collect(Collectors.toSet())).orElseThrow(() -> new UserNotFoundException("No user found with username: " + userDetails.getUsername()));
     }
 
+
+    @Transactional
     public void addFavoriteAdvertisement(UserDetails userDetails, UUID advertisementId) {
         Users user = getUser(userDetails);
         Advertisement ad = advertisementRepository.findByAdvertisementId(advertisementId)
                 .orElseThrow(() -> new EntityNotFoundException("Advertisement not found "));
         Set<Users> favoritedByUsers = ad.getFavoritedByUsers();
+        Set<Advertisement> favoritedByAdvertisement = user.getFavoritedAdvertisements();
         favoritedByUsers.add(user);
+        favoritedByAdvertisement.add(ad);
         advertisementRepository.save(ad);
+        usersRepository.save(user);
     }
 
 
@@ -52,6 +59,7 @@ public class FavoriteAdvertisementService {
         Set<Users> favoritedByAdvertisementId = ad.getFavoritedByUsers();
         favoritedByAdvertisementId.remove(user);
         advertisementRepository.save(ad);
+        usersRepository.save(user);
     }
 
     private Users getUser(UserDetails userDetails) {

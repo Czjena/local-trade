@@ -8,6 +8,7 @@ import io.github.czjena.local_trade.service.AdvertisementService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigDecimal;
+import java.util.HashSet;
 import java.util.UUID;
 
 public class AdUtils {
@@ -22,6 +23,7 @@ public class AdUtils {
                 .price(price)
                 .active(true)
                 .location("test")
+                .favoritedByUsers(new HashSet<>())
                 .build();
 
     }
