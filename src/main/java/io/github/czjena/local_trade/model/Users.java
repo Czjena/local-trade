@@ -22,7 +22,7 @@ public class Users implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String name;
-    private String username;
+
     @Email
     private String email;
     private String password;
@@ -31,7 +31,6 @@ public class Users implements UserDetails {
 
     @ManyToMany(mappedBy = "favoritedByUsers", fetch = FetchType.LAZY )
     private Set<Advertisement> favoritedAdvertisements = new HashSet<>();
-
 
     @CreationTimestamp
     @Column(updatable = false, name ="created_at")

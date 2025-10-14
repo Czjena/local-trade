@@ -2,22 +2,17 @@ package io.github.czjena.local_trade.service;
 
 import io.github.czjena.local_trade.dto.AdvertisementDto;
 import io.github.czjena.local_trade.dto.AdvertisementFilterDto;
-import io.github.czjena.local_trade.enums.AdvertisementSortField;
-import io.github.czjena.local_trade.enums.SortDirection;
 import io.github.czjena.local_trade.mappers.AdvertisementMapperToAdvertisementDto;
 import io.github.czjena.local_trade.model.Advertisement;
 import io.github.czjena.local_trade.repository.AdvertisementRepository;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-
 
 
 @Service

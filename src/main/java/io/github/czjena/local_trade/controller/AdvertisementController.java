@@ -32,7 +32,7 @@ public class AdvertisementController {
         this.usersRepository = usersRepository;
     }
 
-    @PreAuthorize("hasAnyRole()")
+    @PreAuthorize("isAuthenticated()")
     @PostMapping("/add")
     public ResponseEntity<Advertisement> createAdd(@RequestBody AdvertisementDto ad, @AuthenticationPrincipal UserDetails userDetails) {
         Users user = usersRepository.findByEmail(userDetails.getUsername())
@@ -40,14 +40,16 @@ public class AdvertisementController {
         Advertisement created = advertisementService.addAd(ad,user);
         return ResponseEntity.ok(created);
     }
+
     @GetMapping("/get/{id}")
     @Operation(summary = "Get advertisement by advertisement id")
     public ResponseEntity<Advertisement> getAdd(@PathVariable Integer id) {
         Advertisement advertisement = advertisementService.getAdvertisementById(id);
         return ResponseEntity.ok(advertisement);
     }
+
     @PutMapping("/update/{id}")
-    @PreAuthorize("hasAnyRole()")
+    @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Update advertisement by advertisement id and user")
     public ResponseEntity<AdvertisementUpdateDto> updateAdd(@PathVariable Integer id, @RequestBody AdvertisementUpdateDto ad, @AuthenticationPrincipal UserDetails userDetails) {
         Users user = usersRepository.findByEmail(userDetails.getUsername())
@@ -56,6 +58,7 @@ public class AdvertisementController {
         AdvertisementUpdateDto updatedDto = AdvertisementMapperToAdvertisementUpdateDto.toDto(updated);
         return ResponseEntity.ok(updatedDto);
     }
+
     @PreAuthorize("hasRole('ADMIN')or @advertisementSecurityService.isOwner(authentication,id)")
     @DeleteMapping("/delete/{id}")
     @Operation(summary = "Delete advertisement by advertisement id and user")
@@ -65,5 +68,4 @@ public class AdvertisementController {
         advertisementService.deleteAdvertisement(user, id);
         return ResponseEntity.ok().build();
     }
-
 }

@@ -89,6 +89,12 @@
             <version>4.2</version>
         </dependency>
 
+        <!-- Web sockets -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-websocket</artifactId>
+            <version>3.5.5</version>
+        </dependency>
 
         <!-- S3 Dependency -->
         <dependency>

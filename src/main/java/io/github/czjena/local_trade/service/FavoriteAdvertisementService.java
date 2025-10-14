@@ -37,7 +37,6 @@ public class FavoriteAdvertisementService {
                         .collect(Collectors.toSet())).orElseThrow(() -> new UserNotFoundException("No user found with username: " + userDetails.getUsername()));
     }
 
-
     @Transactional
     public void addFavoriteAdvertisement(UserDetails userDetails, UUID advertisementId) {
         Users user = getUser(userDetails);
@@ -51,13 +50,12 @@ public class FavoriteAdvertisementService {
         usersRepository.save(user);
     }
 
-
     public void deleteFavoriteAdvertisement(UserDetails userDetails, UUID advertisementId) {
         Users user = getUser(userDetails);
         Advertisement ad = advertisementRepository.findByAdvertisementId(advertisementId)
                 .orElseThrow(() -> new EntityNotFoundException("Advertisement not found "));
-        Set<Users> favoritedByAdvertisementId = ad.getFavoritedByUsers();
-        favoritedByAdvertisementId.remove(user);
+        ad.getFavoritedByUsers().remove(user);
+        user.getFavoritedAdvertisements().remove(ad);
         advertisementRepository.save(ad);
         usersRepository.save(user);
     }
