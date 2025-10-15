@@ -75,6 +75,13 @@
             <optional>true</optional>
         </dependency>
 
+        <!-- awaitility -->
+        <dependency>
+            <groupId>org.awaitility</groupId>
+            <artifactId>awaitility</artifactId>
+            <version>4.2.0</version> <scope>test</scope>
+        </dependency>
+
         <!-- Apache utils -->
         <dependency>
             <groupId>commons-io</groupId>
@@ -93,7 +100,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-websocket</artifactId>
-            <version>3.5.5</version>
         </dependency>
 
         <!-- S3 Dependency -->

@@ -1,5 +1,6 @@
 package io.github.czjena.local_trade.controller;
 
+import io.github.czjena.local_trade.dto.ChatMessageDto;
 import io.github.czjena.local_trade.dto.ChatMessagePayload;
 import io.github.czjena.local_trade.model.ChatMessage;
 import io.github.czjena.local_trade.service.ChatMessageService;
@@ -9,9 +10,13 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
+
+import javax.management.relation.Role;
+import java.security.Principal;
 
 
 @Controller
@@ -30,11 +35,11 @@ public class WebMessageChatController {
         chatMessageService.save(chatMessage);
         return chatMessage;
     }
-
     @MessageMapping("/chat.sendMessage.private/{recipient}")
-    @Operation(summary = "Take logged in user and send recipientUsername to send message")
-    public void sendPrivateMessage(@Payload ChatMessagePayload chatMessage, @DestinationVariable String recipientUsername, @AuthenticationPrincipal UserDetails userDetails) {
-        ChatMessage newChatMessage = chatMessageService.createAndSaveMessageForPrivateUser(chatMessage,userDetails,recipientUsername);
-        simpMessagingTemplate.convertAndSendToUser(recipientUsername,"/queue/messages", newChatMessage);
+    @Operation(summary = "Take logged in user and send recipient Username to send message")
+    public void sendPrivateMessage(@Payload ChatMessagePayload chatMessage, @DestinationVariable("recipient") String recipient, @AuthenticationPrincipal Principal principal) {
+        ChatMessageDto newChatMessage = chatMessageService.createAndSaveMessageForPrivateUser(chatMessage,principal,recipient);
+        simpMessagingTemplate.convertAndSendToUser(recipient,"/queue/messages", newChatMessage);
+        simpMessagingTemplate.convertAndSendToUser(principal.getName(), "/queue/messages", newChatMessage);
     }
 }

@@ -25,19 +25,15 @@ import org.springframework.web.bind.annotation.*;
 public class AdvertisementController {
 
     private final AdvertisementService advertisementService;
-    private final UsersRepository usersRepository;
 
-    public AdvertisementController(AdvertisementService advertisementService,  UsersRepository usersRepository) {
+    public AdvertisementController(AdvertisementService advertisementService) {
         this.advertisementService = advertisementService;
-        this.usersRepository = usersRepository;
     }
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/add")
     public ResponseEntity<Advertisement> createAdd(@RequestBody AdvertisementDto ad, @AuthenticationPrincipal UserDetails userDetails) {
-        Users user = usersRepository.findByEmail(userDetails.getUsername())
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-        Advertisement created = advertisementService.addAd(ad,user);
+        Advertisement created = advertisementService.addAd(ad,userDetails);
         return ResponseEntity.ok(created);
     }
 
@@ -52,20 +48,15 @@ public class AdvertisementController {
     @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Update advertisement by advertisement id and user")
     public ResponseEntity<AdvertisementUpdateDto> updateAdd(@PathVariable Integer id, @RequestBody AdvertisementUpdateDto ad, @AuthenticationPrincipal UserDetails userDetails) {
-        Users user = usersRepository.findByEmail(userDetails.getUsername())
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-        Advertisement updated = advertisementService.changeAdvertisement(ad, user, id);
-        AdvertisementUpdateDto updatedDto = AdvertisementMapperToAdvertisementUpdateDto.toDto(updated);
-        return ResponseEntity.ok(updatedDto);
+        AdvertisementUpdateDto updated = advertisementService.changeAdvertisement(ad, userDetails, id);
+        return ResponseEntity.ok(updated);
     }
 
     @PreAuthorize("hasRole('ADMIN')or @advertisementSecurityService.isOwner(authentication,id)")
     @DeleteMapping("/delete/{id}")
     @Operation(summary = "Delete advertisement by advertisement id and user")
     public ResponseEntity<Void> deleteAdd(@PathVariable Integer id, @AuthenticationPrincipal UserDetails userDetails) {
-        Users user = usersRepository.findByEmail(userDetails.getUsername())
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-        advertisementService.deleteAdvertisement(user, id);
+        advertisementService.deleteAdvertisement(userDetails, id);
         return ResponseEntity.ok().build();
     }
 }

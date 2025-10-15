@@ -50,7 +50,7 @@ public class FavoriteAdvertisementIntegrationTests extends AbstractIntegrationTe
             "DELETE, /favorite/{id}, 204 "
     })
     @Transactional
-    @WithMockUser("test")
+    @WithMockUser("test@test.com")
     public void checkMyFavoriteAdvertisement_thenReturnFavoriteAdvertisement(String httpMethod ,String endpointTemplate, int expectedStatus) throws Exception {
         Advertisement ad = adUtilsIntegrationTests.createAdWithUserAndCategoryAutomaticRoleUser("test","test", BigDecimal.valueOf(300));
         Users user = ad.getUser();
@@ -115,7 +115,7 @@ public class FavoriteAdvertisementIntegrationTests extends AbstractIntegrationTe
             "DELETE, /favorite/{id}, 404 "
     })
     @Transactional
-    @WithMockUser("test")
+    @WithMockUser("test@test.com")
     public void whenTryingToCheckFavoriteAdvertisements_thenAdvertIsNotPresent_returnNoAdvertisements(String httpMethod ,String endpointTemplate, int expectedStatus) throws Exception {
         Users user = UserUtils.createUserRoleUser();
         usersRepository.save(user);

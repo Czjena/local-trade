@@ -45,8 +45,5 @@ public class UsersController {
     public ResponseEntity<UserResponseDto> updateCurrentUser(@RequestBody UpdateUserDto updateUserDto) {
         UserResponseDto updatedUser = usersService.updateCurrentUser(updateUserDto);
         return ResponseEntity.ok(updatedUser);
-
     }
-
-
 }

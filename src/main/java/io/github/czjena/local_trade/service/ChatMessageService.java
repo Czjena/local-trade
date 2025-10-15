@@ -1,5 +1,6 @@
 package io.github.czjena.local_trade.service;
 
+import io.github.czjena.local_trade.dto.ChatMessageDto;
 import io.github.czjena.local_trade.dto.ChatMessagePayload;
 import io.github.czjena.local_trade.exceptions.UserNotFoundException;
 import io.github.czjena.local_trade.model.ChatMessage;
@@ -10,6 +11,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -30,18 +32,21 @@ public class ChatMessageService {
         return chatMessageRepository.save(chatMessage);
     }
     @Transactional
-    public ChatMessage createAndSaveMessageForPrivateUser(ChatMessagePayload chatMessage, UserDetails userDetails, String recipientUsername) {
-        Users user = usersRepository.findByName(userDetails.getUsername())
-                .orElseThrow(() ->new UserNotFoundException("User not found with username :" + userDetails.getUsername()));
-        Users user1 = usersRepository.findByName(recipientUsername)
-                .orElseThrow(() ->new UserNotFoundException("User not found with username :" + recipientUsername ));
+    public ChatMessageDto createAndSaveMessageForPrivateUser(ChatMessagePayload chatMessage, Principal principal, String recipientEmail) {
+        Users user = usersRepository.findByEmail(principal.getName())
+                .orElseThrow(() ->new UserNotFoundException("User not found with username :" + principal.getName()));
+        Users user1 = usersRepository.findByEmail(recipientEmail)
+                .orElseThrow(() ->new UserNotFoundException("User not found with username :" + recipientEmail ));
         ChatMessage newChatMessage = ChatMessage.builder()
                 .sender(user)
                 .recipient(user1)
                 .content(chatMessage.content())
                 .build();
-     return chatMessageRepository.save(newChatMessage);
+        ChatMessageDto dto = new ChatMessageDto(newChatMessage);
+      chatMessageRepository.save(newChatMessage);
+      return dto;
     }
+
     @Transactional
     public List<ChatMessage> getChatHistory(UserDetails sender, String recipientUsername) {
         Users user1 = usersRepository.findByName(sender.getUsername())

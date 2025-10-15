@@ -4,9 +4,11 @@ import io.github.czjena.local_trade.dto.UpdateUserDto;
 import io.github.czjena.local_trade.exceptions.UserNotFoundException;
 
 import io.github.czjena.local_trade.model.Users;
+import io.github.czjena.local_trade.repository.ChatMessageRepository;
 import io.github.czjena.local_trade.repository.UsersRepository;
 
 import io.github.czjena.local_trade.service.UsersService;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 
 
@@ -31,15 +33,21 @@ public class UserRepositoryIntegrationTest extends AbstractIntegrationTest {
 
     private final UsersRepository usersRepository;
     private final UsersService usersService;
+    @Autowired
+    private ChatMessageRepository chatMessageRepository;
 
     @Autowired
     public UserRepositoryIntegrationTest (UsersRepository usersRepository, UsersService usersService) {
         this.usersRepository = usersRepository;
         this.usersService = usersService;
     }
-
+    @Transactional
     @Test
     void whenSavingUser_thenUserSavedCorrectly() {
+        chatMessageRepository.deleteAll();
+        usersRepository.deleteAll();
+
+
 
         long countBefore = usersRepository.count();
         assertEquals(0, countBefore, "No users should be present before the test");
@@ -57,6 +65,7 @@ public class UserRepositoryIntegrationTest extends AbstractIntegrationTest {
         assertEquals("test", savedUser.getPassword(), "User password should be test");
     }
     @Test
+    @Transactional
     void whenUpdatingUser_thenUserUpdatedCorrectly() {
         Users user = new Users();
 
@@ -84,6 +93,7 @@ public class UserRepositoryIntegrationTest extends AbstractIntegrationTest {
     }
 
     @Test
+    @Transactional
     void whenUpdatingUser_thenUserUpdatedCorrectly_whenUserNotFound() {
         UpdateUserDto updateUserDto = new UpdateUserDto();
         updateUserDto.setEmail("test@test.com");

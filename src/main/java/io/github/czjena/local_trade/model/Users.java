@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.security.core.GrantedAuthority;
@@ -29,6 +30,7 @@ public class Users implements UserDetails {
     private String role = "ROLE_USER";
     private UUID userId =  UUID.randomUUID();
 
+    @ToString.Exclude
     @ManyToMany(mappedBy = "favoritedByUsers", fetch = FetchType.LAZY )
     private Set<Advertisement> favoritedAdvertisements = new HashSet<>();
 

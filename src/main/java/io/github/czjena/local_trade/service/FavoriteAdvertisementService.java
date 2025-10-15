@@ -30,7 +30,7 @@ public class FavoriteAdvertisementService {
     }
 
     public Set<FavoriteAdvertisementDto> getFavoriteAdvertisements(UserDetails userDetails) {
-        return usersRepository.findByName(userDetails.getUsername())
+        return usersRepository.findByEmail(userDetails.getUsername())
                 .map(users -> users.getFavoritedAdvertisements()
                         .stream()
                         .map(favoriteAdvertisementMapper::toDto)
@@ -61,7 +61,7 @@ public class FavoriteAdvertisementService {
     }
 
     private Users getUser(UserDetails userDetails) {
-        return usersRepository.findByName(userDetails.getUsername())
+        return usersRepository.findByEmail(userDetails.getUsername())
                 .orElseThrow(() -> new UserNotFoundException("No user found with username: " + userDetails.getUsername()));
     }
 

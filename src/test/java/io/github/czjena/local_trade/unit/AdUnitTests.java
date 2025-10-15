@@ -17,8 +17,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.userdetails.UserDetails;
 
 
 import java.math.BigDecimal;
@@ -69,6 +71,9 @@ public class AdUnitTests {
                 "Warsaw"                    // location
         );
 
+        UserDetails userDetails = mock(UserDetails.class);
+        when(usersRepository.findByEmail(userDetails.getUsername())).thenReturn(Optional.of(user));
+
         when(categoryRepository.findById(any())).thenReturn(Optional.of(category));
 
         Advertisement mapped = Advertisement.builder()
@@ -85,7 +90,7 @@ public class AdUnitTests {
         when(advertisementRepository.save(any(Advertisement.class))).thenReturn(mapped);
 
         // wywołanie metody serwisu
-        Advertisement created = advertisementService.addAd(ad,user);
+        Advertisement created = advertisementService.addAd(ad,userDetails);
 
         // asercje
         assertEquals(mapped, created);
@@ -115,10 +120,13 @@ public class AdUnitTests {
         Users user = UserUtils.createUserRoleUser();
         Advertisement ad = AdUtils.createAdvertisement();
         ad.setUser(user);
+        UserDetails userDetails = Mockito.mock(UserDetails.class);
+        when(usersRepository.findByEmail(userDetails.getUsername())).thenReturn(Optional.of(user));
         AdvertisementUpdateDto dto = new AdvertisementUpdateDto(null, null, null, null, null);
         when(advertisementRepository.findByUserAndId(user, ad.getId()))
                 .thenReturn(Optional.of(ad));
-        advertisementService.changeAdvertisement(dto, user, ad.getId());
+
+        advertisementService.changeAdvertisement(dto, userDetails, ad.getId());
         verify(advertisementMapper).updateAdvertisementFromDtoSkipNull(dto, ad);
         verify(advertisementRepository).save(ad);
     }
@@ -127,17 +135,22 @@ public class AdUnitTests {
         Users user = UserUtils.createUserRoleUser();
         Advertisement ad = AdUtils.createAdvertisement();
         ad.setUser(user);
+        UserDetails userDetails = Mockito.mock(UserDetails.class);
+        when(usersRepository.findByEmail(userDetails.getUsername())).thenReturn(Optional.of(user));
         when(advertisementRepository.findByUserAndId(user, ad.getId()))
                 .thenReturn(Optional.of(ad));
-        advertisementService.deleteAdvertisement(user, ad.getId());
+        advertisementService.deleteAdvertisement(userDetails, ad.getId());
         verify(advertisementRepository).delete(ad);
     }
     @Test
     void deleteAdvertisement_throwsEntityNotFoundException() {
         Users user = UserUtils.createUserRoleUser();
+        UserDetails userDetails = Mockito.mock(UserDetails.class);
+        when(usersRepository.findByEmail(userDetails.getUsername())).thenReturn(Optional.of(user));
         int id = 999;
         when(advertisementRepository.findByUserAndId(user, id)).thenReturn(Optional.empty());
-        assertThrows(EntityNotFoundException.class, () -> advertisementService.deleteAdvertisement(user, id));
+
+        assertThrows(EntityNotFoundException.class, () -> advertisementService.deleteAdvertisement(userDetails, id));
     }
 
 }

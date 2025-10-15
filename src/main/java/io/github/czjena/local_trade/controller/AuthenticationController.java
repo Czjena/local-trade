@@ -53,6 +53,7 @@ public class AuthenticationController {
                 .expiresIn(jwtService.getExpirationTime())
                 .refreshToken(refreshToken.getToken()).build();
     }
+
     @PostMapping("/refreshToken")
     @Operation(summary = "Refresh token for users when jwt token expires")
     public LoginResponse refreshToken(@RequestBody RefreshTokenRequest refreshTokenRequest) {
@@ -60,9 +61,9 @@ public class AuthenticationController {
                 .map(refreshTokenService::verifyExpiry)
                 .map(RefreshToken::getUsers)
                 .map(Users -> {
-                   String accesstoken = jwtService.generateToken(Users);
+                   String accessToken = jwtService.generateToken(Users);
                    return LoginResponse.builder()
-                           .token(accesstoken)
+                           .token(accessToken)
                            .refreshToken((refreshTokenRequest.getToken()))
                            .build();
 
