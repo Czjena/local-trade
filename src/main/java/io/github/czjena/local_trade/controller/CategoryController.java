@@ -1,13 +1,14 @@
 package io.github.czjena.local_trade.controller;
 
+import io.github.czjena.local_trade.dto.CategoryDto;
 import io.github.czjena.local_trade.model.Category;
 import io.github.czjena.local_trade.service.CategoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.apache.commons.lang3.builder.ToStringSummary;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -22,9 +23,26 @@ public class CategoryController {
 
     @GetMapping
     @Operation(summary = "Get all categories")
-    public ResponseEntity<List<Category>> getAllCategories() {
-        List<Category> categories = categoryService.getAllCategories();
+    public ResponseEntity<List<CategoryDto>> getAllCategories() {
+        List<CategoryDto> categories = categoryService.getAllCategories();
         return ResponseEntity.ok(categories);
     }
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping()
+    public ResponseEntity<CategoryDto> createCategory(@RequestBody CategoryDto category) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(categoryService.postCategory(category));
+    }
+    @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping("/{id}")
+    public ResponseEntity<CategoryDto> updateCategory(@RequestBody CategoryDto categoryDto,@PathVariable Integer id) {
+        return ResponseEntity.ok(categoryService.changeCategory(id,categoryDto));
+    }
+    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void>  deleteCategory(@PathVariable Integer id) {
+        categoryService.deleteCategory(id);
+        return ResponseEntity.noContent().build();
+    }
+
 
 }

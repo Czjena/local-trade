@@ -17,4 +17,6 @@ public interface AdvertisementRepository extends JpaRepository<Advertisement, In
     Page<Advertisement> findAll(Specification<Advertisement> specification, Pageable pageable);
     Optional<Advertisement> findByAdvertisementId(UUID advertisementId);
     List<Advertisement> user(Users user);
+
+    long countByCategoryId(Integer categoryId);
 }

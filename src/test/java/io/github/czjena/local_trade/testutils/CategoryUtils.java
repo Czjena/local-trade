@@ -1,5 +1,6 @@
 package io.github.czjena.local_trade.testutils;
 
+import io.github.czjena.local_trade.dto.CategoryDto;
 import io.github.czjena.local_trade.model.Category;
 
 import java.util.UUID;
@@ -11,6 +12,7 @@ public class CategoryUtils {
         category.setName("test");
         category.setDescription("test");
         category.setParentCategory("test");
+        category.setCategoryId(UUID.randomUUID());
         return category;
     }
     public static Category createCategoryForIntegrationTests() {
@@ -20,5 +22,15 @@ public class CategoryUtils {
         category.setParentCategory("test");
         category.setCategoryId(UUID.randomUUID());
         return category;
+    }
+    public static CategoryDto createCategoryDto() {
+        return new CategoryDto(
+                null,
+                "Test category",
+                "Category for testing",
+                "Test parent category"
+        );
+
+
     }
 }
