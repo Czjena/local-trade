@@ -57,8 +57,8 @@ public class CategoryService {
         newCategory.setName(category.name());
         newCategory.setDescription(category.description());
         newCategory.setParentCategory(category.parentCategory());
-         Category savedCategory = categoryRepository.save(newCategory);
-         return categoryMapper.postCategoryToDto(savedCategory);
+        Category savedCategory = categoryRepository.save(newCategory);
+        return categoryMapper.postCategoryToDto(savedCategory);
     }
     @Transactional
     public CategoryDto changeCategory(Integer id, CategoryDto categoryDto) {
@@ -73,7 +73,7 @@ public class CategoryService {
         if(categoryDto.parentCategory() != null) {
             category.setParentCategory(categoryDto.parentCategory());
         }
-         Category Saved = categoryRepository.save(category);
+        Category Saved = categoryRepository.save(category);
         return categoryMapper.postCategoryToDto(Saved);
     }
     @Transactional

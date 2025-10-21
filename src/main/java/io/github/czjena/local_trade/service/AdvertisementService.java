@@ -1,6 +1,5 @@
 package io.github.czjena.local_trade.service;
 
-import io.github.czjena.local_trade.dto.AdvertisementDto;
 import io.github.czjena.local_trade.dto.AdvertisementUpdateDto;
 import io.github.czjena.local_trade.mappers.AdvertisementMapper;
 import io.github.czjena.local_trade.mappers.AdvertisementMapperToAdvertisementUpdateDto;
@@ -10,6 +9,7 @@ import io.github.czjena.local_trade.model.Users;
 import io.github.czjena.local_trade.repository.AdvertisementRepository;
 import io.github.czjena.local_trade.repository.CategoryRepository;
 import io.github.czjena.local_trade.repository.UsersRepository;
+import io.github.czjena.local_trade.request.RequestAdvertisementDto;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -32,7 +32,7 @@ public class AdvertisementService {
         this.usersRepository = usersRepository;
     }
 
-    public Advertisement addAd(AdvertisementDto dto, UserDetails userDetails) {
+    public Advertisement addAd(RequestAdvertisementDto dto, UserDetails userDetails) {
         Users user = usersRepository.findByEmail(userDetails.getUsername())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
         Advertisement ad = Advertisement.builder()

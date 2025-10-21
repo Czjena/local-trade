@@ -2,7 +2,6 @@ package io.github.czjena.local_trade.integration;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.czjena.local_trade.dto.AdvertisementDto;
 import io.github.czjena.local_trade.dto.AdvertisementFilterDto;
 import io.github.czjena.local_trade.enums.SortDirection;
 import io.github.czjena.local_trade.model.Advertisement;

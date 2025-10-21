@@ -45,11 +45,13 @@ public class AdFiltersUtils {
                 null
         );
     }
+
     public static Advertisement createAdvertisementWithIndex(Category category, Users user, int index) {
         return Advertisement.builder()
                 .title("Test Advertisement " + index) // Każdy tytuł będzie unikalny
                 .description("Some description")
-                .price(BigDecimal.valueOf(100 + index * 10L)) // Każda cena będzie inna
+                .price(BigDecimal.valueOf(100 + index * 10L))
+                .location("location")// Każda cena będzie inna
                 .category(category)
                 .user(user)
                 .build();

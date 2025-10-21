@@ -4,10 +4,14 @@ import io.github.czjena.local_trade.dto.AdvertisementUpdateDto;
 import io.github.czjena.local_trade.model.Advertisement;
 import io.github.czjena.local_trade.model.Category;
 import io.github.czjena.local_trade.model.Users;
+import io.github.czjena.local_trade.request.RequestAdvertisementDto;
+import io.github.czjena.local_trade.response.ResponseAdvertisementDto;
 import io.github.czjena.local_trade.service.AdvertisementService;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.UUID;
 
@@ -27,6 +31,7 @@ public class AdUtils {
                 .build();
 
     }
+
     public static Advertisement createAdWithUserAndCategoryAutomaticRoleUser() {
         Category category = CategoryUtils.createCategoryForIntegrationTests();
         Users user = UserUtils.createUserRoleUser();
@@ -62,4 +67,12 @@ public class AdUtils {
         return new AdvertisementUpdateDto(price, "title update test", "title description test", "location test ", "image test");
     }
 
+    public static RequestAdvertisementDto createRequestAdvertisementDto() {
+        return new RequestAdvertisementDto(1, BigDecimal.valueOf(150), "test", "test", "test", true, "test");
+
+    }
+
+    public static ResponseAdvertisementDto createResponseAdvertisementDto() {
+        return new ResponseAdvertisementDto(UUID.randomUUID(), 1, BigDecimal.valueOf(150), "test", "test", "test", true, "test",new ArrayList<>(), new ArrayList<>());
+    }
 }

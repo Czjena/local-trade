@@ -1,10 +1,13 @@
 package io.github.czjena.local_trade.facade;
 
-import io.github.czjena.local_trade.dto.AdvertisementDto;
 import io.github.czjena.local_trade.exceptions.UserNotFoundException;
+import io.github.czjena.local_trade.mappers.AdvertisementDtoMapper;
 import io.github.czjena.local_trade.model.Advertisement;
+import io.github.czjena.local_trade.model.Image;
 import io.github.czjena.local_trade.model.Users;
 import io.github.czjena.local_trade.repository.UsersRepository;
+import io.github.czjena.local_trade.request.RequestAdvertisementDto;
+import io.github.czjena.local_trade.response.ResponseAdvertisementDto;
 import io.github.czjena.local_trade.service.AdvertisementService;
 import io.github.czjena.local_trade.service.S3Service;
 import io.github.czjena.local_trade.service.UsersService;
@@ -22,23 +25,27 @@ public class NewAdvertisementFacade {
     private final S3Service s3Service;
     private final UsersService usersService;
     private final UsersRepository usersRepository;
+    private final AdvertisementDtoMapper advertisementDtoMapper;
 
-    public NewAdvertisementFacade(AdvertisementService advertisementService, S3Service s3Service, UsersService usersService, UsersRepository usersRepository) {
+    public NewAdvertisementFacade(AdvertisementService advertisementService, S3Service s3Service, UsersService usersService, UsersRepository usersRepository, AdvertisementDtoMapper advertisementDtoMapper) {
         this.advertisementService = advertisementService;
         this.s3Service = s3Service;
         this.usersService = usersService;
         this.usersRepository = usersRepository;
+        this.advertisementDtoMapper = advertisementDtoMapper;
     }
     @Transactional
-    public Advertisement addWholeAdvertisement(AdvertisementDto advertisementDto, List<MultipartFile> images, UserDetails userDetails) throws IOException {
+    public ResponseAdvertisementDto addWholeAdvertisement(RequestAdvertisementDto advertisementDto, List<MultipartFile> images, UserDetails userDetails) throws IOException {
         Users user = usersRepository.findByEmail(userDetails.getUsername())
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
         Advertisement ad = advertisementService.addAd(advertisementDto,user);
         if (images != null && !images.isEmpty()) {
             for (MultipartFile imageFile : images) {
-                s3Service.uploadFile(ad.getAdvertisementId(), imageFile);
+                Image image = s3Service.uploadFile(ad.getAdvertisementId(), imageFile);
+                ad.getImages().add(image);
             }
         }
-        return ad;
+
+        return advertisementDtoMapper.toResponseAdvertisementDto(ad);
  }
 }

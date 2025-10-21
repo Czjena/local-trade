@@ -1,7 +1,7 @@
 package io.github.czjena.local_trade.controller;
 
-import io.github.czjena.local_trade.dto.AdvertisementDto;
 import io.github.czjena.local_trade.dto.AdvertisementFilterDto;
+import io.github.czjena.local_trade.response.ResponseAdvertisementDto;
 import io.github.czjena.local_trade.service.AdvertisementFilterService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.data.domain.Page;
@@ -23,7 +23,7 @@ public class AdvertisementFilterController {
     }
     @GetMapping("/search")
     @Operation(summary = "Filter advertisements", description = "Sortowanie po polu \", allowableValues = {\"PRICE\",\"TITLE\",\"CREATED_AT} , Kierunek Sortowania SortDirection allowableValues = ASC,DESC")
-    public ResponseEntity<Page<AdvertisementDto>> filterAndPageAdvertisements(
+    public ResponseEntity<Page<ResponseAdvertisementDto>> filterAndPageAdvertisements(
             @RequestParam (required = false) Integer categoryId ,
             @RequestParam(required = false)BigDecimal minPrice,
             @RequestParam(required = false)BigDecimal maxPrice,

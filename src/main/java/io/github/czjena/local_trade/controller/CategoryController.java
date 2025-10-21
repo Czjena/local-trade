@@ -4,6 +4,7 @@ import io.github.czjena.local_trade.dto.CategoryDto;
 import io.github.czjena.local_trade.model.Category;
 import io.github.czjena.local_trade.service.CategoryService;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import org.apache.commons.lang3.builder.ToStringSummary;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,12 +30,12 @@ public class CategoryController {
     }
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping()
-    public ResponseEntity<CategoryDto> createCategory(@RequestBody CategoryDto category) {
+    public ResponseEntity<CategoryDto> createCategory(@Valid @RequestBody CategoryDto category) {
         return ResponseEntity.status(HttpStatus.CREATED).body(categoryService.postCategory(category));
     }
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
-    public ResponseEntity<CategoryDto> updateCategory(@RequestBody CategoryDto categoryDto,@PathVariable Integer id) {
+    public ResponseEntity<CategoryDto> updateCategory(@Valid @RequestBody CategoryDto categoryDto,@PathVariable Integer id) {
         return ResponseEntity.ok(categoryService.changeCategory(id,categoryDto));
     }
     @PreAuthorize("hasRole('ADMIN')")

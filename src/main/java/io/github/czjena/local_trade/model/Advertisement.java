@@ -11,6 +11,7 @@ import jakarta.persistence.Id;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Entity
 @Data
@@ -24,7 +25,8 @@ public class Advertisement {
     private Integer id;
 
     @OneToMany(mappedBy = "advertisement", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Image> images;
+    @Builder.Default
+    private List<Image> images = new ArrayList<>();
 
     private UUID advertisementId =  UUID.randomUUID();
 
@@ -37,6 +39,7 @@ public class Advertisement {
 
     @Size(max = 500)
     private String image;
+
 
     private BigDecimal price;
 

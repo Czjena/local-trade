@@ -1,11 +1,12 @@
 package io.github.czjena.local_trade.service;
 
-import io.github.czjena.local_trade.dto.AdvertisementDto;
 import io.github.czjena.local_trade.dto.AdvertisementFilterDto;
-import io.github.czjena.local_trade.mappers.AdvertisementMapperToAdvertisementDto;
+import io.github.czjena.local_trade.mappers.AdvertisementDtoMapper;
 import io.github.czjena.local_trade.model.Advertisement;
 import io.github.czjena.local_trade.repository.AdvertisementRepository;
+import io.github.czjena.local_trade.response.ResponseAdvertisementDto;
 import jakarta.persistence.criteria.Predicate;
+import org.apache.coyote.Response;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -18,8 +19,10 @@ import java.util.List;
 @Service
 public class AdvertisementFilterService {
     private final AdvertisementRepository advertisementRepository;
-    public AdvertisementFilterService(AdvertisementRepository advertisementRepository) {
+    private final AdvertisementDtoMapper advertisementDtoMapper;
+    public AdvertisementFilterService(AdvertisementRepository advertisementRepository,AdvertisementDtoMapper advertisementDtoMapper) {
         this.advertisementRepository = advertisementRepository;
+        this.advertisementDtoMapper = advertisementDtoMapper;
     }
     private Specification<Advertisement> getSpecification(AdvertisementFilterDto filter) {
         return (root, query, cb) -> {
@@ -66,9 +69,9 @@ public class AdvertisementFilterService {
         };
     }
 
-    public Page<AdvertisementDto> filterAndPageAdvertisements(AdvertisementFilterDto advertisementFilterDto,Pageable pageable) {
+    public Page<ResponseAdvertisementDto> filterAndPageAdvertisements(AdvertisementFilterDto advertisementFilterDto, Pageable pageable) {
         Specification<Advertisement> spec = getSpecification(advertisementFilterDto);
         Page<Advertisement> advertisements = advertisementRepository.findAll(spec,pageable);
-        return advertisements.map(AdvertisementMapperToAdvertisementDto::toDto);
+        return advertisements.map(advertisementDtoMapper::toResponseAdvertisementDto);
     }
 }

@@ -2,7 +2,6 @@ package io.github.czjena.local_trade.integration;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.czjena.local_trade.dto.AdvertisementDto;
 import io.github.czjena.local_trade.dto.AdvertisementUpdateDto;
 import io.github.czjena.local_trade.model.Advertisement;
 import io.github.czjena.local_trade.model.Category;
@@ -10,6 +9,7 @@ import io.github.czjena.local_trade.model.Users;
 import io.github.czjena.local_trade.repository.AdvertisementRepository;
 import io.github.czjena.local_trade.repository.CategoryRepository;
 import io.github.czjena.local_trade.repository.UsersRepository;
+import io.github.czjena.local_trade.response.ResponseAdvertisementDto;
 import io.github.czjena.local_trade.testutils.AdUtils;
 import io.github.czjena.local_trade.testutils.CategoryUtils;
 import io.github.czjena.local_trade.testutils.UserUtils;
@@ -30,6 +30,9 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import resources.AbstractIntegrationTest;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -68,14 +71,18 @@ public class AdvTest extends AbstractIntegrationTest {
                 .build();
         categoryRepository.save(category);
 
-        AdvertisementDto ad = new AdvertisementDto(
+        ResponseAdvertisementDto ad = new ResponseAdvertisementDto(
+                UUID.randomUUID(),
                 category.getId(),
                 new BigDecimal("149.99"),
                 "Audi A4 B6",
                 "audi_a4.jpg",
                 "Well maintained, 1.9 TDI",
                 true,
-                "Warsaw"
+                "Warsaw",
+                new ArrayList<>(),
+                new ArrayList<>()
+
         );
 
         String adJson = objectMapper.writeValueAsString(ad);

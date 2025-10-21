@@ -3,7 +3,9 @@ package io.github.czjena.local_trade.integration;
 import io.github.czjena.local_trade.dto.ChatMessageDto;
 import io.github.czjena.local_trade.dto.ChatMessagePayload;
 import io.github.czjena.local_trade.model.Users;
+import io.github.czjena.local_trade.repository.ChatMessageRepository;
 import io.github.czjena.local_trade.repository.UsersRepository;
+import io.github.czjena.local_trade.service.ChatMessageService;
 import io.github.czjena.local_trade.service.JwtService;
 import io.github.czjena.local_trade.service.TestJwtUtils;
 import io.github.czjena.local_trade.testutils.UserUtils;
@@ -56,6 +58,10 @@ public class WebChatIntegrationTests extends AbstractIntegrationTest {
     private WebSocketStompClient stompClient;
     private String url;
     private String senderJwt;
+    @Autowired
+    private ChatMessageService chatMessageService;
+    @Autowired
+    private ChatMessageRepository chatMessageRepository;
 
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -79,10 +85,8 @@ public class WebChatIntegrationTests extends AbstractIntegrationTest {
         this.senderJwt = TestJwtUtils.generateToken(jwtService, sender);
     }
 
-
     @Test
     public void sendChatMessage() throws Exception {
-        // Używamy kolejki na generyczny Obiekt, aby przechwycić wiadomość LUB błąd
         final BlockingQueue<Object> blockingQueue = new ArrayBlockingQueue<>(1);
         ChatMessagePayload payload = new ChatMessagePayload("Hey how are you?");
 
@@ -106,48 +110,40 @@ public class WebChatIntegrationTests extends AbstractIntegrationTest {
                 session.send("/app/chat.sendMessage.private/Ania@wp.pl", payload);
             }
 
-            // --- Metody do łapania ukrytych błędów ---
             @Override
             public void handleException(StompSession session, StompCommand command, StompHeaders headers, byte[] payload, Throwable exception) {
                 System.err.println("--- ZŁAPANO BŁĄD STOMP ---");
                 exception.printStackTrace();
-                blockingQueue.offer(exception); // Wkładamy błąd do kolejki, żeby test go zobaczył
+                blockingQueue.offer(exception);
             }
 
             @Override
             public void handleTransportError(StompSession session, Throwable exception) {
                 System.err.println("--- ZŁAPANO BŁĄD TRANSPORTOWY ---");
                 exception.printStackTrace();
-                blockingQueue.offer(exception); // Wkładamy błąd do kolejki, żeby test go zobaczył
+                blockingQueue.offer(exception);
             }
         };
 
-        // Czekamy na nawiązanie połączenia
         CompletableFuture<StompSession> future = stompClient.connectAsync(
                 url, new WebSocketHttpHeaders(), connectHeaders, sessionHandler);
         future.get(5, TimeUnit.SECONDS);
 
-        // Czekamy na cokolwiek w kolejce (wiadomość lub błąd)
         Object result = blockingQueue.poll(5, TimeUnit.SECONDS);
 
-        // --- ASERCJE DIAGNOSTYCZNE ---
         Assertions.assertNotNull(result, "Nie otrzymano niczego (wiadomości ani błędu) w ciągu 5 sekund.");
 
-        // Sprawdzamy, czy to, co otrzymaliśmy, nie jest błędem
         if (result instanceof Throwable) {
             Assertions.fail("Test zakończony z powodu błędu przechwyconego przez handler", (Throwable) result);
         }
 
-        // Jeśli to nie był błąd, sprawdzamy, czy to poprawna wiadomość
         Assertions.assertInstanceOf(ChatMessageDto.class, result, "Otrzymany obiekt nie jest błędem, ale nie jest też typu ChatMessageDto.");
 
-        // Standardowe asercje dla wiadomości
         ChatMessageDto chatMessage = (ChatMessageDto) result;
         Assertions.assertEquals("Hey how are you?", chatMessage.getContent());
         Assertions.assertEquals("Tomek", chatMessage.getSender());
         Assertions.assertEquals("Ania", chatMessage.getRecipient());
-
-
+        chatMessageRepository.deleteAll();
     }
 }
 
