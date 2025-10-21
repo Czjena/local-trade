@@ -22,6 +22,14 @@
         <java.version>17</java.version>
     </properties>
 
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <name>GitHub OWNER Apache Maven Packages</name>
+            <url>https://maven.pkg.github.com/czjena/local-trade</url>
+        </repository>
+    </distributionManagement>
+
     <dependencies>
         <!-- Spring Boot -->
         <dependency>
