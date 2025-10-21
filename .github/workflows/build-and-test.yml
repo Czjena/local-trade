@@ -16,7 +16,7 @@ jobs:
         env:
           MINIO_ROOT_USER: minioadmin
           MINIO_ROOT_PASSWORD: minioadmin
-        command: server /data
+        args: server /data
         options: >-
           --health-cmd "mc ready local"
           --health-interval 10s
