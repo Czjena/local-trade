@@ -10,6 +10,21 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    services:
+      minio:
+        image: minio/minio:latest
+        env:
+          MINIO_ROOT_USER: minioadmin
+          MINIO_ROOT_PASSWORD: minioadmin
+        command: server /data
+        options: >-
+          --health-cmd "mc ready local"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 3
+        ports:
+          - 9000:9000
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -23,3 +38,7 @@ jobs:
 
       - name: Build and test with Maven
         run: ./mvnw -B verify
+        env:
+          S3_ENDPOINT: http://minio:9000
+          AWS_ACCESS_KEY_ID: minioadmin
+          AWS_SECRET_ACCESS_KEY: minioadmin
