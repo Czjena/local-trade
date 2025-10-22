@@ -7,9 +7,12 @@ import io.github.czjena.local_trade.repository.AdvertisementRepository;
 import io.github.czjena.local_trade.repository.CategoryRepository;
 import io.github.czjena.local_trade.repository.UsersRepository;
 import io.github.czjena.local_trade.request.RequestAdvertisementDto;
+import io.github.czjena.local_trade.service.AdvertisementService;
+import io.github.czjena.local_trade.service.S3Service;
 import io.github.czjena.local_trade.testutils.AdUtils;
 import io.github.czjena.local_trade.testutils.CategoryUtils;
 import io.github.czjena.local_trade.testutils.UserUtils;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -18,12 +21,18 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
+import org.testcontainers.containers.MinIOContainer;
+import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import resources.AbstractIntegrationTest;
 import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.*;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -52,6 +61,43 @@ public class NewAdvertisementFacadeTests extends AbstractIntegrationTest {
     private UsersRepository usersRepository;
     @Autowired
     private CategoryRepository categoryRepository;
+    @Autowired
+    private S3Client s3Client;
+    private static final String bucketName = "advertisements";
+
+    @Container
+    static final MinIOContainer minioContainer = new MinIOContainer("minio/minio:latest")
+            .withUserName("minioadmin")
+            .withPassword("minioadmin")
+            .withExposedPorts(9000);
+
+    @DynamicPropertySource
+    static void overrideS3Properties(DynamicPropertyRegistry registry) {
+        String minioEndpoint = "http://" + minioContainer.getHost() + ":" + minioContainer.getMappedPort(9000);
+
+        registry.add("s3.endpoint", () -> minioEndpoint);
+        registry.add("s3.accessKey", minioContainer::getUserName);
+        registry.add("s3.secretKey", minioContainer::getPassword);
+    }
+    @BeforeEach
+    public void cleanBucket() {
+        try {
+            s3Client.headBucket(HeadBucketRequest.builder().bucket(bucketName).build());
+        } catch (NoSuchBucketException e) {
+            s3Client.createBucket(CreateBucketRequest.builder().bucket(bucketName).build());
+        }
+
+        ListObjectsV2Request listRequest = ListObjectsV2Request.builder()
+                .bucket(bucketName)
+                .build();
+
+        s3Client.listObjectsV2(listRequest)
+                .contents()
+                .forEach(obj -> s3Client.deleteObject(DeleteObjectRequest.builder()
+                        .bucket(bucketName)
+                        .key(obj.key())
+                        .build()));
+    }
 
     @WithMockUser("test@test.com")
     @Test

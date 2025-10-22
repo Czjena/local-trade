@@ -26,9 +26,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.testcontainers.containers.MinIOContainer;
+import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import resources.AbstractIntegrationTest;
 import software.amazon.awssdk.core.sync.RequestBody;
@@ -75,6 +79,23 @@ public class S3IntegrationTests extends AbstractIntegrationTest {
     @Autowired
     private AdUtilsIntegrationTests adUtilsIntegrationTests;
 
+
+    @Container
+    static final MinIOContainer minioContainer = new MinIOContainer("minio/minio:latest")
+            .withUserName("minioadmin")
+            .withPassword("minioadmin")
+            .withExposedPorts(9000);
+
+    @DynamicPropertySource
+    static void overrideS3Properties(DynamicPropertyRegistry registry) {
+        String minioEndpoint = "http://" + minioContainer.getHost() + ":" + minioContainer.getMappedPort(9000);
+
+        registry.add("s3.endpoint", () -> minioEndpoint);
+        registry.add("s3.accessKey", minioContainer::getUserName);
+        registry.add("s3.secretKey", minioContainer::getPassword);
+
+    }
+
     @Transactional
     @Test
     void uploadAndGetFile() throws IOException {
@@ -102,6 +123,12 @@ public class S3IntegrationTests extends AbstractIntegrationTest {
 
     @BeforeEach
     public void cleanBucket() {
+        try {
+            s3Client.headBucket(HeadBucketRequest.builder().bucket(bucketName).build());
+        } catch (NoSuchBucketException e) {
+            s3Client.createBucket(CreateBucketRequest.builder().bucket(bucketName).build());
+        }
+
         ListObjectsV2Request listRequest = ListObjectsV2Request.builder()
                 .bucket(bucketName)
                 .build();
@@ -113,7 +140,6 @@ public class S3IntegrationTests extends AbstractIntegrationTest {
                         .key(obj.key())
                         .build()));
     }
-
 
     @Test
     @Transactional
