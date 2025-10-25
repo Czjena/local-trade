@@ -1,5 +1,6 @@
 package io.github.czjena.local_trade.service;
 
+import io.github.czjena.local_trade.exceptions.UserNotFoundException;
 import io.github.czjena.local_trade.model.RefreshToken;
 import io.github.czjena.local_trade.model.Users;
 import io.github.czjena.local_trade.repository.RefreshTokenRepository;
@@ -26,8 +27,10 @@ public class RefreshTokenService {
     }
 
     public RefreshToken createRefreshToken(String name) {
+        Users user = usersRepository.findByName(name)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
         RefreshToken refreshToken = RefreshToken.builder()
-                .users(usersRepository.findByName(name).get())
+                .users(user)
                 .token(UUID.randomUUID().toString())
                 .expires(Instant.now().plusMillis(600000))
                 .build();
@@ -37,6 +40,7 @@ public class RefreshTokenService {
     public Optional<RefreshToken> findByToken(String token) {
         return refreshTokenRepository.findByToken(token);
     }
+
     public RefreshToken verifyExpiry(RefreshToken token) {
         if(token.getExpires().compareTo(Instant.now())<0){
             refreshTokenRepository.delete(token);

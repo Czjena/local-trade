@@ -16,7 +16,6 @@ import java.util.*;
 
 @Data
 @Entity
-@EqualsAndHashCode(exclude = "favoritedAdvertisements")
 public class Users implements UserDetails {
 
     @Id

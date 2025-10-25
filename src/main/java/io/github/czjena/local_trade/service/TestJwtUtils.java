@@ -25,7 +25,7 @@ public class TestJwtUtils {
         return Jwts.builder()
                 .setSubject(user.getUsername())
                 .setIssuedAt(new Date())  // <- NOWY czas wydania
-                .setExpiration(new Date(System.currentTimeMillis() + - 20_000))
+                .setExpiration(new Date(System.currentTimeMillis() + 20_000))
                 .signWith(jwtService.getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
