@@ -1,5 +1,6 @@
 package io.github.czjena.local_trade.service;
 
+import io.github.czjena.local_trade.dto.LoginDto;
 import io.github.czjena.local_trade.dto.RefreshTokenRequest;
 import io.github.czjena.local_trade.exceptions.UserNotFoundException;
 import io.github.czjena.local_trade.model.RefreshToken;
@@ -29,8 +30,8 @@ public class RefreshTokenService {
         this.jwtService = jwtService;
     }
 
-    public RefreshToken createRefreshToken(String name) {
-        Users user = usersRepository.findByName(name)
+    public RefreshToken createRefreshToken(LoginDto loginDto) {
+        Users user = usersRepository.findByEmail(loginDto.getEmail())
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
         RefreshToken refreshToken = RefreshToken.builder()
                 .users(user)
@@ -40,7 +41,7 @@ public class RefreshTokenService {
         return refreshTokenRepository.save(refreshToken);
     }
 
-    public LoginResponse responseWithRefreshToken(RefreshTokenRequest refreshTokenRequest) {
+    public LoginResponse generateNewTokenFromRefresh(RefreshTokenRequest refreshTokenRequest) {
         return refreshTokenRepository.findByToken((refreshTokenRequest.getToken()))
                 .map(this::verifyExpiry)
                 .map(RefreshToken::getUsers)

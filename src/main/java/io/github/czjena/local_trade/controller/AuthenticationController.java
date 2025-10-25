@@ -3,6 +3,7 @@ package io.github.czjena.local_trade.controller;
 import io.github.czjena.local_trade.dto.LoginDto;
 import io.github.czjena.local_trade.dto.RefreshTokenRequest;
 import io.github.czjena.local_trade.dto.RegisterUsersDto;
+import io.github.czjena.local_trade.facade.LoginFacade;
 import io.github.czjena.local_trade.model.RefreshToken;
 import io.github.czjena.local_trade.model.Users;
 
@@ -12,6 +13,7 @@ import io.github.czjena.local_trade.service.AuthenticationService;
 import io.github.czjena.local_trade.service.JwtService;
 import io.github.czjena.local_trade.service.RefreshTokenService;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,46 +24,34 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/auth")
 public class AuthenticationController {
-    private final JwtService jwtService;
 
     private final AuthenticationService authenticationService;
-
     private final RefreshTokenService refreshTokenService;
+    private final LoginFacade loginFacade;
 
-    public AuthenticationController(JwtService jwtService, AuthenticationService authenticationService, RefreshTokenService refreshTokenService) {
-        this.jwtService = jwtService;
+    public AuthenticationController(AuthenticationService authenticationService, RefreshTokenService refreshTokenService, LoginFacade loginFacade) {
         this.authenticationService = authenticationService;
         this.refreshTokenService = refreshTokenService;
+        this.loginFacade = loginFacade;
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<Users> register(@RequestBody RegisterUsersDto registerUserDto) {
-        Users registeredUser = authenticationService.signup(registerUserDto);
-
-        return ResponseEntity.ok(registeredUser);
+    public ResponseEntity<Users> register(@RequestBody @Valid RegisterUsersDto registerUserDto) {
+        return ResponseEntity.ok(authenticationService.signup(registerUserDto));
     }
-
     @PostMapping("/login")
-    public LoginResponse authenticate(@RequestBody LoginDto loginUserDto) {
-        Users authenticatedUser = authenticationService.authenticate(loginUserDto);
-        RefreshToken refreshToken = refreshTokenService.createRefreshToken(authenticatedUser.getName());
-        String jwtToken = jwtService.generateToken(authenticatedUser);
-
-
-        return LoginResponse.builder()
-                .token(jwtToken)
-                .expiresIn(jwtService.getExpirationTime())
-                .refreshToken(refreshToken.getToken()).build();
+    public LoginResponse authenticate(@RequestBody @Valid LoginDto loginUserDto) {
+        return loginFacade.authenticateAndAssignNewRefreshToken(loginUserDto);
     }
 
     @PostMapping("/refreshToken")
     @Operation(summary = "Refresh token for users when jwt token expires")
-    public LoginResponse refreshToken(@RequestBody RefreshTokenRequest refreshTokenRequest) {
-        return refreshTokenService.responseWithRefreshToken(refreshTokenRequest);
+    public LoginResponse refreshToken(@RequestBody @Valid RefreshTokenRequest refreshTokenRequest) {
+        return refreshTokenService.generateNewTokenFromRefresh(refreshTokenRequest);
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<?> logOut(@RequestBody RefreshTokenRequest refreshTokenRequest) {
+    public ResponseEntity<?> logOut(@RequestBody @Valid RefreshTokenRequest refreshTokenRequest) {
         refreshTokenService.revokeRefreshToken(refreshTokenRequest.getToken());
         return ResponseEntity.ok().build();
     }
