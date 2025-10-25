@@ -57,19 +57,9 @@ public class AuthenticationController {
     @PostMapping("/refreshToken")
     @Operation(summary = "Refresh token for users when jwt token expires")
     public LoginResponse refreshToken(@RequestBody RefreshTokenRequest refreshTokenRequest) {
-      return refreshTokenService.findByToken((refreshTokenRequest.getToken()))
-                .map(refreshTokenService::verifyExpiry)
-                .map(RefreshToken::getUsers)
-                .map(Users -> {
-                   String accessToken = jwtService.generateToken(Users);
-                   return LoginResponse.builder()
-                           .token(accessToken)
-                           .refreshToken((refreshTokenRequest.getToken()))
-                           .build();
-
-                }).orElseThrow(()-> new RuntimeException("Refresh token not found"));
-
+        return refreshTokenService.responseWithRefreshToken(refreshTokenRequest);
     }
+
     @PostMapping("/logout")
     public ResponseEntity<?> logOut(@RequestBody RefreshTokenRequest refreshTokenRequest) {
         refreshTokenService.revokeRefreshToken(refreshTokenRequest.getToken());

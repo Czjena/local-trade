@@ -8,7 +8,6 @@ import lombok.Data;
 public class RegisterUsersDto {
     @NotBlank
     private String name;
-
     @Email
     @NotBlank
     private String email;
