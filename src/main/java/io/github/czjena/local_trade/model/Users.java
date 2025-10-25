@@ -30,6 +30,9 @@ public class Users implements UserDetails {
     private String role = "ROLE_USER";
     private UUID userId =  UUID.randomUUID();
 
+    private int ratingCount;
+    private double averageRating;
+
     @ToString.Exclude
     @ManyToMany(mappedBy = "favoritedByUsers", fetch = FetchType.LAZY )
     private Set<Advertisement> favoritedAdvertisements = new HashSet<>();

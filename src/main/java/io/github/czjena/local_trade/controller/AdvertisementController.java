@@ -67,6 +67,7 @@ public class AdvertisementController {
         advertisementService.deleteAdvertisement(userDetails, id);
         return ResponseEntity.ok().build();
     }
+
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/new")
     public ResponseEntity<ResponseAdvertisementDto> addWholeAdvertisement(@RequestPart RequestAdvertisementDto advertisementDto, @RequestPart List<MultipartFile> files, @AuthenticationPrincipal UserDetails userDetails) throws IOException {

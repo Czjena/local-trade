@@ -1,30 +1,66 @@
-version: '3.8'
 
 services:
   postgres-db:
     image: postgres:16
     container_name: local-trade-db
     environment:
-      POSTGRES_DB: ${DB_NAME}       # Czyta z dev.env
-      POSTGRES_USER: ${DB_USER}      # Czyta z dev.env
-      POSTGRES_PASSWORD: ${DB_PASSWORD} # Czyta z dev.env
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     env_file:
-      - dev.env
+      - .env
+
+
+  minio-storage:
+    image: "minio/minio:latest"
+    container_name: local-trade-minio
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio_data:/data
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+    command: server /data --console-address ":9001"
+    restart: unless-stopped
+    env_file:
+      - .env
+
+  redis-cache:
+    image: "redis:7-alpine"
+    container_name: local-trade-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+
+
 
   backend-app:
-    build: ./local-trade
+    build: .
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-db:5432/${DB_NAME}
       SPRING_DATASOURCE_USERNAME: ${DB_USER}
       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD} # Przekazujemy hasło do aplikacji
+      # Dodane zmienne dla Redisa
+      REDIS_HOST: redis-cache # Nazwa serwisu Redisa
+      REDIS_PORT: 6379
     ports:
       - "8080:8080"
     depends_on:
       - postgres-db
+      - redis-cache
+    env_file:
+      - .env
 
 volumes:
   postgres_data:
+  redis_data:
+  minio_data:
+

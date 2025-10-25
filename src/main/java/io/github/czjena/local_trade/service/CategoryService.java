@@ -7,6 +7,8 @@ import io.github.czjena.local_trade.model.Category;
 import io.github.czjena.local_trade.repository.AdvertisementRepository;
 import io.github.czjena.local_trade.repository.CategoryRepository;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,12 +47,14 @@ public class CategoryService {
                 .orElseThrow(() -> new EntityNotFoundException("Category not found"));
 
     }
+    @Cacheable("categories")
     @Transactional
     public List<CategoryDto> getAllCategories() {
         return categoryRepository.findAll().stream()
                 .map(categoryMapper::postCategoryToDto)
                 .toList();
     }
+    @CacheEvict(value = "categories", allEntries = true)
     @Transactional
     public CategoryDto postCategory(CategoryDto category) {
         Category newCategory = new Category();
@@ -60,6 +64,7 @@ public class CategoryService {
         Category savedCategory = categoryRepository.save(newCategory);
         return categoryMapper.postCategoryToDto(savedCategory);
     }
+    @CacheEvict(value = "categories", allEntries = true)
     @Transactional
     public CategoryDto changeCategory(Integer id, CategoryDto categoryDto) {
         Category category = categoryRepository.findById(id)
@@ -77,6 +82,7 @@ public class CategoryService {
         return categoryMapper.postCategoryToDto(Saved);
     }
     @Transactional
+    @CacheEvict(value = "categories", allEntries = true)
     public void deleteCategory(Integer categoryId) {
         if(!categoryRepository.existsById(categoryId)) {
             throw new EntityNotFoundException("Category not found");
