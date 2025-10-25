@@ -34,15 +34,23 @@ It supports user listings, messaging, ratings, and media management — designed
 
 The application requires the following environment variables. Example .env file:
 
-POSTGRES_DB=localtrade
-POSTGRES_USER=localuser
-POSTGRES_PASSWORD=localpass
+POSTGRES_DB= dbName
+DB_USER= dbUserName
+DB_PASSWORD= dbPassowrd
+JWT_SECRET= JWT Secret Key hs256 encrypted
+
 
 # S3 / MinIO
-S3_ENDPOINT=http://minio:9000
-S3_BUCKET=local-trade-bucket
-S3_ACCESS_KEY=minioadmin
-S3_SECRET_KEY=minioadmin
+- S3_ENDPOINT=http://minio:9000
+- S3_BUCKET=/advertisements
+- S3_ACCESS_KEY=minioadmin
+- S3_SECRET_KEY=minioadmin
+
+Change this env to true to use real S3 bucket 
+
+```bash
+s3.useMinio=true
+```
 
 # Optional (Redis)
 REDIS_HOST=redis
@@ -50,6 +58,8 @@ REDIS_PORT=6379
 
 
 The application-secret.yml (or relevant profile) should reference these environment variables.
+
+
 
 ## Local Development Setup
 
@@ -75,35 +85,35 @@ mvn test
 
 This command automatically provisions PostgreSQL, Redis, and MinIO containers for the integration test suite.
 
-API Documentation
+## API Documentation
 
 ## API documentation is available via the following endpoints:
 Swagger UI: /swagger-ui.html
 OpenAPI v3 Specification: /v3/api-docs
 
-##CI/CD Pipeline
+## CI/CD Pipeline
 The GitHub Actions workflow executes the following:
 Build and test using Maven
 Code quality checks via Qodana
 Static analysis and test coverage reports
 
-##Architectural Overview
+## Architectural Overview
 Layered architecture (controller → service → repository)
 External integrations (S3, Redis, DB) are mocked via Testcontainers during the test phase
 Ready for deployment with minimal configuration changes
 
 Docker Compose orchestrates the database, cache, and object storage
 
-##License
+## License
 This project is licensed under the MIT License.
 See the LICENSE file for details.
 
-##Project Roadmap
+## Project Roadmap
 AI-based image moderation
 WebSocket or Kafka-based notification system
 CI/CD deployment to a staging environment
 Frontend integration (React/Next.js)
 
-##Author
+## Author
 Adrian Wieczorek (Czjena)
 GitHub: @Czjena
