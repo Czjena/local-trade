@@ -9,6 +9,7 @@ import io.github.czjena.local_trade.repository.AdvertisementRepository;
 import io.github.czjena.local_trade.repository.TradeRepository;
 import io.github.czjena.local_trade.repository.UsersRepository;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,12 +32,13 @@ public class TradeService {
         this.tradeRepository = tradeRepository;
         this.advertisementSecurityService = advertisementSecurityService;
     }
+
+
     @Transactional
     public Trade tradeInitiation(UserDetails userDetails, Users buyer, UUID advertisementId) {
         if(!advertisementSecurityService.isOwner(userDetails,advertisementId)){
             throw new SecurityException("User is not an owner of this advertisement");
         }
-
         Users seller = usersRepository.findByEmail(userDetails.getUsername())
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
         if(seller.getId().equals(buyer.getId())){
@@ -57,6 +59,7 @@ public class TradeService {
                 .build();
         return tradeRepository.save(newTrade);
     }
+
     @Transactional
     public Trade tradeIsComplete(UserDetails userDetails, Long tradeId) {
         Trade trade = tradeRepository.findById(tradeId).orElseThrow(() -> new EntityNotFoundException("Trade not found"));
@@ -95,6 +98,7 @@ public class TradeService {
             if(LocalDateTime.now().isBefore(trade.getCreatedAt().plusHours(2))){
                 throw new SecurityException("Trade is too new to cancel");
             }
+
             trade.setStatus(TradeStatus.CANCELLED);
             tradeRepository.save(trade);
     }

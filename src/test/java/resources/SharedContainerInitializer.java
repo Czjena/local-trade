@@ -1,9 +1,11 @@
 
 package resources;
 
+import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.utility.DockerImageName;
 
-public abstract class PostgresContainerInitializer {
+public abstract class SharedContainerInitializer {
 
     // Definiujemy stały, współdzielony kontener.
     protected static final PostgreSQLContainer<?> POSTGRES_CONTAINER =
@@ -12,8 +14,13 @@ public abstract class PostgresContainerInitializer {
                     .withUsername("test")
                     .withPassword("test");
 
+    protected static final GenericContainer<?> REDIS_CONTAINER =
+            new GenericContainer<>(DockerImageName.parse("redis:7.2-alpine"))
+                    .withExposedPorts(6379);
+
     // Ten blok statyczny uruchomi kontener raz, przed uruchomieniem pierwszego testu.
     static {
         POSTGRES_CONTAINER.start();
+        REDIS_CONTAINER.start();
     }
 }

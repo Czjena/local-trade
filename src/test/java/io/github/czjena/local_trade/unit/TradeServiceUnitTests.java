@@ -12,6 +12,7 @@ import io.github.czjena.local_trade.service.TradeService;
 import io.github.czjena.local_trade.testutils.AdUtils;
 import io.github.czjena.local_trade.testutils.UserUtils;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -36,18 +37,24 @@ public class TradeServiceUnitTests {
     @Mock
     UsersRepository usersRepository;
 
-    @Test
-    public void tradeInitiation_thenReturnCreatedTrade() {
-        Users buyer = UserUtils.createUserRoleUser();
-        Users seller = UserUtils.createUserRoleUser();
+    private Users seller;
+    private Users buyer;
+    private Trade newTrade;
+    private Advertisement advertisement;
+    private UserDetails mockUserDetails;
+
+    @BeforeEach
+    public void setUp() {
+        buyer = UserUtils.createUserRoleUser();
+        seller = UserUtils.createUserRoleUser();
         buyer.setEmail("buyer@gmail.com");
         seller.setEmail("seller@gmail.com");
         buyer.setId(1);
         seller.setId(2);
-        UserDetails mockUserDetails = mock(UserDetails.class);
-        Advertisement advertisement = AdUtils.createAdvertisement();
+        mockUserDetails = mock(UserDetails.class);
+        advertisement = AdUtils.createAdvertisement();
         advertisement.setUser(buyer);
-        Trade  newTrade = Trade.builder()
+        newTrade = Trade.builder()
                 .seller(seller)
                 .buyer(buyer)
                 .advertisement(advertisement)
@@ -55,6 +62,10 @@ public class TradeServiceUnitTests {
                 .sellerLeftReview(false)
                 .buyerLeftReview(false)
                 .build();
+    }
+
+    @Test
+    public void tradeInitiation_thenReturnCreatedTrade() {
 
         when(mockUserDetails.getUsername()).thenReturn(seller.getEmail());
         when(usersRepository.findByEmail(mockUserDetails.getUsername())).thenReturn(Optional.of(seller));
@@ -66,6 +77,7 @@ public class TradeServiceUnitTests {
         Trade trade = tradeService.tradeInitiation(mockUserDetails,buyer,advertisement.getAdvertisementId());
 
         verify(tradeRepository, times(1)).save(any(Trade.class));
+
         Assertions.assertNotNull(trade);
         Assertions.assertEquals(TradeStatus.PROPOSED,trade.getStatus());
         Assertions.assertEquals(buyer.getId(),trade.getBuyer().getId());
@@ -73,4 +85,14 @@ public class TradeServiceUnitTests {
         Assertions.assertEquals(advertisement.getAdvertisementId(),trade.getAdvertisement().getAdvertisementId());
         Assertions.assertEquals(trade,newTrade);
     }
+
+    @Test
+    public void tradeInitiationWithWrongUser_returnsBadRequest() {
+        when(mockUserDetails.getUsername()).thenReturn(seller.getEmail());
+        when(usersRepository.findByEmail(mockUserDetails.getUsername())).thenReturn(Optional.empty());
+        when(advertisementSecurityService.isOwner(mockUserDetails,advertisement.getAdvertisementId())).thenReturn(false);
+
+        verify(tradeRepository, never()).save(any(Trade.class));
+    }
+
 }
