@@ -87,11 +87,9 @@ public class TradeServiceUnitTests {
     }
 
     @Test
-    public void tradeInitiationWithWrongUser_returnsBadRequest() {
-        when(mockUserDetails.getUsername()).thenReturn(seller.getEmail());
-        when(usersRepository.findByEmail(mockUserDetails.getUsername())).thenReturn(Optional.empty());
+    public void tradeInitiationWithWrongUser_throwsSecurityException() {
         when(advertisementSecurityService.isOwner(mockUserDetails,advertisement.getAdvertisementId())).thenReturn(false);
-
+        Assertions.assertThrows(SecurityException.class, () ->{ tradeService.tradeInitiation(mockUserDetails,buyer,advertisement.getAdvertisementId());});
         verify(tradeRepository, never()).save(any(Trade.class));
     }
 
