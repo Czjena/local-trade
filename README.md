@@ -1,6 +1,6 @@
 # local-trade: Backend API Platform
 
-A **full-featured Spring Boot backend REST API for a local advertisement trading platform.
+A full-featured Spring Boot backend REST API for a local advertisement trading platform.
 It supports user listings, messaging, ratings, and media management — designed for scalability and real-world deployment.
 
 ## Tech Stack
@@ -34,30 +34,30 @@ It supports user listings, messaging, ratings, and media management — designed
 
 The application requires the following environment variables. Example .env file:
 
-POSTGRES_DB= dbName
-DB_USER= dbUserName
-DB_PASSWORD= dbPassowrd
-JWT_SECRET= JWT Secret Key hs256 encrypted
+- POSTGRES_DB= dbName
+- DB_USER= dbUserName
+- DB_PASSWORD= dbPassowrd
+- JWT_SECRET= JWT Secret Key hs256 encrypted
 
 
-# S3 / MinIO
+### S3 / MinIO
 - S3_ENDPOINT=http://minio:9000
 - S3_BUCKET=/advertisements
 - S3_ACCESS_KEY=minioadmin
 - S3_SECRET_KEY=minioadmin
 
-Change this env to true to use real S3 bucket 
+Change this env to false to use real S3 bucket 
 
 ```bash
 s3.useMinio=true
 ```
 
-# Optional (Redis)
-REDIS_HOST=redis
-REDIS_PORT=6379
+### Optional (Redis)
+- REDIS_HOST=redis
+- REDIS_PORT=6379
 
 
-The application-secret.yml (or relevant profile) should reference these environment variables.
+### The application-secret.yml (or relevant profile) should reference these environment variables.
 
 
 
@@ -87,28 +87,28 @@ This command automatically provisions PostgreSQL, Redis, and MinIO containers fo
 
 ## API Documentation
 
-## API documentation is available via the following endpoints:
+### API documentation is available via the following endpoints:
 Swagger UI: /swagger-ui.html
 OpenAPI v3 Specification: /v3/api-docs
 
-## CI/CD Pipeline
+### CI/CD Pipeline
 The GitHub Actions workflow executes the following:
-Build and test using Maven
-Code quality checks via Qodana
-Static analysis and test coverage reports
+Build and test using Maven,
+Code quality checks via Qodana,
+Static analysis and test coverage reports.
 
-## Architectural Overview
+### Architectural Overview
 Layered architecture (controller → service → repository)
 External integrations (S3, Redis, DB) are mocked via Testcontainers during the test phase
 Ready for deployment with minimal configuration changes
 
 Docker Compose orchestrates the database, cache, and object storage
 
-## License
+### License
 This project is licensed under the MIT License.
 See the LICENSE file for details.
 
-## Project Roadmap
+### Project Roadmap
 AI-based image moderation
 WebSocket or Kafka-based notification system
 CI/CD deployment to a staging environment
