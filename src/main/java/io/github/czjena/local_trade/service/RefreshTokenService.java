@@ -30,9 +30,7 @@ public class RefreshTokenService {
         this.jwtService = jwtService;
     }
 
-    public RefreshToken createRefreshToken(LoginDto loginDto) {
-        Users user = usersRepository.findByEmail(loginDto.getEmail())
-                .orElseThrow(() -> new UserNotFoundException("User not found"));
+    public RefreshToken createRefreshToken(Users user) {
         RefreshToken refreshToken = RefreshToken.builder()
                 .users(user)
                 .token(UUID.randomUUID().toString())
