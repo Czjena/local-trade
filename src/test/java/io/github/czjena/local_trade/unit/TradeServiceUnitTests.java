@@ -1,6 +1,7 @@
 package io.github.czjena.local_trade.unit;
 
 import io.github.czjena.local_trade.enums.TradeStatus;
+import io.github.czjena.local_trade.exceptions.UserNotFoundException;
 import io.github.czjena.local_trade.model.Advertisement;
 import io.github.czjena.local_trade.model.Trade;
 import io.github.czjena.local_trade.model.Users;
@@ -11,6 +12,7 @@ import io.github.czjena.local_trade.service.AdvertisementSecurityService;
 import io.github.czjena.local_trade.service.TradeService;
 import io.github.czjena.local_trade.testutils.AdUtils;
 import io.github.czjena.local_trade.testutils.UserUtils;
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,9 +22,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
 
 @ExtendWith(MockitoExtension.class)
 public class TradeServiceUnitTests {
@@ -88,6 +92,8 @@ public class TradeServiceUnitTests {
 
     @Test
     public void tradeInitiationWithWrongUser_throwsSecurityException() {
+        when(usersRepository.findByEmail(mockUserDetails.getUsername())).thenReturn(Optional.of(buyer));
+        when(advertisementRepository.findByAdvertisementId(any())).thenReturn(Optional.of(advertisement));
         when(advertisementSecurityService.isOwner(mockUserDetails, advertisement.getAdvertisementId())).thenReturn(false);
         Assertions.assertThrows(SecurityException.class, () -> {
             tradeService.tradeInitiation(mockUserDetails, buyer, advertisement.getAdvertisementId());
@@ -97,7 +103,8 @@ public class TradeServiceUnitTests {
 
     @Test
     public void tradeInitiationWithSameUser_throwsIllegalStateException() {
-        when(usersRepository.findByEmail(mockUserDetails.getUsername())).thenReturn(Optional.of(seller));
+        when(usersRepository.findByEmail(any())).thenReturn(Optional.of(seller));
+        when(advertisementRepository.findByAdvertisementId(any())).thenReturn(Optional.of(advertisement));
         when(advertisementSecurityService.isOwner(mockUserDetails, advertisement.getAdvertisementId())).thenReturn(true);
         seller.setId(1);
         buyer.setId(1);
@@ -105,5 +112,41 @@ public class TradeServiceUnitTests {
             tradeService.tradeInitiation(mockUserDetails, buyer, advertisement.getAdvertisementId());
         });
         verify(tradeRepository, never()).save(any(Trade.class));
+    }
+    @Test
+    public void tradeInitiationNoAdvertisement_throwsEntityNotFoundException() {
+        when(usersRepository.findByEmail(any())).thenReturn(Optional.of(seller));
+        when(advertisementRepository.findByAdvertisementId(any())).thenReturn(Optional.empty());
+        Assertions.assertThrows(EntityNotFoundException.class, () -> {
+            tradeService.tradeInitiation(seller, buyer, advertisement.getAdvertisementId());
+        });
+        verify(tradeRepository, never()).save(any(Trade.class));
+    }
+    @Test
+    public void tradeInitiationTradeAlreadyExists_throwsIllegalArgumentException() {
+        when(usersRepository.findByEmail(any())).thenReturn(Optional.of(seller));
+        when(advertisementRepository.findByAdvertisementId(any())).thenReturn(Optional.of(advertisement));
+        when(advertisementSecurityService.isOwner(seller,advertisement.getAdvertisementId())).thenReturn(true);
+        when(tradeRepository.existsByAdvertisementAndBuyer(advertisement, buyer)).thenReturn(true);
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            tradeService.tradeInitiation(seller, buyer, advertisement.getAdvertisementId());
+        });
+        verify(tradeRepository, never()).save(any(Trade.class));
+    }
+    @Test
+    public void tradeCancelledButUserIsNotFound_throwsUserNotFoundException() {
+        when(usersRepository.findByEmail(any())).thenReturn(Optional.empty());
+        Assertions.assertThrows(UserNotFoundException.class, () -> {
+          tradeService.tradeIsCancelled(mockUserDetails, 2L);
+        });
+        verify(tradeRepository, never()).save(any(Trade.class));
+    }
+    @Test
+    public void tradeIsCancelled_thenTradeIsCancelled() {
+        when(usersRepository.findByEmail(any())).thenReturn(Optional.of(seller));
+        when(tradeRepository.findById(any())).thenReturn(Optional.of(newTrade));
+        newTrade.setCreatedAt(LocalDateTime.now().minusDays(1));
+        tradeService.tradeIsCancelled(mockUserDetails, 2L);
+        Assertions.assertEquals(TradeStatus.CANCELLED, newTrade.getStatus());
     }
 }

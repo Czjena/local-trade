@@ -36,19 +36,23 @@ public class TradeService {
 
     @Transactional
     public Trade tradeInitiation(UserDetails userDetails, Users buyer, UUID advertisementId) {
+        Users seller = usersRepository.findByEmail(userDetails.getUsername())
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+        Advertisement advertisement = advertisementRepository.findByAdvertisementId(advertisementId)
+                .orElseThrow(() -> new EntityNotFoundException("Advertisement not found"));
+
         if(!advertisementSecurityService.isOwner(userDetails,advertisementId)){
             throw new SecurityException("User is not an owner of this advertisement");
         }
-        Users seller = usersRepository.findByEmail(userDetails.getUsername())
-                .orElseThrow(() -> new UserNotFoundException("User not found"));
-        if(seller.getId().equals(buyer.getId())){
-            throw new IllegalArgumentException("Seller and buyer are the same");
-        }
-        Advertisement advertisement = advertisementRepository.findByAdvertisementId(advertisementId)
-                .orElseThrow(() -> new EntityNotFoundException("Advertisement not found"));
+
         if(tradeRepository.existsByAdvertisementAndBuyer(advertisement,buyer)){
             throw new IllegalArgumentException("Trade already exists");
         }
+
+        if(seller.getId().equals(buyer.getId())){
+            throw new IllegalArgumentException("Seller and buyer are the same");
+        }
+
         Trade  newTrade = Trade.builder()
                 .seller(seller)
                 .buyer(buyer)

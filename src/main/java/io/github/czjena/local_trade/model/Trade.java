@@ -6,6 +6,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -14,6 +17,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@EntityListeners(AuditingEntityListener.class)
 public class Trade {
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,8 +35,11 @@ public class Trade {
 
     @Enumerated(EnumType.STRING)
     private TradeStatus status;
-
+    @CreatedDate
+    @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
+    @LastModifiedDate
+    @Column(nullable = false)
     private LocalDateTime updatedAt;
 
     private boolean sellerLeftReview;
