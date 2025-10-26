@@ -69,28 +69,41 @@ public class TradeServiceUnitTests {
 
         when(mockUserDetails.getUsername()).thenReturn(seller.getEmail());
         when(usersRepository.findByEmail(mockUserDetails.getUsername())).thenReturn(Optional.of(seller));
-        when(advertisementSecurityService.isOwner(mockUserDetails,advertisement.getAdvertisementId())).thenReturn(true);
+        when(advertisementSecurityService.isOwner(mockUserDetails, advertisement.getAdvertisementId())).thenReturn(true);
         when(advertisementRepository.findByAdvertisementId(advertisement.getAdvertisementId())).thenReturn(Optional.of(advertisement));
-        when(tradeRepository.existsByAdvertisementAndBuyer(advertisement,buyer)).thenReturn(false);
+        when(tradeRepository.existsByAdvertisementAndBuyer(advertisement, buyer)).thenReturn(false);
         when(tradeRepository.save(any(Trade.class))).thenReturn(newTrade);
 
-        Trade trade = tradeService.tradeInitiation(mockUserDetails,buyer,advertisement.getAdvertisementId());
+        Trade trade = tradeService.tradeInitiation(mockUserDetails, buyer, advertisement.getAdvertisementId());
 
         verify(tradeRepository, times(1)).save(any(Trade.class));
 
         Assertions.assertNotNull(trade);
-        Assertions.assertEquals(TradeStatus.PROPOSED,trade.getStatus());
-        Assertions.assertEquals(buyer.getId(),trade.getBuyer().getId());
-        Assertions.assertEquals(seller.getId(),trade.getSeller().getId());
-        Assertions.assertEquals(advertisement.getAdvertisementId(),trade.getAdvertisement().getAdvertisementId());
-        Assertions.assertEquals(trade,newTrade);
+        Assertions.assertEquals(TradeStatus.PROPOSED, trade.getStatus());
+        Assertions.assertEquals(buyer.getId(), trade.getBuyer().getId());
+        Assertions.assertEquals(seller.getId(), trade.getSeller().getId());
+        Assertions.assertEquals(advertisement.getAdvertisementId(), trade.getAdvertisement().getAdvertisementId());
+        Assertions.assertEquals(trade, newTrade);
     }
 
     @Test
     public void tradeInitiationWithWrongUser_throwsSecurityException() {
-        when(advertisementSecurityService.isOwner(mockUserDetails,advertisement.getAdvertisementId())).thenReturn(false);
-        Assertions.assertThrows(SecurityException.class, () ->{ tradeService.tradeInitiation(mockUserDetails,buyer,advertisement.getAdvertisementId());});
+        when(advertisementSecurityService.isOwner(mockUserDetails, advertisement.getAdvertisementId())).thenReturn(false);
+        Assertions.assertThrows(SecurityException.class, () -> {
+            tradeService.tradeInitiation(mockUserDetails, buyer, advertisement.getAdvertisementId());
+        });
         verify(tradeRepository, never()).save(any(Trade.class));
     }
 
+    @Test
+    public void tradeInitiationWithSameUser_throwsIllegalStateException() {
+        when(usersRepository.findByEmail(mockUserDetails.getUsername())).thenReturn(Optional.of(seller));
+        when(advertisementSecurityService.isOwner(mockUserDetails, advertisement.getAdvertisementId())).thenReturn(true);
+        seller.setId(1);
+        buyer.setId(1);
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            tradeService.tradeInitiation(mockUserDetails, buyer, advertisement.getAdvertisementId());
+        });
+        verify(tradeRepository, never()).save(any(Trade.class));
+    }
 }

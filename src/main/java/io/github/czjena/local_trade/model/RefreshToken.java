@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 
 import java.time.Instant;
 
-
 @Entity
 @Data
 @AllArgsConstructor
@@ -19,7 +18,7 @@ public class RefreshToken {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    private String  token;
+    private String token;
     private Instant expires;
 
     @ManyToOne(fetch = FetchType.LAZY)

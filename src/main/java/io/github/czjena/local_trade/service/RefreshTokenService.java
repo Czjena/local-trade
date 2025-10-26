@@ -1,10 +1,13 @@
 package io.github.czjena.local_trade.service;
 
+import io.github.czjena.local_trade.dto.LoginDto;
+import io.github.czjena.local_trade.dto.RefreshTokenRequest;
 import io.github.czjena.local_trade.exceptions.UserNotFoundException;
 import io.github.czjena.local_trade.model.RefreshToken;
 import io.github.czjena.local_trade.model.Users;
 import io.github.czjena.local_trade.repository.RefreshTokenRepository;
 import io.github.czjena.local_trade.repository.UsersRepository;
+import io.github.czjena.local_trade.response.LoginResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,17 +21,16 @@ public class RefreshTokenService {
     private final RefreshTokenRepository refreshTokenRepository;
 
     private final UsersRepository usersRepository;
+    private final JwtService jwtService;
 
 
-    public RefreshTokenService(RefreshTokenRepository refreshTokenRepository, UsersRepository usersRepository) {
+    public RefreshTokenService(RefreshTokenRepository refreshTokenRepository, UsersRepository usersRepository, JwtService jwtService) {
         this.refreshTokenRepository = refreshTokenRepository;
         this.usersRepository = usersRepository;
-
+        this.jwtService = jwtService;
     }
 
-    public RefreshToken createRefreshToken(String name) {
-        Users user = usersRepository.findByName(name)
-                .orElseThrow(() -> new UserNotFoundException("User not found"));
+    public RefreshToken createRefreshToken(Users user) {
         RefreshToken refreshToken = RefreshToken.builder()
                 .users(user)
                 .token(UUID.randomUUID().toString())
@@ -37,8 +39,17 @@ public class RefreshTokenService {
         return refreshTokenRepository.save(refreshToken);
     }
 
-    public Optional<RefreshToken> findByToken(String token) {
-        return refreshTokenRepository.findByToken(token);
+    public LoginResponse generateNewTokenFromRefresh(RefreshTokenRequest refreshTokenRequest) {
+        return refreshTokenRepository.findByToken((refreshTokenRequest.getToken()))
+                .map(this::verifyExpiry)
+                .map(RefreshToken::getUsers)
+                .map(Users -> {
+                    String accessToken = jwtService.generateToken(Users);
+                    return LoginResponse.builder()
+                            .token(accessToken)
+                            .refreshToken((refreshTokenRequest.getToken()))
+                            .build();
+                }).orElseThrow(() -> new UserNotFoundException("User not found"));
     }
 
     public RefreshToken verifyExpiry(RefreshToken token) {
