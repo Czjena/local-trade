@@ -35,20 +35,16 @@ public class TradeService {
 
 
     @Transactional
-    public Trade tradeInitiation(UserDetails userDetails, Users buyer, UUID advertisementId) {
-        Users seller = usersRepository.findByEmail(userDetails.getUsername())
+    public Trade tradeInitiation(UserDetails userDetails,UUID advertisementId) {
+        Users buyer = usersRepository.findByEmail(userDetails.getUsername())
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
         Advertisement advertisement = advertisementRepository.findByAdvertisementId(advertisementId)
                 .orElseThrow(() -> new EntityNotFoundException("Advertisement not found"));
-
-        if(!advertisementSecurityService.isOwner(userDetails,advertisementId)){
-            throw new SecurityException("User is not an owner of this advertisement");
-        }
+        Users seller = advertisement.getUser();
 
         if(tradeRepository.existsByAdvertisementAndBuyer(advertisement,buyer)){
             throw new IllegalArgumentException("Trade already exists");
         }
-
         if(seller.getId().equals(buyer.getId())){
             throw new IllegalArgumentException("Seller and buyer are the same");
         }
@@ -69,19 +65,29 @@ public class TradeService {
         Trade trade = tradeRepository.findById(tradeId).orElseThrow(() -> new EntityNotFoundException("Trade not found"));
         Users loggedInUser = usersRepository.findByEmail(userDetails.getUsername())
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
-        if(!loggedInUser.getId().equals(trade.getBuyer().getId())) {
-            throw new SecurityException("Only Buyer can complete this trade");
+        if (!trade.getStatus().equals(TradeStatus.PROPOSED)) {
+            throw new IllegalArgumentException("Trade is NOT PROPOSED, Current status is " + trade.getStatus());
         }
-        if(!trade.getStatus().equals(TradeStatus.PROPOSED)){
-            throw new SecurityException("Trade is NOT PROPOSED, Current status is " + trade.getStatus());
-        }
-        if(LocalDateTime.now().isBefore(trade.getCreatedAt().plusHours(1))){
-            throw new SecurityException("Trade is too new to complete, wait 1 hour.");
+        boolean isBuyer = loggedInUser.getId().equals(trade.getBuyer().getId());
+        boolean isSeller = loggedInUser.getId().equals(trade.getSeller().getId());
+
+        if (!isBuyer && !isSeller) {
+            throw new IllegalArgumentException("Only buyer and seller can complete this trade");
         }
 
-        trade.setStatus(TradeStatus.COMPLETED);
+        if (isBuyer) {
+            trade.setBuyerMarkedCompleted(true);
+        } else
+            trade.setSellerMarkedCompleted(true);
+
+        if (trade.isBuyerMarkedCompleted() && trade.isSellerMarkedCompleted()) {
+            if (LocalDateTime.now().isAfter(trade.getCreatedAt().plusHours(1))) {
+            trade.setStatus(TradeStatus.COMPLETED);
+            }
+        }
         return tradeRepository.save(trade);
     }
+
     @Transactional
     public void tradeIsCancelled(UserDetails userDetails, Long tradeId) {
             Users loggedInUser = usersRepository.findByEmail(userDetails.getUsername())
@@ -94,13 +100,13 @@ public class TradeService {
             boolean isSeller = loggedInUser.getId().equals(sellerId);
 
             if(!isBuyer && !isSeller){
-                throw new SecurityException("User is not a part of this trade and cannot cancel itd");
+                throw new SecurityException("User is not a part of this trade and cannot cancel it");
             }
             if(!trade.getStatus().equals(TradeStatus.PROPOSED)){
-                throw new SecurityException("Trade is NOT PROPOSED, Current status is " + trade.getStatus());
+                throw new IllegalArgumentException("Trade is NOT PROPOSED, Current status is " + trade.getStatus());
             }
             if(LocalDateTime.now().isBefore(trade.getCreatedAt().plusHours(2))){
-                throw new SecurityException("Trade is too new to cancel");
+                throw new IllegalArgumentException("Trade is too new to cancel");
             }
 
             trade.setStatus(TradeStatus.CANCELLED);

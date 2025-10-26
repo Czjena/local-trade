@@ -44,4 +44,6 @@ public class Trade {
 
     private boolean sellerLeftReview;
     private boolean buyerLeftReview;
+    private boolean buyerMarkedCompleted = false;
+    private boolean sellerMarkedCompleted = false;
 }

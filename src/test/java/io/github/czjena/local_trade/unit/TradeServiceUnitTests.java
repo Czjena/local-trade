@@ -46,18 +46,22 @@ public class TradeServiceUnitTests {
     private Trade newTrade;
     private Advertisement advertisement;
     private UserDetails mockUserDetails;
+    private Users stranger;
 
     @BeforeEach
     public void setUp() {
+        stranger = UserUtils.createUserRoleUser();
         buyer = UserUtils.createUserRoleUser();
         seller = UserUtils.createUserRoleUser();
         buyer.setEmail("buyer@gmail.com");
         seller.setEmail("seller@gmail.com");
+        stranger.setEmail("stranger@gmail.com");
         buyer.setId(1);
         seller.setId(2);
+        stranger.setId(3);
         mockUserDetails = mock(UserDetails.class);
         advertisement = AdUtils.createAdvertisement();
-        advertisement.setUser(buyer);
+        advertisement.setUser(seller);
         newTrade = Trade.builder()
                 .seller(seller)
                 .buyer(buyer)
@@ -71,14 +75,13 @@ public class TradeServiceUnitTests {
     @Test
     public void tradeInitiation_thenReturnCreatedTrade() {
 
-        when(mockUserDetails.getUsername()).thenReturn(seller.getEmail());
-        when(usersRepository.findByEmail(mockUserDetails.getUsername())).thenReturn(Optional.of(seller));
-        when(advertisementSecurityService.isOwner(mockUserDetails, advertisement.getAdvertisementId())).thenReturn(true);
+        when(mockUserDetails.getUsername()).thenReturn(buyer.getEmail());
+        when(usersRepository.findByEmail(mockUserDetails.getUsername())).thenReturn(Optional.of(buyer));
         when(advertisementRepository.findByAdvertisementId(advertisement.getAdvertisementId())).thenReturn(Optional.of(advertisement));
         when(tradeRepository.existsByAdvertisementAndBuyer(advertisement, buyer)).thenReturn(false);
         when(tradeRepository.save(any(Trade.class))).thenReturn(newTrade);
 
-        Trade trade = tradeService.tradeInitiation(mockUserDetails, buyer, advertisement.getAdvertisementId());
+        Trade trade = tradeService.tradeInitiation(mockUserDetails, advertisement.getAdvertisementId());
 
         verify(tradeRepository, times(1)).save(any(Trade.class));
 
@@ -91,45 +94,43 @@ public class TradeServiceUnitTests {
     }
 
     @Test
-    public void tradeInitiationWithWrongUser_throwsSecurityException() {
-        when(usersRepository.findByEmail(mockUserDetails.getUsername())).thenReturn(Optional.of(buyer));
+    public void tradeInitiation_whenUserNotFound_thenReturnNotFoundTrade() {
+        when(usersRepository.findByEmail(mockUserDetails.getUsername())).thenReturn(Optional.empty());
+        Assertions.assertThrows(UserNotFoundException.class, () -> {
+            tradeService.tradeInitiation(mockUserDetails, advertisement.getAdvertisementId());
+        });
+        verify(tradeRepository, never()).save(any(Trade.class));
+    }
+
+
+    @Test
+    public void tradeInitiationWithSameUser_throwsIllegalStateException() {
+        when(usersRepository.findByEmail(any())).thenReturn(Optional.of(buyer));
+        when(mockUserDetails.getUsername()).thenReturn(buyer.getEmail());
         when(advertisementRepository.findByAdvertisementId(any())).thenReturn(Optional.of(advertisement));
-        when(advertisementSecurityService.isOwner(mockUserDetails, advertisement.getAdvertisementId())).thenReturn(false);
-        Assertions.assertThrows(SecurityException.class, () -> {
-            tradeService.tradeInitiation(mockUserDetails, buyer, advertisement.getAdvertisementId());
+        advertisement.setUser(buyer);
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            tradeService.tradeInitiation(mockUserDetails,  advertisement.getAdvertisementId());
         });
         verify(tradeRepository, never()).save(any(Trade.class));
     }
 
     @Test
-    public void tradeInitiationWithSameUser_throwsIllegalStateException() {
-        when(usersRepository.findByEmail(any())).thenReturn(Optional.of(seller));
-        when(advertisementRepository.findByAdvertisementId(any())).thenReturn(Optional.of(advertisement));
-        when(advertisementSecurityService.isOwner(mockUserDetails, advertisement.getAdvertisementId())).thenReturn(true);
-        seller.setId(1);
-        buyer.setId(1);
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            tradeService.tradeInitiation(mockUserDetails, buyer, advertisement.getAdvertisementId());
-        });
-        verify(tradeRepository, never()).save(any(Trade.class));
-    }
-    @Test
     public void tradeInitiationNoAdvertisement_throwsEntityNotFoundException() {
-        when(usersRepository.findByEmail(any())).thenReturn(Optional.of(seller));
+        when(usersRepository.findByEmail(any())).thenReturn(Optional.of(buyer));
         when(advertisementRepository.findByAdvertisementId(any())).thenReturn(Optional.empty());
         Assertions.assertThrows(EntityNotFoundException.class, () -> {
-            tradeService.tradeInitiation(seller, buyer, advertisement.getAdvertisementId());
+            tradeService.tradeInitiation(mockUserDetails, advertisement.getAdvertisementId());
         });
         verify(tradeRepository, never()).save(any(Trade.class));
     }
     @Test
     public void tradeInitiationTradeAlreadyExists_throwsIllegalArgumentException() {
-        when(usersRepository.findByEmail(any())).thenReturn(Optional.of(seller));
+        when(usersRepository.findByEmail(any())).thenReturn(Optional.of(buyer));
         when(advertisementRepository.findByAdvertisementId(any())).thenReturn(Optional.of(advertisement));
-        when(advertisementSecurityService.isOwner(seller,advertisement.getAdvertisementId())).thenReturn(true);
         when(tradeRepository.existsByAdvertisementAndBuyer(advertisement, buyer)).thenReturn(true);
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            tradeService.tradeInitiation(seller, buyer, advertisement.getAdvertisementId());
+            tradeService.tradeInitiation(mockUserDetails,  advertisement.getAdvertisementId());
         });
         verify(tradeRepository, never()).save(any(Trade.class));
     }
@@ -148,5 +149,89 @@ public class TradeServiceUnitTests {
         newTrade.setCreatedAt(LocalDateTime.now().minusDays(1));
         tradeService.tradeIsCancelled(mockUserDetails, 2L);
         Assertions.assertEquals(TradeStatus.CANCELLED, newTrade.getStatus());
+        verify(tradeRepository, times(1)).save(any(Trade.class));
     }
+    @Test
+    public void tradeIsCancelledAndTradeIsProposed_throwsIllegalStateException() {
+        newTrade.setStatus(TradeStatus.COMPLETED);
+        when(usersRepository.findByEmail(any())).thenReturn(Optional.of(seller));
+        when(tradeRepository.findById(any())).thenReturn(Optional.of(newTrade));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            tradeService.tradeIsCancelled(mockUserDetails, 2L);
+        });
+        verify(tradeRepository, never()).save(any(Trade.class));
+    }
+    @Test
+    public void tradeIsCancelledAndSellerIsTheSameAsBuyer_throwsSecurityException() {
+        when(usersRepository.findByEmail(any())).thenReturn(Optional.of(stranger));
+        when(tradeRepository.findById(any())).thenReturn(Optional.of(newTrade));
+        Assertions.assertThrows(SecurityException.class, () -> {
+            tradeService.tradeIsCancelled(mockUserDetails, 2L);
+        });
+        verify(tradeRepository, never()).save(any(Trade.class));
+    }
+    @Test
+    public void tradeIsCancelledAndItsTooSoon_throwsIllegalArgumentException() {
+        when(usersRepository.findByEmail(any())).thenReturn(Optional.of(seller));
+        when(tradeRepository.findById(any())).thenReturn(Optional.of(newTrade));
+        newTrade.setCreatedAt(LocalDateTime.now());
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            tradeService.tradeIsCancelled(mockUserDetails, 2L);
+        });
+        verify(tradeRepository, never()).save(any(Trade.class));
+    }
+    @Test
+    public void tradeIsCompleted_thenTradeIsCompleted() {
+        newTrade.setSellerMarkedCompleted(true);
+        newTrade.setCreatedAt(LocalDateTime.now().minusDays(1));
+
+        when(usersRepository.findByEmail(any())).thenReturn(Optional.of(buyer));
+        when(tradeRepository.findById(any())).thenReturn(Optional.of(newTrade));
+
+        newTrade.setCreatedAt(LocalDateTime.now().minusDays(1));
+        tradeService.tradeIsComplete(mockUserDetails, 2L);
+        Assertions.assertEquals(TradeStatus.COMPLETED, newTrade.getStatus());
+        Assertions.assertTrue(newTrade.isBuyerMarkedCompleted());
+        verify(tradeRepository, times(1)).save(newTrade);
+    }
+
+    @Test
+    public void tradeIsCompletedAndTradeStatusIsWrong_throwsIllegalStateException() {
+        when(usersRepository.findByEmail(any())).thenReturn(Optional.of(buyer));
+        when(tradeRepository.findById(any())).thenReturn(Optional.of(newTrade));
+        newTrade.setStatus(TradeStatus.PROCESSING);
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            tradeService.tradeIsComplete(mockUserDetails, 2L);
+        });
+        verify(tradeRepository, never()).save(any(Trade.class));
+    }
+    @Test
+    public void tradeIsCompletedUserNotFound_throwsUserNotFoundException() {
+        when(usersRepository.findByEmail(any())).thenReturn(Optional.empty());
+        when(tradeRepository.findById(any())).thenReturn(Optional.of(newTrade));
+        Assertions.assertThrows(UserNotFoundException.class, () -> {
+            tradeService.tradeIsComplete(mockUserDetails, 2L);
+        });
+        verify(tradeRepository, never()).save(any(Trade.class));
+    }
+    @Test
+    public void tradeIsCompletedTradeIsNotFound_throwsEntityNotFoundException() {
+        when(tradeRepository.findById(any())).thenReturn(Optional.empty());
+        Assertions.assertThrows(EntityNotFoundException.class, () -> {
+            tradeService.tradeIsComplete(mockUserDetails, 2L);
+        });
+        verify(tradeRepository, never()).save(
+                any(Trade.class));
+    }
+    @Test
+    public void tradeIsCompletedAndItsTooSoon_throwsIllegalArgumentException() {
+        when(usersRepository.findByEmail(any())).thenReturn(Optional.of(buyer));
+        when(tradeRepository.findById(any())).thenReturn(Optional.of(newTrade));
+        newTrade.setBuyerMarkedCompleted(true);
+        newTrade.setSellerMarkedCompleted(true);
+        newTrade.setCreatedAt(LocalDateTime.now());
+        tradeService.tradeIsComplete(mockUserDetails, 2L);
+        Assertions.assertEquals(TradeStatus.PROPOSED,newTrade.getStatus());
+    }
+
 }
