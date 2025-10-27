@@ -1,4 +1,6 @@
 package io.github.czjena.local_trade.response;
 
-public class SimpleUserResponseDto {
-}
+public record SimpleUserResponseDto(
+        Integer id,
+        String name
+){}

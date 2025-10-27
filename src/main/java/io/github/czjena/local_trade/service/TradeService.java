@@ -2,21 +2,24 @@ package io.github.czjena.local_trade.service;
 
 import io.github.czjena.local_trade.enums.TradeStatus;
 import io.github.czjena.local_trade.exceptions.UserNotFoundException;
+import io.github.czjena.local_trade.mappers.TradeResponseDtoMapper;
 import io.github.czjena.local_trade.model.Advertisement;
 import io.github.czjena.local_trade.model.Trade;
 import io.github.czjena.local_trade.model.Users;
 import io.github.czjena.local_trade.repository.AdvertisementRepository;
 import io.github.czjena.local_trade.repository.TradeRepository;
 import io.github.czjena.local_trade.repository.UsersRepository;
+import io.github.czjena.local_trade.request.TradeInitiationRequestDto;
+import io.github.czjena.local_trade.response.TradeResponseDto;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.UUID;
+import java.util.Optional;
 
 @Service
 public class TradeService {
@@ -24,23 +27,27 @@ public class TradeService {
     private final AdvertisementRepository advertisementRepository;
     private final UsersRepository usersRepository;
     private final TradeRepository tradeRepository;
-    private final AdvertisementSecurityService advertisementSecurityService;
+    private final TradeResponseDtoMapper tradeResponseDtoMapper;
 
-    public TradeService(TradeRepository tradeRepository, UsersRepository usersRepository, AdvertisementRepository advertisementRepository, AdvertisementSecurityService advertisementSecurityService) {
+
+    public TradeService(TradeRepository tradeRepository, UsersRepository usersRepository, AdvertisementRepository advertisementRepository,TradeResponseDtoMapper tradeResponseDtoMapper) {
         this.usersRepository = usersRepository;
         this.advertisementRepository = advertisementRepository;
         this.tradeRepository = tradeRepository;
-        this.advertisementSecurityService = advertisementSecurityService;
+        this.tradeResponseDtoMapper = tradeResponseDtoMapper;
+
     }
 
-
     @Transactional
-    public Trade tradeInitiation(UserDetails userDetails,UUID advertisementId) {
+    public TradeResponseDto tradeInitiation(UserDetails userDetails, TradeInitiationRequestDto tradeInitiationRequestDto) {
         Users buyer = usersRepository.findByEmail(userDetails.getUsername())
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
-        Advertisement advertisement = advertisementRepository.findByAdvertisementId(advertisementId)
+        Advertisement advertisement = advertisementRepository.findByAdvertisementId(tradeInitiationRequestDto.advertisementId())
                 .orElseThrow(() -> new EntityNotFoundException("Advertisement not found"));
+
         Users seller = advertisement.getUser();
+
+        BigDecimal newPrice = Optional.ofNullable(tradeInitiationRequestDto.proposedPrice()).orElse(advertisement.getPrice());
 
         if(tradeRepository.existsByAdvertisementAndBuyer(advertisement,buyer)){
             throw new IllegalArgumentException("Trade already exists");
@@ -48,20 +55,21 @@ public class TradeService {
         if(seller.getId().equals(buyer.getId())){
             throw new IllegalArgumentException("Seller and buyer are the same");
         }
-
         Trade  newTrade = Trade.builder()
                 .seller(seller)
                 .buyer(buyer)
+                .proposedPrice(newPrice)
                 .advertisement(advertisement)
                 .status(TradeStatus.PROPOSED)
                 .sellerLeftReview(false)
                 .buyerLeftReview(false)
                 .build();
-        return tradeRepository.save(newTrade);
+        tradeRepository.save(newTrade);
+        return tradeResponseDtoMapper.tradeToTradeResponseDto(newTrade);
     }
 
     @Transactional
-    public Trade tradeIsComplete(UserDetails userDetails, Long tradeId) {
+    public TradeResponseDto tradeIsComplete(UserDetails userDetails, Long tradeId) {
         Trade trade = tradeRepository.findById(tradeId).orElseThrow(() -> new EntityNotFoundException("Trade not found"));
         Users loggedInUser = usersRepository.findByEmail(userDetails.getUsername())
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
@@ -85,7 +93,8 @@ public class TradeService {
             trade.setStatus(TradeStatus.COMPLETED);
             }
         }
-        return tradeRepository.save(trade);
+        tradeRepository.save(trade);
+        return tradeResponseDtoMapper.tradeToTradeResponseDto(trade);
     }
 
     @Transactional

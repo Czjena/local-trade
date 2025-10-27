@@ -2,13 +2,17 @@ package io.github.czjena.local_trade.unit;
 
 import io.github.czjena.local_trade.enums.TradeStatus;
 import io.github.czjena.local_trade.exceptions.UserNotFoundException;
+import io.github.czjena.local_trade.mappers.TradeResponseDtoMapper;
 import io.github.czjena.local_trade.model.Advertisement;
 import io.github.czjena.local_trade.model.Trade;
 import io.github.czjena.local_trade.model.Users;
 import io.github.czjena.local_trade.repository.AdvertisementRepository;
 import io.github.czjena.local_trade.repository.TradeRepository;
 import io.github.czjena.local_trade.repository.UsersRepository;
-import io.github.czjena.local_trade.service.AdvertisementSecurityService;
+import io.github.czjena.local_trade.request.TradeInitiationRequestDto;
+import io.github.czjena.local_trade.response.SimpleAdvertisementResponseDto;
+import io.github.czjena.local_trade.response.SimpleUserResponseDto;
+import io.github.czjena.local_trade.response.TradeResponseDto;
 import io.github.czjena.local_trade.service.TradeService;
 import io.github.czjena.local_trade.testutils.AdUtils;
 import io.github.czjena.local_trade.testutils.UserUtils;
@@ -22,6 +26,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -30,8 +35,6 @@ import static org.mockito.Mockito.any;
 
 @ExtendWith(MockitoExtension.class)
 public class TradeServiceUnitTests {
-    @Mock
-    AdvertisementSecurityService advertisementSecurityService;
     @InjectMocks
     TradeService tradeService;
     @Mock
@@ -40,6 +43,8 @@ public class TradeServiceUnitTests {
     AdvertisementRepository advertisementRepository;
     @Mock
     UsersRepository usersRepository;
+    @Mock
+    TradeResponseDtoMapper tradeResponseDtoMapper;
 
     private Users seller;
     private Users buyer;
@@ -47,6 +52,8 @@ public class TradeServiceUnitTests {
     private Advertisement advertisement;
     private UserDetails mockUserDetails;
     private Users stranger;
+    private TradeInitiationRequestDto tradeInitiationRequestDto;
+    private TradeResponseDto tradeResponseDto;
 
     @BeforeEach
     public void setUp() {
@@ -62,43 +69,88 @@ public class TradeServiceUnitTests {
         mockUserDetails = mock(UserDetails.class);
         advertisement = AdUtils.createAdvertisement();
         advertisement.setUser(seller);
+        SimpleUserResponseDto sellerSimpleUserResponseDto = new SimpleUserResponseDto(seller.getId(), seller.getEmail());
+        SimpleUserResponseDto buyerSimpleUserResponseDto = new SimpleUserResponseDto(buyer.getId(), buyer.getEmail());
+        SimpleAdvertisementResponseDto simpleAdvertisementResponseDto = new SimpleAdvertisementResponseDto(advertisement.getAdvertisementId(), advertisement.getTitle());
+        tradeInitiationRequestDto = new TradeInitiationRequestDto(BigDecimal.valueOf(2),advertisement.getAdvertisementId());
         newTrade = Trade.builder()
                 .seller(seller)
+                .proposedPrice(tradeInitiationRequestDto.proposedPrice())
                 .buyer(buyer)
                 .advertisement(advertisement)
                 .status(TradeStatus.PROPOSED)
                 .sellerLeftReview(false)
                 .buyerLeftReview(false)
                 .build();
+        tradeResponseDto = new TradeResponseDto(
+                newTrade.getId(),newTrade.getStatus(),newTrade.getProposedPrice(),newTrade.getCreatedAt(), newTrade.isBuyerMarkedCompleted(),
+                newTrade.isSellerMarkedCompleted(), buyerSimpleUserResponseDto, sellerSimpleUserResponseDto, simpleAdvertisementResponseDto);
     }
+
 
     @Test
     public void tradeInitiation_thenReturnCreatedTrade() {
-
+        when(tradeResponseDtoMapper.tradeToTradeResponseDto(any())).thenReturn(tradeResponseDto);
         when(mockUserDetails.getUsername()).thenReturn(buyer.getEmail());
         when(usersRepository.findByEmail(mockUserDetails.getUsername())).thenReturn(Optional.of(buyer));
         when(advertisementRepository.findByAdvertisementId(advertisement.getAdvertisementId())).thenReturn(Optional.of(advertisement));
         when(tradeRepository.existsByAdvertisementAndBuyer(advertisement, buyer)).thenReturn(false);
         when(tradeRepository.save(any(Trade.class))).thenReturn(newTrade);
 
-        Trade trade = tradeService.tradeInitiation(mockUserDetails, advertisement.getAdvertisementId());
+
+        var trade  = tradeService.tradeInitiation(mockUserDetails, tradeInitiationRequestDto);
 
         verify(tradeRepository, times(1)).save(any(Trade.class));
 
         Assertions.assertNotNull(trade);
-        Assertions.assertEquals(TradeStatus.PROPOSED, trade.getStatus());
-        Assertions.assertEquals(buyer.getId(), trade.getBuyer().getId());
-        Assertions.assertEquals(seller.getId(), trade.getSeller().getId());
-        Assertions.assertEquals(advertisement.getAdvertisementId(), trade.getAdvertisement().getAdvertisementId());
-        Assertions.assertEquals(trade, newTrade);
+        Assertions.assertEquals(TradeStatus.PROPOSED, trade.status());
+        Assertions.assertEquals(buyer.getId(), trade.buyerSimpleDto().id());
+        Assertions.assertEquals(seller.getId(), trade.sellerSimpleDto().id());
+        Assertions.assertEquals(advertisement.getAdvertisementId(), trade.simpleAdvertisementResponseDto().advertisementId());
+        Assertions.assertEquals(advertisement.getTitle(), trade.simpleAdvertisementResponseDto().title());
+        Assertions.assertEquals(newTrade.getProposedPrice(),trade.proposedPrice());
+        Assertions.assertEquals(newTrade.getCreatedAt(),trade.createdAt());
+        Assertions.assertEquals(newTrade.isBuyerMarkedCompleted(),trade.buyerMarkedCompleted());
+        Assertions.assertEquals(newTrade.isSellerMarkedCompleted(),trade.sellerMarkedCompleted());
     }
+
+    @Test
+    public void tradeInitiationAndProposedPriceIsNull_thenReturnAdvertisementPrice() {
+       tradeInitiationRequestDto = new TradeInitiationRequestDto(null,advertisement.getAdvertisementId());
+        when(tradeResponseDtoMapper.tradeToTradeResponseDto(any())).thenAnswer(invocation -> {
+            Trade t = invocation.getArgument(0);
+            return new TradeResponseDto(
+                    t.getId(),
+                    t.getStatus(),
+                    t.getProposedPrice(),
+                    t.getCreatedAt(),
+                    t.isBuyerMarkedCompleted(),
+                    t.isSellerMarkedCompleted(),
+                    new SimpleUserResponseDto(t.getBuyer().getId(), t.getBuyer().getEmail()),
+                    new SimpleUserResponseDto(t.getSeller().getId(), t.getSeller().getEmail()),
+                    new SimpleAdvertisementResponseDto(t.getAdvertisement().getAdvertisementId(), t.getAdvertisement().getTitle())
+            );
+        });
+        when(mockUserDetails.getUsername()).thenReturn(buyer.getEmail());
+        when(usersRepository.findByEmail(mockUserDetails.getUsername())).thenReturn(Optional.of(buyer));
+        when(advertisementRepository.findByAdvertisementId(advertisement.getAdvertisementId())).thenReturn(Optional.of(advertisement));
+        when(tradeRepository.existsByAdvertisementAndBuyer(advertisement, buyer)).thenReturn(false);
+        when(tradeRepository.save(any(Trade.class))).thenReturn(newTrade);
+
+
+        var trade  = tradeService.tradeInitiation(mockUserDetails, tradeInitiationRequestDto);
+
+        verify(tradeRepository, times(1)).save(any(Trade.class));
+        Assertions.assertNotNull(trade);
+        Assertions.assertEquals(trade.proposedPrice(), advertisement.getPrice());
+
+    }
+
 
     @Test
     public void tradeInitiation_whenUserNotFound_thenReturnNotFoundTrade() {
         when(usersRepository.findByEmail(mockUserDetails.getUsername())).thenReturn(Optional.empty());
-        Assertions.assertThrows(UserNotFoundException.class, () -> {
-            tradeService.tradeInitiation(mockUserDetails, advertisement.getAdvertisementId());
-        });
+        Assertions.assertThrows(UserNotFoundException.class, () -> tradeService.tradeInitiation(mockUserDetails, tradeInitiationRequestDto));
         verify(tradeRepository, never()).save(any(Trade.class));
     }
 
@@ -109,9 +161,7 @@ public class TradeServiceUnitTests {
         when(mockUserDetails.getUsername()).thenReturn(buyer.getEmail());
         when(advertisementRepository.findByAdvertisementId(any())).thenReturn(Optional.of(advertisement));
         advertisement.setUser(buyer);
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            tradeService.tradeInitiation(mockUserDetails,  advertisement.getAdvertisementId());
-        });
+        Assertions.assertThrows(IllegalArgumentException.class, () -> tradeService.tradeInitiation(mockUserDetails,  tradeInitiationRequestDto));
         verify(tradeRepository, never()).save(any(Trade.class));
     }
 
@@ -119,9 +169,7 @@ public class TradeServiceUnitTests {
     public void tradeInitiationNoAdvertisement_throwsEntityNotFoundException() {
         when(usersRepository.findByEmail(any())).thenReturn(Optional.of(buyer));
         when(advertisementRepository.findByAdvertisementId(any())).thenReturn(Optional.empty());
-        Assertions.assertThrows(EntityNotFoundException.class, () -> {
-            tradeService.tradeInitiation(mockUserDetails, advertisement.getAdvertisementId());
-        });
+        Assertions.assertThrows(EntityNotFoundException.class, () -> tradeService.tradeInitiation(mockUserDetails, tradeInitiationRequestDto));
         verify(tradeRepository, never()).save(any(Trade.class));
     }
     @Test
@@ -129,17 +177,13 @@ public class TradeServiceUnitTests {
         when(usersRepository.findByEmail(any())).thenReturn(Optional.of(buyer));
         when(advertisementRepository.findByAdvertisementId(any())).thenReturn(Optional.of(advertisement));
         when(tradeRepository.existsByAdvertisementAndBuyer(advertisement, buyer)).thenReturn(true);
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            tradeService.tradeInitiation(mockUserDetails,  advertisement.getAdvertisementId());
-        });
+        Assertions.assertThrows(IllegalArgumentException.class, () -> tradeService.tradeInitiation(mockUserDetails,  tradeInitiationRequestDto));
         verify(tradeRepository, never()).save(any(Trade.class));
     }
     @Test
     public void tradeCancelledButUserIsNotFound_throwsUserNotFoundException() {
         when(usersRepository.findByEmail(any())).thenReturn(Optional.empty());
-        Assertions.assertThrows(UserNotFoundException.class, () -> {
-          tradeService.tradeIsCancelled(mockUserDetails, 2L);
-        });
+        Assertions.assertThrows(UserNotFoundException.class, () -> tradeService.tradeIsCancelled(mockUserDetails, 2L));
         verify(tradeRepository, never()).save(any(Trade.class));
     }
     @Test
@@ -156,18 +200,14 @@ public class TradeServiceUnitTests {
         newTrade.setStatus(TradeStatus.COMPLETED);
         when(usersRepository.findByEmail(any())).thenReturn(Optional.of(seller));
         when(tradeRepository.findById(any())).thenReturn(Optional.of(newTrade));
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            tradeService.tradeIsCancelled(mockUserDetails, 2L);
-        });
+        Assertions.assertThrows(IllegalArgumentException.class, () -> tradeService.tradeIsCancelled(mockUserDetails, 2L));
         verify(tradeRepository, never()).save(any(Trade.class));
     }
     @Test
     public void tradeIsCancelledAndSellerIsTheSameAsBuyer_throwsSecurityException() {
         when(usersRepository.findByEmail(any())).thenReturn(Optional.of(stranger));
         when(tradeRepository.findById(any())).thenReturn(Optional.of(newTrade));
-        Assertions.assertThrows(SecurityException.class, () -> {
-            tradeService.tradeIsCancelled(mockUserDetails, 2L);
-        });
+        Assertions.assertThrows(SecurityException.class, () -> tradeService.tradeIsCancelled(mockUserDetails, 2L));
         verify(tradeRepository, never()).save(any(Trade.class));
     }
     @Test
@@ -175,9 +215,7 @@ public class TradeServiceUnitTests {
         when(usersRepository.findByEmail(any())).thenReturn(Optional.of(seller));
         when(tradeRepository.findById(any())).thenReturn(Optional.of(newTrade));
         newTrade.setCreatedAt(LocalDateTime.now());
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            tradeService.tradeIsCancelled(mockUserDetails, 2L);
-        });
+        Assertions.assertThrows(IllegalArgumentException.class, () -> tradeService.tradeIsCancelled(mockUserDetails, 2L));
         verify(tradeRepository, never()).save(any(Trade.class));
     }
     @Test
@@ -200,31 +238,25 @@ public class TradeServiceUnitTests {
         when(usersRepository.findByEmail(any())).thenReturn(Optional.of(buyer));
         when(tradeRepository.findById(any())).thenReturn(Optional.of(newTrade));
         newTrade.setStatus(TradeStatus.PROCESSING);
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            tradeService.tradeIsComplete(mockUserDetails, 2L);
-        });
+        Assertions.assertThrows(IllegalArgumentException.class, () -> tradeService.tradeIsComplete(mockUserDetails, 2L));
         verify(tradeRepository, never()).save(any(Trade.class));
     }
     @Test
     public void tradeIsCompletedUserNotFound_throwsUserNotFoundException() {
         when(usersRepository.findByEmail(any())).thenReturn(Optional.empty());
         when(tradeRepository.findById(any())).thenReturn(Optional.of(newTrade));
-        Assertions.assertThrows(UserNotFoundException.class, () -> {
-            tradeService.tradeIsComplete(mockUserDetails, 2L);
-        });
+        Assertions.assertThrows(UserNotFoundException.class, () -> tradeService.tradeIsComplete(mockUserDetails, 2L));
         verify(tradeRepository, never()).save(any(Trade.class));
     }
     @Test
     public void tradeIsCompletedTradeIsNotFound_throwsEntityNotFoundException() {
         when(tradeRepository.findById(any())).thenReturn(Optional.empty());
-        Assertions.assertThrows(EntityNotFoundException.class, () -> {
-            tradeService.tradeIsComplete(mockUserDetails, 2L);
-        });
+        Assertions.assertThrows(EntityNotFoundException.class, () -> tradeService.tradeIsComplete(mockUserDetails, 2L));
         verify(tradeRepository, never()).save(
                 any(Trade.class));
     }
     @Test
-    public void tradeIsCompletedAndItsTooSoon_throwsIllegalArgumentException() {
+    public void tradeIsCompletedAndItsTooSoon_thenTradeStatusIsNotChanged() {
         when(usersRepository.findByEmail(any())).thenReturn(Optional.of(buyer));
         when(tradeRepository.findById(any())).thenReturn(Optional.of(newTrade));
         newTrade.setBuyerMarkedCompleted(true);

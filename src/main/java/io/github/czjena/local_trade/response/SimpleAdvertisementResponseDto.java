@@ -1,4 +1,8 @@
 package io.github.czjena.local_trade.response;
 
-public class SimpleAdvertisementResponseDto {
-}
+import java.util.UUID;
+
+public record SimpleAdvertisementResponseDto(
+        UUID advertisementId,
+        String title
+){}
