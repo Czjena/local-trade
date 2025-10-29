@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 public interface RefreshTokenService {
     @Transactional
     RefreshToken createRefreshToken(Users user);
-    @Transactional
+    @Transactional(readOnly = true)
     LoginResponse generateNewTokenFromRefresh(RefreshTokenRequest refreshTokenRequest);
     @Transactional
     RefreshToken verifyExpiry(RefreshToken token);

@@ -13,15 +13,13 @@ import java.util.List;
 import java.util.UUID;
 
 public interface S3Service {
-    @Transactional
     PutObjectRequest putObject(String bucketName, String key, @Nullable String content);
     @Transactional
     Image uploadFile(UUID advertisementId, MultipartFile file) throws IOException;
     @Transactional
     void deleteFile(UUID imageId);
-    @Transactional
+    @Transactional(readOnly = true)
     List<ImageDto> listFiles(UUID advertisementId);
     byte[] generateThumbnail(MultipartFile file) throws IOException;
-    @Transactional
     String generatePresignedUrl(String key, Duration duration);
 }

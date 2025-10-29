@@ -48,7 +48,6 @@ public class S3ServiceImpl implements S3Service {
     }
 
     @Override
-    @Transactional
     public PutObjectRequest putObject(String bucketName, String key, @Nullable String content) {
         return  PutObjectRequest.builder()
                 .bucket(bucketName)
@@ -106,7 +105,7 @@ public class S3ServiceImpl implements S3Service {
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public List<ImageDto> listFiles(UUID advertisementId) {
         Advertisement ad = advertisementRepository.findByAdvertisementId(advertisementId)
                 .orElseThrow(() -> new EntityNotFoundException("Advertisement not found"));
@@ -133,8 +132,7 @@ public class S3ServiceImpl implements S3Service {
     @Override
     @Transactional
     public String generatePresignedUrl(String key, Duration duration) {
-        S3Presigner presigner = s3Presigner;
-        PresignedGetObjectRequest presignedRequest = presigner.presignGetObject(
+        PresignedGetObjectRequest presignedRequest = s3Presigner.presignGetObject(
                 GetObjectPresignRequest.builder()
                         .getObjectRequest(GetObjectRequest.builder()
                                 .bucket(bucketName)
@@ -143,7 +141,6 @@ public class S3ServiceImpl implements S3Service {
                         .signatureDuration(duration)
                         .build()
         );
-        presigner.close();
         return presignedRequest.url().toString();
     }
 }

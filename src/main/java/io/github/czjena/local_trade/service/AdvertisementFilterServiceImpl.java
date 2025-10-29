@@ -71,7 +71,7 @@ public class AdvertisementFilterServiceImpl implements AdvertisementFilterServic
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public Page<ResponseAdvertisementDto> filterAndPageAdvertisements(AdvertisementFilterDto advertisementFilterDto, Pageable pageable) {
         Specification<Advertisement> spec = getSpecification(advertisementFilterDto);
         Page<Advertisement> advertisements = advertisementRepository.findAll(spec,pageable);

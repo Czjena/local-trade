@@ -10,6 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 public interface AdvertisementFilterService {
     Specification<Advertisement> getSpecification(AdvertisementFilterDto filter);
-    @Transactional
+    @Transactional(readOnly = true)
     Page<ResponseAdvertisementDto> filterAndPageAdvertisements(AdvertisementFilterDto advertisementFilterDto, Pageable pageable);
 }

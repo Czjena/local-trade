@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 public interface AdvertisementService {
     @Transactional
     Advertisement addAd(RequestAdvertisementDto dto, UserDetails userDetails);
-    @Transactional
+    @Transactional(readOnly = true)
     Advertisement getAdvertisementById(Integer advertisementId);
     @Transactional
     AdvertisementUpdateDto changeAdvertisement(AdvertisementUpdateDto dto, UserDetails userDetails, Integer advertisementId);

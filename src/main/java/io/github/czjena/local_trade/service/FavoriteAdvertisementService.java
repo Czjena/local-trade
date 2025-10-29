@@ -9,13 +9,13 @@ import java.util.Set;
 import java.util.UUID;
 
 public interface FavoriteAdvertisementService {
-    @Transactional
+    @Transactional(readOnly = true)
     Set<FavoriteAdvertisementDto> getFavoriteAdvertisements(UserDetails userDetails);
 
     @Transactional
     void addFavoriteAdvertisement(UserDetails userDetails, UUID advertisementId);
     @Transactional
     void deleteFavoriteAdvertisement(UserDetails userDetails, UUID advertisementId);
-    @Transactional
+    @Transactional(readOnly = true)
     Users getUser(UserDetails userDetails);
 }

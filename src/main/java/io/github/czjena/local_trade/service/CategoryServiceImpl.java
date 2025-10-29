@@ -25,7 +25,7 @@ public class CategoryServiceImpl implements CategoryService {
         this.categoryRepository = categoryRepository;
         this.categoryMapper = categoryMapper;
     }
-@Transactional
+@Transactional(readOnly = true)
 @Override
 public List<Advertisement> findAllAdvertisementsByCategoryId(Integer categoryId) {
         if (categoryRepository.findById(categoryId).isPresent()) {
@@ -33,7 +33,7 @@ public List<Advertisement> findAllAdvertisementsByCategoryId(Integer categoryId)
         }
         throw new EntityNotFoundException("Category not found");
     }
-    @Transactional
+    @Transactional(readOnly = true)
     @Override
     public String getCategoryNameForEndPoints(Integer categoryId) {
         return categoryRepository.findById(categoryId)
@@ -41,7 +41,7 @@ public List<Advertisement> findAllAdvertisementsByCategoryId(Integer categoryId)
                 .orElseThrow(() -> new EntityNotFoundException("Category not found"));
 
     }
-    @Transactional
+    @Transactional(readOnly = true)
     @Override
     public Integer getCategoryIdForEndPointsFromAdvertisement(Integer advertisementId) {
         return advertisementRepository.findById(advertisementId)
@@ -51,7 +51,7 @@ public List<Advertisement> findAllAdvertisementsByCategoryId(Integer categoryId)
 
     }
     @Cacheable("categories")
-    @Transactional
+    @Transactional(readOnly = true)
     @Override
     public List<CategoryDto> getAllCategories() {
         return categoryRepository.findAll().stream()

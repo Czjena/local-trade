@@ -10,11 +10,12 @@ import java.security.Principal;
 import java.util.List;
 
 public interface ChatMessageService {
+    @Transactional
     ChatMessage save(ChatMessage chatMessage);
 
     @Transactional
     ChatMessageDto createAndSaveMessageForPrivateUser(ChatMessagePayload chatMessage, Principal principal, String recipientEmail);
 
-    @Transactional
+    @Transactional(readOnly = true)
     List<ChatMessage> getChatHistory(UserDetails sender, String recipientUsername);
 }

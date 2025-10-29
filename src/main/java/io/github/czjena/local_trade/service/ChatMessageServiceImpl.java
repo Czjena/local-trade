@@ -28,6 +28,7 @@ public class ChatMessageServiceImpl implements ChatMessageService {
     }
 
     @Override
+    @Transactional
     public ChatMessage save(ChatMessage chatMessage) {
         chatMessage.setTimestamp(LocalDateTime.now());
         return chatMessageRepository.save(chatMessage);
@@ -49,7 +50,7 @@ public class ChatMessageServiceImpl implements ChatMessageService {
       return dto;
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     @Override
     public List<ChatMessage> getChatHistory(UserDetails sender, String recipientUsername) {
         Users user1 = usersRepository.findByName(sender.getUsername())

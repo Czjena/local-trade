@@ -30,7 +30,7 @@ public class FavoriteAdvertisementServiceImpl implements FavoriteAdvertisementSe
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public Set<FavoriteAdvertisementDto> getFavoriteAdvertisements(UserDetails userDetails) {
         return usersRepository.findByEmail(userDetails.getUsername())
                 .map(users -> users.getFavoritedAdvertisements()
@@ -66,7 +66,7 @@ public class FavoriteAdvertisementServiceImpl implements FavoriteAdvertisementSe
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public Users getUser(UserDetails userDetails) {
         return usersRepository.findByEmail(userDetails.getUsername())
                 .orElseThrow(() -> new UserNotFoundException("No user found with username: " + userDetails.getUsername()));

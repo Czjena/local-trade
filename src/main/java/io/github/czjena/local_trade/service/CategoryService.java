@@ -9,28 +9,24 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 public interface CategoryService {
-    @Transactional
+    @Transactional(readOnly = true)
     List<Advertisement> findAllAdvertisementsByCategoryId(Integer categoryId);
 
-    @Transactional
+    @Transactional(readOnly = true)
     String getCategoryNameForEndPoints(Integer categoryId);
 
-    @Transactional
+    @Transactional(readOnly = true)
     Integer getCategoryIdForEndPointsFromAdvertisement(Integer advertisementId);
 
-    @Cacheable("categories")
-    @Transactional
+    @Transactional(readOnly = true)
     List<CategoryDto> getAllCategories();
 
-    @CacheEvict(value = "categories", allEntries = true)
     @Transactional
     CategoryDto postCategory(CategoryDto category);
 
-    @CacheEvict(value = "categories", allEntries = true)
     @Transactional
     CategoryDto changeCategory(Integer id, CategoryDto categoryDto);
 
     @Transactional
-    @CacheEvict(value = "categories", allEntries = true)
     void deleteCategory(Integer categoryId);
 }

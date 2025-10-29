@@ -52,7 +52,7 @@ public class AdvertisementServiceImpl implements AdvertisementService {
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public Advertisement getAdvertisementById(Integer advertisementId) {
         return advertisementRepository.findById(advertisementId)
                 .orElseThrow(() -> new EntityNotFoundException("Advertisement not found"));

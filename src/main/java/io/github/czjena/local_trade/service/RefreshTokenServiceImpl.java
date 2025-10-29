@@ -18,13 +18,11 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
 
     private final RefreshTokenRepository refreshTokenRepository;
 
-    private final UsersRepository usersRepository;
     private final JwtService jwtService;
 
 
-    public RefreshTokenServiceImpl(RefreshTokenRepository refreshTokenRepository, UsersRepository usersRepository, JwtService jwtService) {
+    public RefreshTokenServiceImpl(RefreshTokenRepository refreshTokenRepository, JwtService jwtService) {
         this.refreshTokenRepository = refreshTokenRepository;
-        this.usersRepository = usersRepository;
         this.jwtService = jwtService;
     }
 
@@ -40,7 +38,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public LoginResponse generateNewTokenFromRefresh(RefreshTokenRequest refreshTokenRequest) {
         return refreshTokenRepository.findByToken((refreshTokenRequest.getToken()))
                 .map(this::verifyExpiry)
