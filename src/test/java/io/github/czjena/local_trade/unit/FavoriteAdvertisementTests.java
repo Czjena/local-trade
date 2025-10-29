@@ -1,12 +1,12 @@
 package io.github.czjena.local_trade.unit;
 
-import com.fasterxml.jackson.databind.introspect.TypeResolutionContext;
 import io.github.czjena.local_trade.exceptions.UserNotFoundException;
 import io.github.czjena.local_trade.model.Advertisement;
 import io.github.czjena.local_trade.model.Users;
 import io.github.czjena.local_trade.repository.AdvertisementRepository;
 import io.github.czjena.local_trade.repository.UsersRepository;
 import io.github.czjena.local_trade.service.FavoriteAdvertisementService;
+import io.github.czjena.local_trade.service.FavoriteAdvertisementServiceImpl;
 import io.github.czjena.local_trade.testutils.AdUtils;
 import io.github.czjena.local_trade.testutils.UserUtils;
 import jakarta.persistence.EntityNotFoundException;
@@ -32,7 +32,7 @@ public class FavoriteAdvertisementTests {
     @Mock
     AdvertisementRepository advertisementRepository;
     @InjectMocks
-    FavoriteAdvertisementService favoriteAdvertisementService;
+    FavoriteAdvertisementServiceImpl favoriteAdvertisementService;
 
     @Test
     public void whenAddingFavoriteAdvertisement_thenSuccess() {
@@ -111,7 +111,8 @@ public class FavoriteAdvertisementTests {
         UserDetails mockUserDetails = mock(UserDetails.class);
         when(mockUserDetails.getUsername()).thenReturn(user.getEmail());
 
-        assertThrows(UserNotFoundException.class, () -> {favoriteAdvertisementService.deleteFavoriteAdvertisement(mockUserDetails, ad.getAdvertisementId());
+        assertThrows(UserNotFoundException.class, () -> {
+            favoriteAdvertisementService.deleteFavoriteAdvertisement(mockUserDetails, ad.getAdvertisementId());
         });
         verify(advertisementRepository, never()).save(any(Advertisement.class));
     }
@@ -125,7 +126,8 @@ public class FavoriteAdvertisementTests {
         UserDetails mockUserDetails = mock(UserDetails.class);
         when(mockUserDetails.getUsername()).thenReturn(user.getEmail());
 
-        assertThrows(EntityNotFoundException.class, () -> {favoriteAdvertisementService.deleteFavoriteAdvertisement(mockUserDetails, ad.getAdvertisementId());
+        assertThrows(EntityNotFoundException.class, () -> {
+            favoriteAdvertisementService.deleteFavoriteAdvertisement(mockUserDetails, ad.getAdvertisementId());
         });
         verify(advertisementRepository, never()).save(any(Advertisement.class));
     }

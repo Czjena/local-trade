@@ -1,11 +1,9 @@
 package io.github.czjena.local_trade.controller;
 
 import io.github.czjena.local_trade.dto.CategoryDto;
-import io.github.czjena.local_trade.model.Category;
 import io.github.czjena.local_trade.service.CategoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
-import org.apache.commons.lang3.builder.ToStringSummary;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;

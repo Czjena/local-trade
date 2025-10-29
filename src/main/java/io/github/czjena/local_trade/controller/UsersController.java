@@ -2,14 +2,12 @@ package io.github.czjena.local_trade.controller;
 
 import io.github.czjena.local_trade.dto.UpdateUserDto;
 import io.github.czjena.local_trade.dto.UserResponseDto;
-import io.github.czjena.local_trade.mappers.UserMapper;
 import io.github.czjena.local_trade.model.Users;
 import io.github.czjena.local_trade.repository.UsersRepository;
 import io.github.czjena.local_trade.service.UsersService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,13 +17,9 @@ import java.util.List;
 @RequestMapping("/users")
 public class UsersController {
     private final UsersService usersService;
-    private final UsersRepository usersRepository;
-    private final BCryptPasswordEncoder passwordEncoder;
 
-    public UsersController(UsersService usersService, UsersRepository usersRepository, BCryptPasswordEncoder passwordEncoder) {
+    public UsersController(UsersService usersService) {
         this.usersService = usersService;
-        this.usersRepository = usersRepository;
-        this.passwordEncoder = passwordEncoder;
     }
 
     @GetMapping("/me")

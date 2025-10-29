@@ -21,7 +21,7 @@ public class LoginFacade {
     }
 
     public LoginResponse authenticateAndAssignNewRefreshToken(LoginDto loginDto){
-        Users authenticatedUser  =authenticationService.authenticate(loginDto);
+        Users authenticatedUser  = authenticationService.authenticate(loginDto);
         String jwtToken = jwtService.generateToken(authenticatedUser);
         RefreshToken refreshToken = refreshTokenService.createRefreshToken(authenticatedUser);
          return LoginResponse.builder()

@@ -1,13 +1,10 @@
 package io.github.czjena.local_trade.controller;
 
-import io.github.czjena.local_trade.enums.TradeStatus;
-import io.github.czjena.local_trade.model.Trade;
 import io.github.czjena.local_trade.request.TradeInitiationRequestDto;
 import io.github.czjena.local_trade.request.TradeStatusRequestDto;
 import io.github.czjena.local_trade.response.TradeResponseDto;
 import io.github.czjena.local_trade.service.TradeService;
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -28,13 +25,11 @@ public class TradeController {
     @PostMapping()
     public ResponseEntity<TradeResponseDto> tradeInitiation(@AuthenticationPrincipal UserDetails userDetails, @Valid @RequestBody TradeInitiationRequestDto tradeRequestDto) {
      TradeResponseDto tradeResponseDto = tradeService.tradeInitiation(userDetails, tradeRequestDto);
-
      URI  location = ServletUriComponentsBuilder
              .fromCurrentRequest()
              .path("{id}")
              .buildAndExpand(tradeResponseDto.id())
              .toUri();
-
      return ResponseEntity.created(location).body(tradeResponseDto);
     }
 

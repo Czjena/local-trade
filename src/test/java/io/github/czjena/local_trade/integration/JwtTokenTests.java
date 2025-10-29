@@ -3,8 +3,6 @@ package io.github.czjena.local_trade.integration;
 import io.github.czjena.local_trade.controller.AuthenticationController;
 import io.github.czjena.local_trade.dto.LoginDto;
 import io.github.czjena.local_trade.dto.RefreshTokenRequest;
-import io.github.czjena.local_trade.dto.UserResponseDto;
-import io.github.czjena.local_trade.mappers.UserMapper;
 import io.github.czjena.local_trade.model.Users;
 import io.github.czjena.local_trade.repository.RefreshTokenRepository;
 import io.github.czjena.local_trade.repository.UsersRepository;
@@ -20,9 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import resources.AbstractIntegrationTest;

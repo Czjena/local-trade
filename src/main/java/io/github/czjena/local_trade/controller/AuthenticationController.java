@@ -4,13 +4,9 @@ import io.github.czjena.local_trade.dto.LoginDto;
 import io.github.czjena.local_trade.dto.RefreshTokenRequest;
 import io.github.czjena.local_trade.dto.RegisterUsersDto;
 import io.github.czjena.local_trade.facade.LoginFacade;
-import io.github.czjena.local_trade.model.RefreshToken;
-import io.github.czjena.local_trade.model.Users;
 
-import io.github.czjena.local_trade.repository.RefreshTokenRepository;
 import io.github.czjena.local_trade.response.LoginResponse;
 import io.github.czjena.local_trade.service.AuthenticationService;
-import io.github.czjena.local_trade.service.JwtService;
 import io.github.czjena.local_trade.service.RefreshTokenService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
@@ -20,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Optional;
 @RestController
 @RequestMapping("/auth")
 public class AuthenticationController {
