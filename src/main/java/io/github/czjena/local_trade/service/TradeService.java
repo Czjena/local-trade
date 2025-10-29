@@ -13,6 +13,8 @@ import io.github.czjena.local_trade.request.TradeInitiationRequestDto;
 import io.github.czjena.local_trade.response.TradeResponseDto;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -98,7 +100,7 @@ public class TradeService {
     }
 
     @Transactional
-    public void tradeIsCancelled(UserDetails userDetails, Long tradeId) {
+    public TradeResponseDto tradeIsCancelled(UserDetails userDetails, Long tradeId) {
             Users loggedInUser = usersRepository.findByEmail(userDetails.getUsername())
                     .orElseThrow(() -> new UserNotFoundException("User not found"));
             Trade trade =  tradeRepository.findById(tradeId).orElseThrow(() -> new EntityNotFoundException("Trade not found"));
@@ -119,6 +121,14 @@ public class TradeService {
             }
 
             trade.setStatus(TradeStatus.CANCELLED);
-            tradeRepository.save(trade);
+            return tradeResponseDtoMapper.tradeToTradeResponseDto(tradeRepository.save(trade));
+    }
+    @Transactional
+    public TradeResponseDto updateTradeStatus(UserDetails userDetails, Long tradeId, TradeStatus tradeStatus) {
+        return switch (tradeStatus) {
+            case COMPLETED -> this.tradeIsComplete(userDetails, tradeId);
+            case CANCELLED -> this.tradeIsCancelled(userDetails, tradeId);
+            default -> throw new IllegalArgumentException("Trade status not implemented");
+        };
     }
 }
