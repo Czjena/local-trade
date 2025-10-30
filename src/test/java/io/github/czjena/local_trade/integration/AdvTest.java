@@ -9,6 +9,7 @@ import io.github.czjena.local_trade.model.Users;
 import io.github.czjena.local_trade.repository.AdvertisementRepository;
 import io.github.czjena.local_trade.repository.CategoryRepository;
 import io.github.czjena.local_trade.repository.UsersRepository;
+import io.github.czjena.local_trade.request.RequestAdvertisementDto;
 import io.github.czjena.local_trade.response.ResponseAdvertisementDto;
 import io.github.czjena.local_trade.testutils.AdUtils;
 import io.github.czjena.local_trade.testutils.CategoryUtils;
@@ -71,19 +72,17 @@ public class AdvTest extends AbstractIntegrationTest {
                 .build();
         categoryRepository.save(category);
 
-        ResponseAdvertisementDto ad = new ResponseAdvertisementDto(
-                UUID.randomUUID(),
+        RequestAdvertisementDto ad = new RequestAdvertisementDto(
                 category.getId(),
                 new BigDecimal("149.99"),
                 "Audi A4 B6",
                 "audi_a4.jpg",
                 "Well maintained, 1.9 TDI",
                 true,
-                "Warsaw",
-                new ArrayList<>(),
-                new ArrayList<>()
+                "Warsaw"
 
         );
+
 
         String adJson = objectMapper.writeValueAsString(ad);
 
@@ -91,9 +90,7 @@ public class AdvTest extends AbstractIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(adJson))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.title").value("Audi A4 B6"))
-                .andExpect(jsonPath("$.category.name").value("Car"));
-
+                .andExpect(jsonPath("$.title").value("Audi A4 B6"));
 
     }
     @Test
@@ -107,10 +104,11 @@ public class AdvTest extends AbstractIntegrationTest {
         Advertisement ad = AdUtils.createAdvertisementRoleUserForIntegrationTests(category,user);
         advertisementRepository.save(ad);
 
-        mockMvc.perform(get("/advertisements/get/" + ad.getId()))
+        mockMvc.perform(get("/advertisements/get/" + ad.getAdvertisementId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.title").value("title test"))
-                .andExpect(jsonPath("$.category.name").value("test"));
+                .andExpect(jsonPath("$.price").value(ad.getPrice()))
+                .andExpect(jsonPath("$.description").value(ad.getDescription()));
     }
 
     @Test

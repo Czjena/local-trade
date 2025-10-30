@@ -2,11 +2,13 @@ package io.github.czjena.local_trade.controller;
 
 import io.github.czjena.local_trade.dto.AdvertisementUpdateDto;
 import io.github.czjena.local_trade.facade.NewAdvertisementFacade;
+import io.github.czjena.local_trade.mappers.SimpleAdvertisementDtoMapper;
 import io.github.czjena.local_trade.model.Advertisement;
 
 
 import io.github.czjena.local_trade.request.RequestAdvertisementDto;
 import io.github.czjena.local_trade.response.ResponseAdvertisementDto;
+import io.github.czjena.local_trade.response.SimpleAdvertisementResponseDto;
 import io.github.czjena.local_trade.service.AdvertisementService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -20,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 
 
 @RestController
@@ -36,15 +39,15 @@ public class AdvertisementController {
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/add")
-    public ResponseEntity<Advertisement> createAdd(@RequestBody RequestAdvertisementDto ad, @AuthenticationPrincipal UserDetails userDetails) {
-        Advertisement created = advertisementService.addAd(ad,userDetails);
+    public ResponseEntity<SimpleAdvertisementResponseDto> createAdd(@RequestBody RequestAdvertisementDto ad, @AuthenticationPrincipal UserDetails userDetails) {
+        SimpleAdvertisementResponseDto created = advertisementService.addAd(ad,userDetails);
         return ResponseEntity.ok(created);
     }
 
     @GetMapping("/get/{id}")
     @Operation(summary = "Get advertisement by advertisement id")
-    public ResponseEntity<Advertisement> getAdd(@PathVariable Integer id) {
-        Advertisement advertisement = advertisementService.getAdvertisementById(id);
+    public ResponseEntity<ResponseAdvertisementDto> getAdd(@PathVariable UUID id) {
+        ResponseAdvertisementDto advertisement = advertisementService.getAdvertisementById(id);
         return ResponseEntity.ok(advertisement);
     }
 

@@ -10,6 +10,7 @@ import io.github.czjena.local_trade.repository.AdvertisementRepository;
 import io.github.czjena.local_trade.repository.UsersRepository;
 import io.github.czjena.local_trade.request.RequestAdvertisementDto;
 import io.github.czjena.local_trade.response.ResponseAdvertisementDto;
+import io.github.czjena.local_trade.response.SimpleAdvertisementResponseDto;
 import io.github.czjena.local_trade.service.AdvertisementService;
 import io.github.czjena.local_trade.service.S3Service;
 import io.github.czjena.local_trade.testutils.AdUtils;
@@ -63,6 +64,7 @@ public class NewAdvertisementFacadeUnitTests {
         advertisement.setImages(images);
         List<String> imageUrls = advertisement.getImages().stream().map(Image::getUrl).toList();
         List<String> thumbnailUrls = advertisement.getImages().stream().map(Image::getThumbnailUrl).toList();
+        SimpleAdvertisementResponseDto advertisementResponseDto = new SimpleAdvertisementResponseDto(advertisement.getAdvertisementId(),advertisement.getTitle());
         ResponseAdvertisementDto responseAdvertisementDto = new ResponseAdvertisementDto(
                 advertisement.getAdvertisementId(),
                 advertisement.getCategory().getId(),
@@ -85,9 +87,10 @@ public class NewAdvertisementFacadeUnitTests {
 
         when(userDetails.getUsername()).thenReturn(user.getEmail());
         when(usersRepository.findByEmail(userDetails.getUsername())).thenReturn(Optional.of(user));
-        when(advertisementService.addAd(eq(advertisementDto), eq(user))).thenReturn(advertisement);
+        when(advertisementService.addAd(eq(advertisementDto), eq(user))).thenReturn(advertisementResponseDto);
         when(s3Service.uploadFile(any(UUID.class), any(MultipartFile.class))).thenReturn(image);
         when(advertisementDtoMapper.toResponseAdvertisementDto(advertisement)).thenReturn(responseAdvertisementDto);
+        when(advertisementRepository.findByAdvertisementId(advertisement.getAdvertisementId())).thenReturn(Optional.of(advertisement));
 
 
         ResponseAdvertisementDto result = newAdvertisementFacade.addWholeAdvertisement(advertisementDto,multipartFiles,userDetails);

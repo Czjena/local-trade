@@ -1,20 +1,26 @@
 package io.github.czjena.local_trade.service;
 
 import io.github.czjena.local_trade.dto.AdvertisementUpdateDto;
+import io.github.czjena.local_trade.mappers.AdvertisementDtoMapper;
 import io.github.czjena.local_trade.mappers.AdvertisementMapper;
 import io.github.czjena.local_trade.mappers.AdvertisementMapperToAdvertisementUpdateDto;
+import io.github.czjena.local_trade.mappers.SimpleAdvertisementDtoMapper;
 import io.github.czjena.local_trade.model.Advertisement;
 import io.github.czjena.local_trade.model.Users;
 import io.github.czjena.local_trade.repository.AdvertisementRepository;
 import io.github.czjena.local_trade.repository.CategoryRepository;
 import io.github.czjena.local_trade.repository.UsersRepository;
 import io.github.czjena.local_trade.request.RequestAdvertisementDto;
+import io.github.czjena.local_trade.response.ResponseAdvertisementDto;
+import io.github.czjena.local_trade.response.SimpleAdvertisementResponseDto;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.UUID;
 
 
 @Service
@@ -24,17 +30,21 @@ public class AdvertisementServiceImpl implements AdvertisementService {
     private final CategoryRepository categoryRepository;
     private final AdvertisementMapper advertisementMapper;
     private final UsersRepository usersRepository;
+    private final SimpleAdvertisementDtoMapper simpleAdvertisementDtoMapper;
+    private final AdvertisementDtoMapper advertisementDtoMapper;
 
-    public AdvertisementServiceImpl(AdvertisementRepository advertisementRepository, CategoryRepository categoryRepository, AdvertisementMapper advertisementMapper, UsersRepository usersRepository) {
+    public AdvertisementServiceImpl(SimpleAdvertisementDtoMapper simpleAdvertisementDtoMapper, AdvertisementRepository advertisementRepository, CategoryRepository categoryRepository, AdvertisementMapper advertisementMapper, UsersRepository usersRepository, AdvertisementDtoMapper advertisementDtoMapper) {
         this.advertisementRepository = advertisementRepository;
         this.categoryRepository = categoryRepository;
         this.advertisementMapper = advertisementMapper;
         this.usersRepository = usersRepository;
+        this.simpleAdvertisementDtoMapper = simpleAdvertisementDtoMapper;
+        this.advertisementDtoMapper = advertisementDtoMapper;
     }
 
     @Override
     @Transactional
-    public Advertisement addAd(RequestAdvertisementDto dto, UserDetails userDetails) {
+    public SimpleAdvertisementResponseDto addAd(RequestAdvertisementDto dto, UserDetails userDetails) {
         Users user = usersRepository.findByEmail(userDetails.getUsername())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
         Advertisement ad = Advertisement.builder()
@@ -48,14 +58,17 @@ public class AdvertisementServiceImpl implements AdvertisementService {
                 .user(user)
                 .build();
 
-        return advertisementRepository.save(ad);
+         advertisementRepository.save(ad);
+         return simpleAdvertisementDtoMapper.advertisementToSimpleDto(ad);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Advertisement getAdvertisementById(Integer advertisementId) {
-        return advertisementRepository.findById(advertisementId)
+    public ResponseAdvertisementDto getAdvertisementById(UUID advertisementId) {
+        var advertisement  = advertisementRepository.findByAdvertisementId(advertisementId)
                 .orElseThrow(() -> new EntityNotFoundException("Advertisement not found"));
+        return advertisementDtoMapper.toResponseAdvertisementDto(advertisement);
+
     }
 
     @Override
