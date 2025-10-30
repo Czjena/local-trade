@@ -6,9 +6,6 @@ import io.github.czjena.local_trade.model.Category;
 import io.github.czjena.local_trade.model.Users;
 import io.github.czjena.local_trade.request.RequestAdvertisementDto;
 import io.github.czjena.local_trade.response.ResponseAdvertisementDto;
-import io.github.czjena.local_trade.service.AdvertisementService;
-import org.apache.coyote.Response;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;

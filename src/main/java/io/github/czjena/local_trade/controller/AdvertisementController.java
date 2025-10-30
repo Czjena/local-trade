@@ -2,12 +2,9 @@ package io.github.czjena.local_trade.controller;
 
 import io.github.czjena.local_trade.dto.AdvertisementUpdateDto;
 import io.github.czjena.local_trade.facade.NewAdvertisementFacade;
-import io.github.czjena.local_trade.mappers.AdvertisementMapperToAdvertisementUpdateDto;
 import io.github.czjena.local_trade.model.Advertisement;
 
 
-import io.github.czjena.local_trade.model.Users;
-import io.github.czjena.local_trade.repository.UsersRepository;
 import io.github.czjena.local_trade.request.RequestAdvertisementDto;
 import io.github.czjena.local_trade.response.ResponseAdvertisementDto;
 import io.github.czjena.local_trade.service.AdvertisementService;
@@ -18,7 +15,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -60,7 +56,7 @@ public class AdvertisementController {
         return ResponseEntity.ok(updated);
     }
 
-    @PreAuthorize("hasRole('ADMIN')or @advertisementSecurityService.isOwner(authentication,id)")
+    @PreAuthorize("hasRole('ADMIN')or @advertisementSecurityServiceImpl.isOwner(authentication,id)")
     @DeleteMapping("/delete/{id}")
     @Operation(summary = "Delete advertisement by advertisement id and user")
     public ResponseEntity<Void> deleteAdd(@PathVariable Integer id, @AuthenticationPrincipal UserDetails userDetails) {

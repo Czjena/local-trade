@@ -8,6 +8,7 @@ import io.github.czjena.local_trade.model.Users;
 import io.github.czjena.local_trade.repository.ChatMessageRepository;
 import io.github.czjena.local_trade.repository.UsersRepository;
 import io.github.czjena.local_trade.service.ChatMessageService;
+import io.github.czjena.local_trade.service.ChatMessageServiceImpl;
 import io.github.czjena.local_trade.testutils.UserUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -32,7 +33,7 @@ public class ChatMessageUnitTests {
     @Mock
     ChatMessageRepository chatMessageRepository;
     @InjectMocks
-    ChatMessageService chatMessageService;
+    ChatMessageServiceImpl chatMessageService;
     @Mock
     UsersRepository usersRepository;
 

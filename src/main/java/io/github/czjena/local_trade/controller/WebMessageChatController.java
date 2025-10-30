@@ -10,12 +10,9 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 
-import javax.management.relation.Role;
 import java.security.Principal;
 
 
@@ -24,7 +21,7 @@ public class WebMessageChatController {
     private final ChatMessageService chatMessageService;
     private final SimpMessagingTemplate simpMessagingTemplate;
 
-    public WebMessageChatController(ChatMessageService chatMessageService,SimpMessagingTemplate simpMessagingTemplate) {
+    public WebMessageChatController(ChatMessageService chatMessageService, SimpMessagingTemplate simpMessagingTemplate) {
         this.chatMessageService = chatMessageService;
         this.simpMessagingTemplate = simpMessagingTemplate;
     }

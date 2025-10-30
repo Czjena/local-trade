@@ -7,6 +7,7 @@ import io.github.czjena.local_trade.model.Category;
 import io.github.czjena.local_trade.repository.AdvertisementRepository;
 import io.github.czjena.local_trade.repository.CategoryRepository;
 import io.github.czjena.local_trade.service.CategoryService;
+import io.github.czjena.local_trade.service.CategoryServiceImpl;
 import io.github.czjena.local_trade.testutils.AdUtils;
 import io.github.czjena.local_trade.testutils.CategoryUtils;
 import jakarta.persistence.EntityNotFoundException;
@@ -29,7 +30,7 @@ import static org.mockito.Mockito.*;
 public class CategoryTests {
 
     @InjectMocks
-    private CategoryService categoryService;
+    private CategoryServiceImpl categoryService;
     @Mock
     private AdvertisementRepository advertisementRepository;
     @Mock
@@ -219,7 +220,8 @@ public class CategoryTests {
 
         when(categoryRepository.findById(categoryId)).thenReturn(Optional.empty());
 
-        Assertions.assertThrows(EntityNotFoundException.class, () -> {categoryService.changeCategory(categoryId, dto);});
+        Assertions.assertThrows(EntityNotFoundException.class, () -> {
+            categoryService.changeCategory(categoryId, dto);});
         verify(categoryRepository ,never()).save(any(Category.class));
     }
 
@@ -237,7 +239,8 @@ public class CategoryTests {
     public void deleteCategoryWithInvalidId_thenCategoryIsNotDeleted() {
         Integer categoryId = 9999;
         when(categoryRepository.existsById(categoryId)).thenReturn(false);
-        Assertions.assertThrows(EntityNotFoundException.class, () -> {categoryService.deleteCategory(categoryId);});
+        Assertions.assertThrows(EntityNotFoundException.class, () -> {
+            categoryService.deleteCategory(categoryId);});
         verify(advertisementRepository, never()).countByCategoryId(categoryId);
         verify(categoryRepository, never()).deleteById(anyInt());
     }
@@ -248,7 +251,8 @@ public class CategoryTests {
         when(categoryRepository.existsById(categoryId)).thenReturn(true);
         when(advertisementRepository.countByCategoryId(categoryId)).thenReturn(5L);
 
-        Assertions.assertThrows(EntityNotFoundException.class, () -> {categoryService.deleteCategory(categoryId);});
+        Assertions.assertThrows(EntityNotFoundException.class, () -> {
+            categoryService.deleteCategory(categoryId);});
 
         verify(categoryRepository, never()).deleteById(anyInt());
     }

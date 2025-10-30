@@ -7,10 +7,10 @@ import io.github.czjena.local_trade.model.Category;
 import io.github.czjena.local_trade.repository.AdvertisementRepository;
 import io.github.czjena.local_trade.response.ResponseAdvertisementDto;
 import io.github.czjena.local_trade.service.AdvertisementFilterService;
+import io.github.czjena.local_trade.service.AdvertisementFilterServiceImpl;
 import io.github.czjena.local_trade.testutils.AdFiltersUtils;
 import io.github.czjena.local_trade.testutils.AdUtils;
 import io.github.czjena.local_trade.testutils.CategoryUtils;
-import org.apache.coyote.Response;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatchers;
@@ -28,9 +28,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.IntStream;
 
-import static javax.management.Query.eq;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
@@ -40,7 +38,7 @@ public class AdsFilterUnitTests {
     @Mock
     private AdvertisementRepository advertisementRepository;
     @InjectMocks
-    private AdvertisementFilterService advertisementFilterService;
+    private AdvertisementFilterServiceImpl advertisementFilterService;
     @Mock
     private AdvertisementDtoMapper advertisementDtoMapper;
 

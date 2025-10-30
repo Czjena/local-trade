@@ -3,13 +3,11 @@ package io.github.czjena.local_trade.service;
 import io.github.czjena.local_trade.model.Users;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.security.Keys;
 
 import java.util.Date;
 
-public class TestJwtUtils {
-
-    public static String expiredToken(JwtService jwtService, Users user) {
+public interface TestJwtUtils {
+    static String expiredToken(JwtService jwtService, Users user) {
         Date expiredDate = new Date(System.currentTimeMillis() - 10_000); // 10s temu
 
         return Jwts
@@ -21,7 +19,7 @@ public class TestJwtUtils {
                 .compact();
     }
 
-    public static String generateTokenWithCustomExpiration(JwtService jwtService,Users user) {
+    static String generateTokenWithCustomExpiration(JwtService jwtService, Users user) {
         return Jwts.builder()
                 .setSubject(user.getUsername())
                 .setIssuedAt(new Date())  // <- NOWY czas wydania
@@ -30,7 +28,7 @@ public class TestJwtUtils {
                 .compact();
     }
 
-    public static String generateToken(JwtService jwtService,Users user) {
+    static String generateToken(JwtService jwtService, Users user) {
         return Jwts.builder()
                 .setSubject(user.getUsername())
                 .setIssuedAt(new Date())
@@ -38,5 +36,4 @@ public class TestJwtUtils {
                 .signWith(jwtService.getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
-
 }

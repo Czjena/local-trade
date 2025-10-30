@@ -14,9 +14,11 @@ import io.github.czjena.local_trade.response.SimpleAdvertisementResponseDto;
 import io.github.czjena.local_trade.response.SimpleUserResponseDto;
 import io.github.czjena.local_trade.response.TradeResponseDto;
 import io.github.czjena.local_trade.service.TradeService;
+import io.github.czjena.local_trade.service.TradeServiceImpl;
 import io.github.czjena.local_trade.testutils.AdUtils;
 import io.github.czjena.local_trade.testutils.UserUtils;
 import jakarta.persistence.EntityNotFoundException;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -34,9 +36,9 @@ import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.any;
 
 @ExtendWith(MockitoExtension.class)
-public class TradeServiceUnitTests {
+public class TradeServiceImplUnitTests {
     @InjectMocks
-    TradeService tradeService;
+    TradeServiceImpl tradeService;
     @Mock
     TradeRepository tradeRepository;
     @Mock
@@ -85,6 +87,11 @@ public class TradeServiceUnitTests {
         tradeResponseDto = new TradeResponseDto(
                 newTrade.getId(),newTrade.getStatus(),newTrade.getProposedPrice(),newTrade.getCreatedAt(), newTrade.isBuyerMarkedCompleted(),
                 newTrade.isSellerMarkedCompleted(), buyerSimpleUserResponseDto, sellerSimpleUserResponseDto, simpleAdvertisementResponseDto);
+    }
+
+    @AfterEach
+    public void tearDown() {
+        reset(tradeRepository, tradeResponseDtoMapper);
     }
 
 
@@ -265,5 +272,7 @@ public class TradeServiceUnitTests {
         tradeService.tradeIsComplete(mockUserDetails, 2L);
         Assertions.assertEquals(TradeStatus.PROPOSED,newTrade.getStatus());
     }
+
+
 
 }

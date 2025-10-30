@@ -10,7 +10,6 @@ import io.github.czjena.local_trade.request.RequestAdvertisementDto;
 import io.github.czjena.local_trade.response.ResponseAdvertisementDto;
 import io.github.czjena.local_trade.service.AdvertisementService;
 import io.github.czjena.local_trade.service.S3Service;
-import io.github.czjena.local_trade.service.UsersService;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,14 +22,12 @@ import java.util.List;
 public class NewAdvertisementFacade {
     private final AdvertisementService advertisementService;
     private final S3Service s3Service;
-    private final UsersService usersService;
     private final UsersRepository usersRepository;
     private final AdvertisementDtoMapper advertisementDtoMapper;
 
-    public NewAdvertisementFacade(AdvertisementService advertisementService, S3Service s3Service, UsersService usersService, UsersRepository usersRepository, AdvertisementDtoMapper advertisementDtoMapper) {
+    public NewAdvertisementFacade(AdvertisementService advertisementService, S3Service s3Service, UsersRepository usersRepository, AdvertisementDtoMapper advertisementDtoMapper) {
         this.advertisementService = advertisementService;
         this.s3Service = s3Service;
-        this.usersService = usersService;
         this.usersRepository = usersRepository;
         this.advertisementDtoMapper = advertisementDtoMapper;
     }
