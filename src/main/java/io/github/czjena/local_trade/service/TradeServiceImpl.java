@@ -86,9 +86,9 @@ public class TradeServiceImpl implements TradeService {
 
         if (isBuyer) {
             trade.setBuyerMarkedCompleted(true);
-        } else
+        } else {
             trade.setSellerMarkedCompleted(true);
-
+        }
         if (trade.isBuyerMarkedCompleted() && trade.isSellerMarkedCompleted()) {
             if (LocalDateTime.now().isAfter(trade.getCreatedAt().plusHours(1))) {
             trade.setStatus(TradeStatus.COMPLETED);

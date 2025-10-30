@@ -2,6 +2,7 @@ package io.github.czjena.local_trade.model;
 
 import io.github.czjena.local_trade.enums.TradeStatus;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -43,8 +44,8 @@ public class Trade {
     @LastModifiedDate
     @Column(nullable = false)
     private LocalDateTime updatedAt;
-    
-    @Size(min = 1, max = 9999999)
+
+    @Digits(integer = 5, fraction = 2)
     private BigDecimal proposedPrice;
 
     private boolean sellerLeftReview;
