@@ -6,6 +6,8 @@ import io.github.czjena.local_trade.response.TradeResponseDto;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 public interface TradeService {
     @Transactional
     TradeResponseDto tradeInitiation(UserDetails userDetails, TradeInitiationRequestDto tradeInitiationRequestDto);
@@ -18,4 +20,7 @@ public interface TradeService {
 
     @Transactional
     TradeResponseDto updateTradeStatus(UserDetails userDetails, Long tradeId, TradeStatus tradeStatus);
+
+    @Transactional(readOnly = true)
+    List<TradeResponseDto> getAllMyTrades(UserDetails userDetails);
 }
