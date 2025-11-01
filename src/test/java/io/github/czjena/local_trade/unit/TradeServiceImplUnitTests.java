@@ -86,7 +86,7 @@ public class TradeServiceImplUnitTests {
                 .sellerLeftReview(false)
                 .buyerLeftReview(false)
                 .build();
-        tradeResponseDto = new TradeResponseDto(
+        tradeResponseDto = new TradeResponseDto(newTrade.getTradeId(),
                 newTrade.getId(),newTrade.getStatus(),newTrade.getProposedPrice(),newTrade.getCreatedAt(), newTrade.isBuyerMarkedCompleted(),
                 newTrade.isSellerMarkedCompleted(), buyerSimpleUserResponseDto, sellerSimpleUserResponseDto, simpleAdvertisementResponseDto);
 
@@ -131,6 +131,7 @@ public class TradeServiceImplUnitTests {
         when(tradeResponseDtoMapper.tradeToTradeResponseDto(any())).thenAnswer(invocation -> {
             Trade t = invocation.getArgument(0);
             return new TradeResponseDto(
+                    t.getTradeId(),
                     t.getId(),
                     t.getStatus(),
                     t.getProposedPrice(),

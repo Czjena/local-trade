@@ -8,7 +8,10 @@ import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.UUID;
+
 public class TradeResponseDtoUtils {
+    UUID reviewId = UUID.randomUUID();
     Long id = 3L;
     TradeStatus status = TradeStatus.PROPOSED;
     BigDecimal proposedPrice = BigDecimal.valueOf(2);
@@ -67,7 +70,7 @@ public class TradeResponseDtoUtils {
 }
 
 public TradeResponseDto build(){
-        return new TradeResponseDto(id,status,proposedPrice,createdAt,buyerMarkedCompleted,sellerMarkedCompleted,buyerSimpleDto,sellerSimpleDto,simpleAdvertisementResponseDto);
+        return new TradeResponseDto(reviewId, id,status,proposedPrice,createdAt,buyerMarkedCompleted,sellerMarkedCompleted,buyerSimpleDto,sellerSimpleDto,simpleAdvertisementResponseDto);
 }
     }
 

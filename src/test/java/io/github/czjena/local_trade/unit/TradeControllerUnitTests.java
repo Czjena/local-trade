@@ -68,7 +68,7 @@ public class TradeControllerUnitTests {
     @WithMockUser("buyer@test.com")
     public void tradeInitiation_thenTradeIsInitiated_returnsTradeResponse() throws Exception {
         TradeInitiationRequestDto mockRequest = new TradeInitiationRequestDto(BigDecimal.valueOf(2),mockAdvertisement.getAdvertisementId());
-        TradeResponseDto mockResponse = new TradeResponseDto(1L,
+        TradeResponseDto mockResponse = new TradeResponseDto(UUID.randomUUID(),1L,
                 TradeStatus.PROPOSED,
                 BigDecimal.valueOf(2),
                 LocalDateTime.now(),
@@ -122,7 +122,7 @@ public class TradeControllerUnitTests {
     public void updateTradeStatusToCompleted_thenTradeStatusIsUpdated() throws Exception {
         TradeStatusRequestDto tradeStatusRequestDto = new TradeStatusRequestDto(TradeStatus.COMPLETED);
 
-        TradeResponseDto mockResponse = new TradeResponseDto(1L,
+        TradeResponseDto mockResponse = new TradeResponseDto(UUID.randomUUID(),1L,
                 TradeStatus.COMPLETED,
                 BigDecimal.valueOf(2),
                 LocalDateTime.now(),
@@ -154,7 +154,7 @@ public class TradeControllerUnitTests {
     public void updateTradeStatusToCancelled_thenTradeStatusIsUpdated() throws Exception {
         TradeStatusRequestDto tradeStatusRequestDto = new TradeStatusRequestDto(TradeStatus.CANCELLED);
 
-        TradeResponseDto mockResponse = new TradeResponseDto(1L,
+        TradeResponseDto mockResponse = new TradeResponseDto(UUID.randomUUID(),1L,
                 TradeStatus.CANCELLED,
                 BigDecimal.valueOf(2),
                 LocalDateTime.now(),

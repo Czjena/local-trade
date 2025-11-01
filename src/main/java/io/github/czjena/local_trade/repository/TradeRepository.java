@@ -12,9 +12,13 @@ import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 public interface TradeRepository extends JpaRepository<Trade, Long> {
     boolean existsByAdvertisementAndBuyer(Advertisement advertisement, Users buyer);
 
     List<Trade> findAllByBuyerOrSeller(Users user, Users userAgain);
+    Optional<Trade> findByBuyerAndSeller(Users user, Users userAgain);
+
+    Optional<Trade> findByTradeId(UUID tradeId);
 }

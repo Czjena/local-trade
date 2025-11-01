@@ -6,10 +6,13 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
+import java.util.UUID;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@Builder
 public class Review {
 
     @Id
@@ -27,6 +30,8 @@ public class Review {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reviewed_user_id", nullable = false)
     private Users reviewedUser;
+
+    private UUID reviewId =  UUID.randomUUID();
 
     @Min(1)
     @Max(5)
