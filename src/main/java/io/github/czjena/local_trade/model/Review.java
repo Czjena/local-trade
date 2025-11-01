@@ -35,7 +35,7 @@ public class Review {
 
     @Min(1)
     @Max(5)
-    private int rating;
+    private Integer rating;
     @Size(max = 500)
     private String comment;
 }
