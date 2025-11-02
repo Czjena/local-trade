@@ -23,6 +23,25 @@ public class UserUtils {
         user.setFavoritedAdvertisements(new HashSet<>());
         return user;
     }
+    public static Users createUserRoleUserBuyer() {
+        Users user = new Users();
+        user.setName("buyer");
+        user.setEmail("buyer@test.com");
+        user.setPassword("password");
+        user.setRole("ROLE_USER");
+        user.setFavoritedAdvertisements(new HashSet<>());
+        return user;
+    }
+    public static Users createUserRoleUserSeller() {
+        Users user = new Users();
+        user.setName("seller");
+        user.setEmail("seller@test.com");
+        user.setPassword("password");
+        user.setRole("ROLE_USER");
+        user.setFavoritedAdvertisements(new HashSet<>());
+        return user;
+    }
+
 
     public static Users createUserRoleAdmin() {
         Users user = new Users();

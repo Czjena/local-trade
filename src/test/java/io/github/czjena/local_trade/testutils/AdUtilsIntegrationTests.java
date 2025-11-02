@@ -38,4 +38,18 @@ public class AdUtilsIntegrationTests {
                 .favoritedByUsers(new HashSet<>())
                 .build());
     }
+
+    public  Advertisement createIntegrationAd(Users user,Category category) {
+        return advertisementRepository.save(Advertisement.builder()
+                .title("test")
+                .description("test")
+                .price(BigDecimal.TEN)
+                .active(true)
+                .location("test")
+                .user(user)
+                .category(category)
+                .advertisementId(UUID.randomUUID())
+                .favoritedByUsers(new HashSet<>())
+                .build());
+    }
 }

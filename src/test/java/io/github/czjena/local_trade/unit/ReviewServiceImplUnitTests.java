@@ -1,6 +1,9 @@
 package io.github.czjena.local_trade.unit;
 
 import io.github.czjena.local_trade.enums.TradeStatus;
+import io.github.czjena.local_trade.exceptions.ConflictException;
+import io.github.czjena.local_trade.exceptions.TradeAccessDenied;
+import io.github.czjena.local_trade.exceptions.TradeReviewedConflictException;
 import io.github.czjena.local_trade.exceptions.UserNotFoundException;
 import io.github.czjena.local_trade.mappers.ReviewResponseDtoMapper;
 import io.github.czjena.local_trade.model.Review;
@@ -207,7 +210,7 @@ public class ReviewServiceImplUnitTests {
         when(usersRepository.findByEmail(userDetails.getUsername())).thenReturn(Optional.of(reviewedUser));
         when(tradeRepository.findByTradeId(trade.getTradeId())).thenReturn(Optional.of(trade));
 
-        Assertions.assertThrows(SecurityException.class, () -> reviewService.postReview(userDetails, trade.getTradeId(), reviewRequestDto));
+        Assertions.assertThrows(TradeAccessDenied.class, () -> reviewService.postReview(userDetails, trade.getTradeId(), reviewRequestDto));
 
         verify(reviewRepository, never()).save(any(Review.class));
         verify(tradeRepository, never()).save(any(Trade.class));
@@ -223,7 +226,7 @@ public class ReviewServiceImplUnitTests {
         when(usersRepository.findByEmail(userDetails.getUsername())).thenReturn(Optional.of(reviewedUser));
         when(tradeRepository.findByTradeId(trade.getTradeId())).thenReturn(Optional.of(trade));
 
-        Assertions.assertThrows(SecurityException.class, () -> reviewService.postReview(userDetails, trade.getTradeId(), reviewRequestDto));
+        Assertions.assertThrows(ConflictException.class, () -> reviewService.postReview(userDetails, trade.getTradeId(), reviewRequestDto));
 
         verify(reviewRepository, never()).save(any(Review.class));
         verify(tradeRepository, never()).save(any(Trade.class));
@@ -241,7 +244,7 @@ public class ReviewServiceImplUnitTests {
         when(tradeRepository.findByTradeId(trade.getTradeId())).thenReturn(Optional.of(trade));
         when(reviewRepository.existsByTradeAndReviewer(trade, reviewedUser)).thenReturn(Boolean.TRUE);
 
-        Assertions.assertThrows(IllegalStateException.class, () -> reviewService.postReview(userDetails, trade.getTradeId(), reviewRequestDto));
+        Assertions.assertThrows(TradeReviewedConflictException.class, () -> reviewService.postReview(userDetails, trade.getTradeId(), reviewRequestDto));
 
         verify(reviewRepository, never()).save(any(Review.class));
         verify(tradeRepository, never()).save(any(Trade.class));

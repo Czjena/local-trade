@@ -5,6 +5,7 @@ import com.jayway.jsonpath.JsonPath;
 import io.github.czjena.local_trade.controller.ReviewController;
 import io.github.czjena.local_trade.model.Review;
 import io.github.czjena.local_trade.model.Trade;
+import io.github.czjena.local_trade.repository.ReviewRepository;
 import io.github.czjena.local_trade.request.ReviewRequestDto;
 import io.github.czjena.local_trade.response.ReviewResponseDto;
 import io.github.czjena.local_trade.service.JwtService;
@@ -13,11 +14,13 @@ import io.github.czjena.local_trade.service.TradeService;
 import lombok.With;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.MediaType;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -31,14 +34,12 @@ import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
+@EnableMethodSecurity
 @WebMvcTest(controllers = ReviewController.class)
 public class ReviewControllerUnitTests {
     @Autowired
@@ -51,6 +52,8 @@ public class ReviewControllerUnitTests {
     JwtService jwtService;
     @MockitoBean
     JpaMetamodelMappingContext jpaMetamodelMappingContext;
+    @Mock
+    ReviewRepository reviewRepository;
 
     private ReviewResponseDto reviewResponseDto;
     private List<ReviewResponseDto> reviewResponseDtoList;
@@ -142,6 +145,41 @@ public class ReviewControllerUnitTests {
                         .contentType(MediaType.APPLICATION_JSON)
                         .with(csrf()))
                 .andExpect(status().isUnauthorized());
+
+    }
+    @Test
+    @WithMockUser(value = "test@test.com" ,roles = "ADMIN")
+    public void deleteReview_thenReviewIsDeleted() throws Exception {
+        var review = new Review();
+        review.setReviewId(reviewResponseDto.reviewId());
+
+        doNothing().when(reviewService).deleteReviewByAdmin(any(UserDetails.class),eq(review.getReviewId()));
+
+        mockMvc.perform(delete("/reviews/"+ review.getReviewId())
+                .with(csrf()))
+                .andExpect(status().isNoContent());
+
+    }
+    @Test
+    @WithMockUser(value = "test@test.com" ,roles = "USER")
+    public void deleteReviewWithRoleUser_thenReviewIsNotDeleted_throwsForbidden() throws Exception {
+        var review = new Review();
+        review.setReviewId(reviewResponseDto.reviewId());
+
+        doNothing().when(reviewService).deleteReviewByAdmin(any(UserDetails.class),eq(review.getReviewId()));
+
+        mockMvc.perform(delete("/reviews/"+ review.getReviewId())
+                        .with(csrf()))
+                .andExpect(status().isForbidden());
+
+    }
+    @Test
+    @WithMockUser(value = "test@test.com" ,roles = "ADMIN")
+    public void deleteReviewWithRoleAdminBadRequest_thenReviewIsNotDeleted_throwsBadRequest() throws Exception {
+        String invalidUUID = "this-is-not-a-uuid";
+        mockMvc.perform(delete("/reviews/"+ invalidUUID)
+                .with(csrf()))
+                .andExpect(status().isBadRequest());
 
     }
 

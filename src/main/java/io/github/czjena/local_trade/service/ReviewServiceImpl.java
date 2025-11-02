@@ -1,6 +1,9 @@
 package io.github.czjena.local_trade.service;
 
 import io.github.czjena.local_trade.enums.TradeStatus;
+import io.github.czjena.local_trade.exceptions.ConflictException;
+import io.github.czjena.local_trade.exceptions.TradeAccessDenied;
+import io.github.czjena.local_trade.exceptions.TradeReviewedConflictException;
 import io.github.czjena.local_trade.exceptions.UserNotFoundException;
 import io.github.czjena.local_trade.mappers.ReviewResponseDtoMapper;
 import io.github.czjena.local_trade.model.Review;
@@ -75,15 +78,15 @@ public class ReviewServiceImpl implements ReviewService {
 
         if(!loggedInUser.equals(buyer)&&!loggedInUser.equals(seller)) {
             log.warn("Logged in user is not a part of this trade and can't post this review");
-            throw new SecurityException("Logged in user is not a part of this trade and not able to post this review" + userDetails.getUsername());
+            throw new TradeAccessDenied("Logged in user is not a part of this trade and not able to post this review" + userDetails.getUsername());
         }
         if(!completedTrade.getStatus().equals(TradeStatus.COMPLETED)) {
             log.warn("Trade {} is not in completed status", completedTrade.getId());
-            throw new SecurityException("Trade " + completedTrade.getId() + " is not in completed status");
+            throw new ConflictException("Trade " + completedTrade.getId() + " is not in completed status");
         }
         if (reviewRepository.existsByTradeAndReviewer(completedTrade, loggedInUser)) {
             log.warn("User {} has already reviewed this trade {}", loggedInUser.getUsername(), tradeId);
-            throw new IllegalStateException("You have already reviewed this trade");
+            throw new TradeReviewedConflictException("You have already reviewed this trade");
         }
 
         Users reviewedUser = loggedInUser.equals(buyer) ? seller : buyer;

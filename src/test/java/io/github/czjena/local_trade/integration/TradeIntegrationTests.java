@@ -17,9 +17,7 @@ import io.github.czjena.local_trade.service.JwtService;
 import io.github.czjena.local_trade.testutils.AdUtils;
 import io.github.czjena.local_trade.testutils.CategoryUtils;
 import io.github.czjena.local_trade.testutils.UserUtils;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -173,9 +171,11 @@ public class TradeIntegrationTests extends AbstractIntegrationTest {
                     throw new Exception("Invalid HTTP method");
         }
         resultActions.andExpect(status().is(statusCode));
+
     }
 
     @Test
+    @Transactional
     @WithMockUser("test@test.com")
     public void tradeIsInitiatedWithBadData_thenReturnsBadRequest() throws Exception {
         var tradeInitiationRequest = new TradeInitiationRequestDto(null,null);
@@ -189,6 +189,7 @@ public class TradeIntegrationTests extends AbstractIntegrationTest {
                 .andExpect(status().isBadRequest());
     }
     @Test
+    @Transactional
     public void tradeIsInitiatedUserNotLoggedIn_thenReturnsForbidden() throws Exception {
 
         mockMvc.perform(post("/trades")
@@ -197,12 +198,14 @@ public class TradeIntegrationTests extends AbstractIntegrationTest {
     }
 
     @Test
+    @Transactional
     public void tradeCompletedOrCancelledUserNotLogged_thenReturnsForbidden() throws Exception {
         mockMvc.perform(patch("/trades/1")
                 .with(csrf()))
                 .andExpect(status().isForbidden());
     }
     @Test
+    @Transactional
     @WithMockUser("test@test.com")
     public void tradeCompletedOrCancelledWithBadData_thenReturnsBadRequest() throws Exception {
         var mockTrade =  Trade.builder()

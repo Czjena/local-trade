@@ -1,7 +1,7 @@
 package io.github.czjena.local_trade.exceptions;
 
-public class UserNotFoundException extends RuntimeException {
+public class UserNotFoundException extends ResourceNotFoundException {
     public UserNotFoundException(String message) {
-        super("User Not Found:" + message);
+        super(message);
     }
 }
