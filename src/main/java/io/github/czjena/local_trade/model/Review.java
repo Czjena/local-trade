@@ -6,10 +6,13 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
+import java.util.UUID;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@Builder
 public class Review {
 
     @Id
@@ -28,9 +31,9 @@ public class Review {
     @JoinColumn(name = "reviewed_user_id", nullable = false)
     private Users reviewedUser;
 
-    @Min(1)
-    @Max(5)
-    private int rating;
+    private UUID reviewId =  UUID.randomUUID();
+
+    private Integer rating;
     @Size(max = 500)
     private String comment;
 }

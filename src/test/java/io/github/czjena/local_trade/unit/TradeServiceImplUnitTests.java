@@ -30,6 +30,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.Mockito.*;
@@ -84,9 +86,11 @@ public class TradeServiceImplUnitTests {
                 .sellerLeftReview(false)
                 .buyerLeftReview(false)
                 .build();
-        tradeResponseDto = new TradeResponseDto(
+        tradeResponseDto = new TradeResponseDto(newTrade.getTradeId(),
                 newTrade.getId(),newTrade.getStatus(),newTrade.getProposedPrice(),newTrade.getCreatedAt(), newTrade.isBuyerMarkedCompleted(),
                 newTrade.isSellerMarkedCompleted(), buyerSimpleUserResponseDto, sellerSimpleUserResponseDto, simpleAdvertisementResponseDto);
+
+
     }
 
     @AfterEach
@@ -127,6 +131,7 @@ public class TradeServiceImplUnitTests {
         when(tradeResponseDtoMapper.tradeToTradeResponseDto(any())).thenAnswer(invocation -> {
             Trade t = invocation.getArgument(0);
             return new TradeResponseDto(
+                    t.getTradeId(),
                     t.getId(),
                     t.getStatus(),
                     t.getProposedPrice(),
@@ -272,7 +277,44 @@ public class TradeServiceImplUnitTests {
         tradeService.tradeIsComplete(mockUserDetails, 2L);
         Assertions.assertEquals(TradeStatus.PROPOSED,newTrade.getStatus());
     }
+    @Test
+    public void getAllMyTrades_returnsAllTradesIntoAList() {
+        List<Trade> trades = new ArrayList<>();
+        for(int i = 0; i < 10; i++) {
+            trades.add(newTrade);
+        }
+
+        when(mockUserDetails.getUsername()).thenReturn(buyer.getUsername());
+        when(usersRepository.findByEmail(any())).thenReturn(Optional.of(buyer));
+        when(tradeRepository.findAllByBuyerOrSeller(any(Users.class),any(Users.class))).thenReturn(trades);
+        when(tradeResponseDtoMapper.tradeToTradeResponseDto(any(Trade.class)))
+                .thenReturn(tradeResponseDto);
 
 
+        List<TradeResponseDto> result = tradeService.getAllMyTrades(mockUserDetails);
+
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(trades.size(), result.size());
+        Assertions.assertEquals(trades.get(0).getId(), result.get(0).id());
+    }
+    @Test
+    public void getAllMyTradesWithNoUsers_throwsUserNotFoundException() {
+        when(usersRepository.findByEmail(any())).thenReturn(Optional.empty());
+        Assertions.assertThrows(UserNotFoundException.class, () -> tradeService.getAllMyTrades(mockUserDetails));
+        verify(tradeRepository, never()).save(any(Trade.class));
+    }
+    @Test
+    public void getAllMyTrades_returnsEmptyList() {
+        List<Trade> trades = new ArrayList<>();
+
+        when(mockUserDetails.getUsername()).thenReturn(buyer.getUsername());
+        when(usersRepository.findByEmail(any())).thenReturn(Optional.of(buyer));
+        when(tradeRepository.findAllByBuyerOrSeller(any(Users.class),any(Users.class))).thenReturn(trades);
+
+        List<TradeResponseDto> result = tradeService.getAllMyTrades(mockUserDetails);
+
+        Assertions.assertNotNull(result);
+        verify(tradeResponseDtoMapper, never()).tradeToTradeResponseDto(any(Trade.class));
+    }
 
 }

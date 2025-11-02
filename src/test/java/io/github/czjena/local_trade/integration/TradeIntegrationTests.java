@@ -1,5 +1,6 @@
 package io.github.czjena.local_trade.integration;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.czjena.local_trade.enums.TradeStatus;
 import io.github.czjena.local_trade.model.Advertisement;
@@ -16,12 +17,11 @@ import io.github.czjena.local_trade.service.JwtService;
 import io.github.czjena.local_trade.testutils.AdUtils;
 import io.github.czjena.local_trade.testutils.CategoryUtils;
 import io.github.czjena.local_trade.testutils.UserUtils;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.LazyInitializationExcludeFilter;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -171,7 +171,67 @@ public class TradeIntegrationTests extends AbstractIntegrationTest {
                     throw new Exception("Invalid HTTP method");
         }
         resultActions.andExpect(status().is(statusCode));
+
     }
 
+    @Test
+    @Transactional
+    @WithMockUser("test@test.com")
+    public void tradeIsInitiatedWithBadData_thenReturnsBadRequest() throws Exception {
+        var tradeInitiationRequest = new TradeInitiationRequestDto(null,null);
+
+        String content = objectMapper.writeValueAsString(tradeInitiationRequest);
+
+        mockMvc.perform(post("/trades")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(content)
+                        .with(csrf()))
+                .andExpect(status().isBadRequest());
+    }
+    @Test
+    @Transactional
+    public void tradeIsInitiatedUserNotLoggedIn_thenReturnsForbidden() throws Exception {
+
+        mockMvc.perform(post("/trades")
+                        .with(csrf()))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @Transactional
+    public void tradeCompletedOrCancelledUserNotLogged_thenReturnsForbidden() throws Exception {
+        mockMvc.perform(patch("/trades/1")
+                .with(csrf()))
+                .andExpect(status().isForbidden());
+    }
+    @Test
+    @Transactional
+    @WithMockUser("test@test.com")
+    public void tradeCompletedOrCancelledWithBadData_thenReturnsBadRequest() throws Exception {
+        var mockTrade =  Trade.builder()
+                .advertisement(sellerAdvertisement)
+                .buyerLeftReview(false)
+                .status(TradeStatus.PROPOSED)
+                .createdAt(LocalDateTime.now().minusDays(1))
+                .proposedPrice(BigDecimal.valueOf(2))
+                .sellerMarkedCompleted(true)
+                .buyerMarkedCompleted(false)
+                .buyer(buyer)
+                .seller(seller)
+                .build();
+
+        tradeRepository.save(mockTrade);
+
+        var tradeStatusRequestDto = new TradeStatusRequestDto(null);
+
+        var content = objectMapper.writeValueAsString(tradeStatusRequestDto);
+
+        mockMvc.perform(patch("/trades/"+mockTrade.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(content)
+                        .with(csrf()))
+                .andExpect(status().isBadRequest());
+
+    }
 
 }

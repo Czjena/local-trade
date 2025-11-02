@@ -18,6 +18,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -131,5 +133,17 @@ public class TradeServiceImpl implements TradeService {
             case CANCELLED -> this.tradeIsCancelled(userDetails, tradeId);
             default -> throw new IllegalArgumentException("Trade status not implemented");
         };
+    }
+    @Transactional(readOnly = true)
+    @Override
+    public List<TradeResponseDto> getAllMyTrades(UserDetails userDetails){
+        Users user = usersRepository.findByEmail(userDetails.getUsername())
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+        List<Trade> trades = tradeRepository.findAllByBuyerOrSeller(user,user);
+
+       return  trades.stream()
+                .map(tradeResponseDtoMapper::tradeToTradeResponseDto)
+                .toList();
+
     }
 }

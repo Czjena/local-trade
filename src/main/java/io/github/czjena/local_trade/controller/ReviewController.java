@@ -1,0 +1,44 @@
+package io.github.czjena.local_trade.controller;
+
+import io.github.czjena.local_trade.request.ReviewRequestDto;
+import io.github.czjena.local_trade.response.ReviewResponseDto;
+import io.github.czjena.local_trade.service.ReviewService;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.UUID;
+
+@RestController
+@RequestMapping("/reviews")
+public class ReviewController {
+    private final ReviewService reviewService;
+
+    public ReviewController(ReviewService reviewService) {
+        this.reviewService = reviewService;
+    }
+
+    @GetMapping
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<List<ReviewResponseDto>> getMyReviews(@AuthenticationPrincipal UserDetails userDetails) {
+        return ResponseEntity.ok(reviewService.getAllMyReviews(userDetails));
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("/{tradeId}")
+    public ResponseEntity<ReviewResponseDto> postReview(@AuthenticationPrincipal UserDetails userDetails, @PathVariable UUID tradeId,@RequestBody @Valid ReviewRequestDto reviewRequestDto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(reviewService.postReview(userDetails, tradeId, reviewRequestDto));
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping("/{reviewId}")
+    public ResponseEntity<Void> deleteReview(@AuthenticationPrincipal UserDetails userDetails, @PathVariable UUID reviewId) {
+        reviewService.deleteReviewByAdmin(userDetails,reviewId);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+}

@@ -13,6 +13,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -77,4 +78,46 @@ public class GlobalExceptionHandler {
 
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
-}
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<Map<String, String>> handleTypeMismatch(MethodArgumentTypeMismatchException ex) {
+
+        Class<?> requiredType = ex.getRequiredType();
+        String typeName = (requiredType != null) ? requiredType.getSimpleName() : "unknown";
+
+        String error = String.format("Parameter '%s' has an invalid value: '%s'. Required type is '%s'.",
+                ex.getName(),
+                ex.getValue(),
+                typeName);
+
+        Map<String, String> errorBody = Map.of(
+                "status", "400",
+                "error", "Bad Request",
+                "message", error
+        );
+
+        return new ResponseEntity<>(errorBody, HttpStatus.BAD_REQUEST);
+    }
+    @ExceptionHandler(ConflictException.class)
+    public ResponseEntity<Map<String, String>> handleConflict(ConflictException ex) {
+
+        Map<String, String> errorBody = Map.of(
+                "status", "409",
+                "error", "Conflict",
+                "message", ex.getMessage() // Pobierze wiadomość, np. "Trade 1 is not in completed status"
+        );
+
+        return new ResponseEntity<>(errorBody, HttpStatus.CONFLICT);
+    }
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<Map<String, String>> handleNotFound(ResourceNotFoundException ex) {
+
+        Map<String, String> errorBody = Map.of(
+                "status", "404",
+                "error", "Not Found",
+                "message", ex.getMessage() // Pobierze wiadomość, np. "User not found"
+        );
+
+        return new ResponseEntity<>(errorBody, HttpStatus.NOT_FOUND);
+    }
+// ...
+    }

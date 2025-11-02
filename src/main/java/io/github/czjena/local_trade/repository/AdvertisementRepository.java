@@ -19,4 +19,8 @@ public interface AdvertisementRepository extends JpaRepository<Advertisement, In
     List<Advertisement> user(Users user);
 
     long countByCategoryId(Integer categoryId);
+
+    Advertisement findByUser(Users user);
+
+    Advertisement findByTitle(String title);
 }
