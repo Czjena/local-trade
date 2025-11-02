@@ -24,7 +24,7 @@ It supports user listings, messaging, ratings, and media management — designed
 - Categories and filtering with pagination
 - Rating system with transaction completion logic
 - Redis caching for performance optimization
-- Over 100 unit and integration tests (Testcontainers + MinIO)
+- Over 150 unit and integration tests (Testcontainers + MinIO)
 - Swagger UI for API documentation
 - One-command startup with Docker Compose
 - Environment Configuration
