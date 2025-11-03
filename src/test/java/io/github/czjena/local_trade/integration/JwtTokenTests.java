@@ -186,7 +186,6 @@ public class JwtTokenTests extends AbstractIntegrationTest {
         List<String> roles = (List<String>) jwtService.extractClaim(token, claims -> claims.get("roles"));
         assertEquals(List.of("ROLE_ADMIN"), roles);
 
-
     }
 
     }

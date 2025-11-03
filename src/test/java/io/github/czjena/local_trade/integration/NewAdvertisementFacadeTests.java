@@ -146,6 +146,5 @@ public class NewAdvertisementFacadeTests extends AbstractIntegrationTest {
                 .andExpect(jsonPath("$.thumbnailUrls", hasSize(5)))
                 .andExpect(jsonPath("$.thumbnailUrls[0]", isA(String.class)))
                 .andExpect(jsonPath("$.thumbnailUrls[0]", startsWith("http")));
-
     }
 }

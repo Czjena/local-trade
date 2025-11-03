@@ -52,9 +52,10 @@ public class ReviewServiceImpl implements ReviewService {
         List<Review> reviews = reviewRepository.findAllByReviewedUserOrReviewer(user, user);
 
         if(reviews.isEmpty()) {
-            log.info("No reviews found for user {}", userDetails.getUsername());
+            log.info("No reviews found for user with email {}", userDetails.getUsername());
             return Collections.emptyList();
         }
+
         log.info("Found {} reviews for user {}", reviews.size(), userDetails.getUsername());
         return reviews.stream().map(reviewResponseDtoMapper::toDto).toList();
 
@@ -132,11 +133,11 @@ public class ReviewServiceImpl implements ReviewService {
         List<Review> reviews = reviewRepository.findAllByReviewedUser(user);
 
         if(reviews.isEmpty()) {
-            log.info("No reviews found for user {}", user.getId());
+            log.info("No reviews found for user with id: {}", user.getId());
             user.setAverageRating(0.0);
             user.setRatingCount(0);
         }else {
-            log.info("Found {} reviews for user {}", reviews.size(), user.getId());
+            log.info("Found : {} reviews for user with users id :  {}", reviews.size(), user.getId());
             double ratingSum = reviews.stream().mapToDouble(Review::getRating).sum();
             double averageRating = ratingSum / reviews.size();
             double roundedAverage = Math.round(averageRating * 10.0) / 10.0;
