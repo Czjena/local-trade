@@ -12,10 +12,6 @@ version: "1.0"
 #Specify inspection profile for code analysis
 profile:
   name: qodana.starter
-  rules:
-    non-distinguishable-logging-calls:
-      severity: OFF
-
 
 #Enable inspections
 #include:
