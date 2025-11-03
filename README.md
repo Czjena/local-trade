@@ -1,3 +1,8 @@
+[![CI Build Status](https://img.shields.io/github/actions/workflow/status/Czjena/local-trade/build-and-test.yml?branch=main&style=for-the-badge)](https://github.com/Czjena/local-trade/actions)
+[![Test Coverage](https://img.shields.io/badge/coverage-84%25-brightgreen?style=for-the-badge)](https://shields.io)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
+[![Java 17](https://img.shields.io/badge/Java-17-blue.svg?style=for-the-badge)](https://www.java.com)
+[![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.x-brightgreen.svg?style=for-the-badge)](https://spring.io/projects/spring-boot)
 # local-trade: Backend API Platform
 
 A full-featured Spring Boot backend REST API for a local advertisement trading platform.
@@ -24,41 +29,59 @@ It supports user listings, messaging, ratings, and media management — designed
 - Categories and filtering with pagination
 - Rating system with transaction completion logic
 - Redis caching for performance optimization
-- Over 150 unit and integration tests (Testcontainers + MinIO)
 - Swagger UI for API documentation
 - One-command startup with Docker Compose
 - Environment Configuration
 
+## Testing & Quality Assurance
+This project places a strong emphasis on code quality and reliability.
+
+- 84% Code Test Coverage (verified by Jacoco).
+- Over 150 unit and integration tests.
+- Testcontainers are used for full end-to-end integration tests with real instances of PostgreSQL, Redis, and MinIO in isolated containers.
+- CI/CD Pipeline (GitHub Actions) automatically builds and tests the application on every commit.
+- Static code analysis and quality monitoring using Qodana
 
 ## Environment Configuration
 
 The application requires the following environment variables. Example .env file:
-
-- POSTGRES_DB= dbName
-- DB_USER= dbUserName
-- DB_PASSWORD= dbPassowrd
-- JWT_SECRET= JWT Secret Key hs256 encrypted
-
-
-### S3 / MinIO
-- S3_ENDPOINT=http://minio:9000
-- S3_BUCKET=/advertisements
-- S3_ACCESS_KEY=minioadmin
-- S3_SECRET_KEY=minioadmin
-
-Change this env to false to use real S3 bucket 
-
-```bash
-s3.useMinio=true
+```
+DB_NAME= Postgres db name
+DB_USER= Postgres db username
+DB_PASSWORD= Postgres db password
+JWT_SECRET= JWT Secret Key hs256 encrypted
 ```
 
-### Optional (Redis)
-- REDIS_HOST=redis
-- REDIS_PORT=6379
+### S3 / MinIO
+```
+MINIO_ROOT_USER=minioadmin
+MINIO_ROOT_PASSWORD=minioadmin
+S3_ENDPOINT=http://minio:9000
+S3_ACCESSKEY=minioadmin
+S3_SECRETKEY=minioadmin
+AWS_REGION=eu-central-1
+```
+The application uses the s3.useMinio property to switch between storage providers:
+```
+s3.useMinio=true (Default)
+```
+Uses MinIO for local development.
 
+This integration is fully confirmed by the test suite, which provisions a MinIO instance using Testcontainers.
+```
+s3.useMinio=false
+```
+Switches the configuration to use a live AWS S3 bucket.
+
+This profile requires additional configuration (like AWS credentials, region, and bucket name) to be provided in the relevant application-secret.yml profile.
+
+### Redis configuration
+```
+REDIS_HOST=redis
+REDIS_PORT=6379
+```
 
 ### The application-secret.yml (or relevant profile) should reference these environment variables.
-
 
 
 ## Local Development Setup
@@ -89,17 +112,23 @@ This command automatically provisions PostgreSQL, Redis, and MinIO containers fo
 
 ### API documentation is available via the following endpoints:
 Swagger UI: /swagger-ui.html
+
 OpenAPI v3 Specification: /v3/api-docs
 
 ### CI/CD Pipeline
 The GitHub Actions workflow executes the following:
+
 Build and test using Maven,
+
 Code quality checks via Qodana,
+
 Static analysis and test coverage reports.
 
 ### Architectural Overview
 Layered architecture (controller → service → repository)
+
 External integrations (S3, Redis, DB) are mocked via Testcontainers during the test phase
+
 Ready for deployment with minimal configuration changes
 
 Docker Compose orchestrates the database, cache, and object storage
@@ -109,11 +138,20 @@ This project is licensed under the MIT License.
 See the LICENSE file for details.
 
 ### Project Roadmap
-AI-based image moderation
-WebSocket or Kafka-based notification system
-CI/CD deployment to a staging environment
-Frontend integration (React/Next.js)
 
+[IN PROGRESS] Dynamic Filters: Implementing a fully dynamic, category-specific filtering system (similar to OLX/Allegro) using JSONB attributes in the database.
+
+[IN PROGRESS] User Dashboard: Creating an aggregated BFF (Backend-for-Frontend) endpoint for the user dashboard.
+
+[PLANNED] Notification System: Extracting a separate microservice to handle notifications (email, push) with asynchronous communication (RabbitMQ/Kafka).
+
+[PLANNED] AI-based Image Moderation: Integration with an external API for image moderation.
+
+[PLANNED] Frontend Integration: Full integration with a React/Next.js frontend.
+
+### Contributing
+This is an open-source project, and contributions are welcome! Feel free to open an issue to discuss a new feature or submit a pull request with your improvements. All contributions will be reviewed.
 ## Author
 Adrian Wieczorek (Czjena)
+
 GitHub: @Czjena

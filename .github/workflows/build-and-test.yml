@@ -34,3 +34,10 @@ jobs:
           S3_ENDPOINT: http://minio:9000
           AWS_ACCESS_KEY_ID: minioadmin
           AWS_SECRET_ACCESS_KEY: minioadmin
+
+      - name: Upload JaCoCo report artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jacoco-report
+          path: target/site/jacoco/
