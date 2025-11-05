@@ -55,6 +55,3 @@ jobs:
       - name: 2. Build the final service images
 
         run: docker-compose build main-api notification-service
-
-
-     t
