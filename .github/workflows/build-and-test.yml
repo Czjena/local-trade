@@ -6,7 +6,7 @@ on:
   pull_request:
 
 jobs:
-  build:
+  build-and-test:
     runs-on: ubuntu-latest
 
 
@@ -30,11 +30,10 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      - name: Build and test with Maven
+      - name: Run Maven Tests (with Testcontainers)
 
         run: mvn -B verify
         env:
-
           S3_ENDPOINT: http://minio:9000
           AWS_ACCESS_KEY_ID: minioadmin
           AWS_SECRET_ACCESS_KEY: minioadmin
@@ -44,20 +43,18 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: jacoco-reports-all-modules
-
           path: '**/target/site/jacoco/'
           retention-days: 7
 
 
 
-      - name: Build Docker Image for main-api
-        run: |
-          docker build -t main-api:latest \
-            -f services/main-api/Dockerfile \
-            ./services/main-api
+      - name: 1. Build the 'builder' image
 
-      - name: Build Docker Image for notification-service
-        run: |
-          docker build -t notification-service:latest \
-            -f services/notification-service/Dockerfile \
-            ./services/notification-service
+        run: docker-compose build builder
+
+      - name: 2. Build the final service images
+
+        run: docker-compose build main-api notification-service
+
+
+     t
