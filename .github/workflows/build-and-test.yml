@@ -50,8 +50,8 @@ jobs:
 
       - name: 1. Build the 'builder' image
 
-        run: docker-compose build builder
+        run: docker compose build builder
 
       - name: 2. Build the final service images
 
-        run: docker-compose build main-api notification-service
+        run: docker compose build main-api notification-service
