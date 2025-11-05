@@ -11,7 +11,8 @@ It supports user listings, messaging, ratings, and media management — designed
 ## Tech Stack
 - **Java 17**
 - **Spring Boot** (REST API, WebSocket chat, validation)
-- **PostgreSQL** – relational database  
+- **PostgreSQL** – relational database
+- **RabbitMQ** – asynchronous message broker
 - **Redis** – caching and token storage  
 - **MinIO / AWS S3** – image storage and thumbnail generation  
 - **Testcontainers** – integration testing environment  
@@ -38,7 +39,7 @@ This project places a strong emphasis on code quality and reliability.
 
 - 84% Code Test Coverage (verified by Jacoco).
 - Over 150 unit and integration tests.
-- Testcontainers are used for full end-to-end integration tests with real instances of PostgreSQL, Redis, and MinIO in isolated containers.
+- Testcontainers are used for full end-to-end integration tests with real instances of PostgreSQL, Redis, MinIO, and RabbitMQ in isolated containers.
 - CI/CD Pipeline (GitHub Actions) automatically builds and tests the application on every commit.
 - Static code analysis and quality monitoring using Qodana
 
@@ -125,13 +126,12 @@ Code quality checks via Qodana,
 Static analysis and test coverage reports.
 
 ### Architectural Overview
-Layered architecture (controller → service → repository)
-
-External integrations (S3, Redis, DB) are mocked via Testcontainers during the test phase
-
-Ready for deployment with minimal configuration changes
-
-Docker Compose orchestrates the database, cache, and object storage
+### Architectural Overview
+- **Multi-service Monorepo:** The platform is built as a monorepo containing multiple independent services (e.g., `main-api`, `notification-service`).
+- **Event-Driven:** Services communicate asynchronously using **RabbitMQ** for a decoupled and resilient architecture.
+- **Layered Architecture:** Each individual service internally follows a clean layered architecture (controller → service → repository).
+- **Fully Containerized:** The entire system (all services, DB, cache, broker, storage) is orchestrated via Docker Compose for one-command startup.
+- **Test-Driven:** External integrations (S3, Redis, DB, RabbitMQ) are all tested in the CI pipeline using **Testcontainers**.
 
 ### License
 This project is licensed under the MIT License.
@@ -143,7 +143,11 @@ See the LICENSE file for details.
 
 [IN PROGRESS] User Dashboard: Creating an aggregated BFF (Backend-for-Frontend) endpoint for the user dashboard.
 
-[PLANNED] Notification System: Extracting a separate microservice to handle notifications (email, push) with asynchronous communication (RabbitMQ/Kafka).
+[IN PROGRESS] Notification System: The core microservice architecture is now implemented.
+- [DONE] Extracted a separate `notification-service` microservice.
+- [DONE] Integrated asynchronous communication using **RabbitMQ**.
+- [PLANNED] Implementing full notification logic (e.g., email sending via SendGrid/Mailgun).
+- [PLANNED] Adding user notification preferences.
 
 [PLANNED] AI-based Image Moderation: Integration with an external API for image moderation.
 
