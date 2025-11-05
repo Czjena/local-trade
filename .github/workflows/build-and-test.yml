@@ -1,12 +1,14 @@
-name: Java CI Build and Test
+name: CI/CD Build, Test & Dockerize (Monorepo)
 
 on:
   push:
+    branches: [ "main", "develop" ]
   pull_request:
 
 jobs:
-  build:
+  build-and-test:
     runs-on: ubuntu-latest
+
 
     services:
       minio:
@@ -21,15 +23,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up JDK 17
+      - name: Set up JDK 17 and Maven Cache
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
           cache: maven
 
-      - name: Build and test with Maven
-        run: ./mvnw -B verify
+      - name: Run Maven Tests (with Testcontainers)
+
+        run: mvn -B verify
         env:
           S3_ENDPOINT: http://minio:9000
           AWS_ACCESS_KEY_ID: minioadmin
@@ -39,5 +42,16 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: jacoco-report
-          path: target/site/jacoco/
+          name: jacoco-reports-all-modules
+          path: '**/target/site/jacoco/'
+          retention-days: 7
+
+
+
+      - name: 1. Build the 'builder' image
+
+        run: docker compose build builder
+
+      - name: 2. Build the final service images
+
+        run: docker compose build main-api notification-service
