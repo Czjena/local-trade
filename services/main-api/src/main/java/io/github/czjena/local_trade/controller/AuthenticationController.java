@@ -3,11 +3,11 @@ package io.github.czjena.local_trade.controller;
 import io.github.czjena.local_trade.dto.LoginDto;
 import io.github.czjena.local_trade.dto.RefreshTokenRequest;
 import io.github.czjena.local_trade.dto.RegisterUsersDto;
-import io.github.czjena.local_trade.facade.LoginFacade;
+import io.github.czjena.local_trade.service.facade.LoginFacade;
 
 import io.github.czjena.local_trade.response.LoginResponse;
-import io.github.czjena.local_trade.service.AuthenticationService;
-import io.github.czjena.local_trade.service.RefreshTokenService;
+import io.github.czjena.local_trade.service.infrastructure.AuthenticationService;
+import io.github.czjena.local_trade.service.infrastructure.RefreshTokenService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;

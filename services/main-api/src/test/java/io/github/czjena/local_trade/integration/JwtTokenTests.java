@@ -7,14 +7,12 @@ import io.github.czjena.local_trade.model.Users;
 import io.github.czjena.local_trade.repository.RefreshTokenRepository;
 import io.github.czjena.local_trade.repository.UsersRepository;
 import io.github.czjena.local_trade.response.LoginResponse;
-import io.github.czjena.local_trade.service.JwtService;
-import io.github.czjena.local_trade.service.TestJwtUtils;
+import io.github.czjena.local_trade.service.business.JwtService;
+import io.github.czjena.local_trade.service.business.TestJwtUtils;
 import io.jsonwebtoken.*;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 

@@ -3,7 +3,7 @@ package io.github.czjena.local_trade.controller;
 import io.github.czjena.local_trade.request.TradeInitiationRequestDto;
 import io.github.czjena.local_trade.request.TradeStatusRequestDto;
 import io.github.czjena.local_trade.response.TradeResponseDto;
-import io.github.czjena.local_trade.service.TradeService;
+import io.github.czjena.local_trade.service.infrastructure.TradeService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;

@@ -4,8 +4,10 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
+
 # .gitignore
 .env
+
 
 ### STS ###
 .apt_generated

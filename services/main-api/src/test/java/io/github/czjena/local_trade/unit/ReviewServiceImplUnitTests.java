@@ -14,7 +14,7 @@ import io.github.czjena.local_trade.repository.TradeRepository;
 import io.github.czjena.local_trade.repository.UsersRepository;
 import io.github.czjena.local_trade.request.ReviewRequestDto;
 import io.github.czjena.local_trade.response.ReviewResponseDto;
-import io.github.czjena.local_trade.service.ReviewServiceImpl;
+import io.github.czjena.local_trade.service.business.ReviewServiceImpl;
 import io.github.czjena.local_trade.testutils.UserUtils;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Assertions;
@@ -24,7 +24,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 

@@ -2,7 +2,7 @@ package io.github.czjena.local_trade.configs;
 
 import io.github.czjena.local_trade.exceptions.UserNotFoundException;
 import io.github.czjena.local_trade.repository.UsersRepository;
-import io.github.czjena.local_trade.service.JwtService;
+import io.github.czjena.local_trade.service.business.JwtService;
 import lombok.NonNull;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;

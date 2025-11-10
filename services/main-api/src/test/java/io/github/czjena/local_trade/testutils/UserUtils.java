@@ -9,6 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.HashSet;
+import java.util.UUID;
 
 @SpringBootTest
 public class UserUtils {
@@ -36,6 +37,16 @@ public class UserUtils {
         Users user = new Users();
         user.setName("seller");
         user.setEmail("seller@test.com");
+        user.setPassword("password");
+        user.setRole("ROLE_USER");
+        user.setFavoritedAdvertisements(new HashSet<>());
+        return user;
+    }
+    public static Users createUserRoleUserUnitTestWithUUID() {
+        Users user = new Users();
+        user.setUserId(UUID.randomUUID());
+        user.setName("buyer");
+        user.setEmail("buyer@test.com");
         user.setPassword("password");
         user.setRole("ROLE_USER");
         user.setFavoritedAdvertisements(new HashSet<>());

@@ -3,7 +3,7 @@ package io.github.czjena.local_trade.controller;
 import io.github.czjena.local_trade.dto.ChatMessageDto;
 import io.github.czjena.local_trade.dto.ChatMessagePayload;
 import io.github.czjena.local_trade.model.ChatMessage;
-import io.github.czjena.local_trade.service.ChatMessageService;
+import io.github.czjena.local_trade.service.infrastructure.ChatMessageService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;

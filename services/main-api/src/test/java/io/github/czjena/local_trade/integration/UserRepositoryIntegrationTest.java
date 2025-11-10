@@ -7,7 +7,7 @@ import io.github.czjena.local_trade.model.Users;
 import io.github.czjena.local_trade.repository.ChatMessageRepository;
 import io.github.czjena.local_trade.repository.UsersRepository;
 
-import io.github.czjena.local_trade.service.UsersService;
+import io.github.czjena.local_trade.service.infrastructure.UsersService;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 

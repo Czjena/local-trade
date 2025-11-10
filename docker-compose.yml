@@ -88,6 +88,8 @@ services:
     networks:
       - local-trade-net
     restart: on-failure
+    env_file:
+      - .env
 
   main-api:
     build:

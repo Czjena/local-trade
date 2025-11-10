@@ -3,12 +3,10 @@ package io.github.czjena.local_trade.controller;
 import io.github.czjena.local_trade.dto.UpdateUserDto;
 import io.github.czjena.local_trade.dto.UserResponseDto;
 import io.github.czjena.local_trade.model.Users;
-import io.github.czjena.local_trade.repository.UsersRepository;
-import io.github.czjena.local_trade.service.UsersService;
+import io.github.czjena.local_trade.service.infrastructure.UsersService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

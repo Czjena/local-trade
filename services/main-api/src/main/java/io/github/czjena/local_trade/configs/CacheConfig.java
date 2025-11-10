@@ -13,7 +13,6 @@ public class CacheConfig {
 
     @Bean
     public RedisCacheConfiguration redisCacheConfiguration() {
-
         return RedisCacheConfiguration.defaultCacheConfig()
                 .serializeKeysWith(SerializationPair.fromSerializer(new StringRedisSerializer()))
                 .serializeValuesWith(SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer()));

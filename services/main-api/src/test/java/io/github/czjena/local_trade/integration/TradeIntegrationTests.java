@@ -1,6 +1,5 @@
 package io.github.czjena.local_trade.integration;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.czjena.local_trade.enums.TradeStatus;
 import io.github.czjena.local_trade.model.Advertisement;
@@ -13,7 +12,7 @@ import io.github.czjena.local_trade.repository.TradeRepository;
 import io.github.czjena.local_trade.repository.UsersRepository;
 import io.github.czjena.local_trade.request.TradeInitiationRequestDto;
 import io.github.czjena.local_trade.request.TradeStatusRequestDto;
-import io.github.czjena.local_trade.service.JwtService;
+import io.github.czjena.local_trade.service.business.JwtService;
 import io.github.czjena.local_trade.testutils.AdUtils;
 import io.github.czjena.local_trade.testutils.CategoryUtils;
 import io.github.czjena.local_trade.testutils.UserUtils;
@@ -21,12 +20,10 @@ import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.LazyInitializationExcludeFilter;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -35,7 +32,6 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import resources.AbstractIntegrationTest;
 
 import java.math.BigDecimal;
-import java.time.Clock;
 import java.time.LocalDateTime;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;

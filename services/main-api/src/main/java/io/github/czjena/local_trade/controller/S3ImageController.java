@@ -2,7 +2,7 @@ package io.github.czjena.local_trade.controller;
 
 import io.github.czjena.local_trade.dto.ImageDto;
 import io.github.czjena.local_trade.mappers.ImageMapper;
-import io.github.czjena.local_trade.service.S3Service;
+import io.github.czjena.local_trade.service.infrastructure.S3Service;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

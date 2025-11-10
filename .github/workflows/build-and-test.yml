@@ -37,6 +37,8 @@ jobs:
           S3_ENDPOINT: http://minio:9000
           AWS_ACCESS_KEY_ID: minioadmin
           AWS_SECRET_ACCESS_KEY: minioadmin
+          MAILTRAP_USERNAME: ${{ secrets.MAILTRAP_USERNAME }}
+          MAILTRAP_PASSWORD: ${{ secrets.MAILTRAP_PASSWORD }}
 
       - name: Upload JaCoCo report artifact
         if: always()

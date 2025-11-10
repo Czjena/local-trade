@@ -1,7 +1,7 @@
 package io.github.czjena.local_trade.controller;
 
 import io.github.czjena.local_trade.dto.CategoryDto;
-import io.github.czjena.local_trade.service.CategoryService;
+import io.github.czjena.local_trade.service.infrastructure.CategoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;

@@ -5,9 +5,8 @@ import io.github.czjena.local_trade.enums.TradeStatus;
 import io.github.czjena.local_trade.model.*;
 import io.github.czjena.local_trade.repository.*;
 import io.github.czjena.local_trade.request.ReviewRequestDto;
-import io.github.czjena.local_trade.service.ReviewService;
+import io.github.czjena.local_trade.service.infrastructure.ReviewService;
 import io.github.czjena.local_trade.testutils.*;
-import lombok.With;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,7 +18,6 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import resources.AbstractIntegrationTest;
 

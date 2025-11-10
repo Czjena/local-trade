@@ -2,7 +2,7 @@ package io.github.czjena.local_trade.controller;
 
 import io.github.czjena.local_trade.dto.AdvertisementFilterDto;
 import io.github.czjena.local_trade.response.ResponseAdvertisementDto;
-import io.github.czjena.local_trade.service.AdvertisementFilterService;
+import io.github.czjena.local_trade.service.business.AdvertisementFilterService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

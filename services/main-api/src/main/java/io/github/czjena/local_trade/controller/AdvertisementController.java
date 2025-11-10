@@ -1,15 +1,13 @@
 package io.github.czjena.local_trade.controller;
 
 import io.github.czjena.local_trade.dto.AdvertisementUpdateDto;
-import io.github.czjena.local_trade.facade.NewAdvertisementFacade;
-import io.github.czjena.local_trade.mappers.SimpleAdvertisementDtoMapper;
-import io.github.czjena.local_trade.model.Advertisement;
+import io.github.czjena.local_trade.service.facade.NewAdvertisementFacade;
 
 
 import io.github.czjena.local_trade.request.RequestAdvertisementDto;
 import io.github.czjena.local_trade.response.ResponseAdvertisementDto;
 import io.github.czjena.local_trade.response.SimpleAdvertisementResponseDto;
-import io.github.czjena.local_trade.service.AdvertisementService;
+import io.github.czjena.local_trade.service.infrastructure.AdvertisementService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.http.ResponseEntity;

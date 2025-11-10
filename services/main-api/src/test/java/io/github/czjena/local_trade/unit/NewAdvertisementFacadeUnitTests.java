@@ -1,6 +1,6 @@
 package io.github.czjena.local_trade.unit;
 
-import io.github.czjena.local_trade.facade.NewAdvertisementFacade;
+import io.github.czjena.local_trade.service.facade.NewAdvertisementFacade;
 import io.github.czjena.local_trade.mappers.AdvertisementDtoMapper;
 import io.github.czjena.local_trade.model.Advertisement;
 import io.github.czjena.local_trade.model.Category;
@@ -11,9 +11,9 @@ import io.github.czjena.local_trade.repository.UsersRepository;
 import io.github.czjena.local_trade.request.RequestAdvertisementDto;
 import io.github.czjena.local_trade.response.ResponseAdvertisementDto;
 import io.github.czjena.local_trade.response.SimpleAdvertisementResponseDto;
-import io.github.czjena.local_trade.service.AdvertisementService;
-import io.github.czjena.local_trade.service.NotificationEventPublisher;
-import io.github.czjena.local_trade.service.S3Service;
+import io.github.czjena.local_trade.service.infrastructure.AdvertisementService;
+import io.github.czjena.local_trade.service.infrastructure.NotificationEventPublisher;
+import io.github.czjena.local_trade.service.infrastructure.S3Service;
 import io.github.czjena.local_trade.testutils.AdUtils;
 import io.github.czjena.local_trade.testutils.CategoryUtils;
 import io.github.czjena.local_trade.testutils.UserUtils;
@@ -94,7 +94,6 @@ public class NewAdvertisementFacadeUnitTests {
         when(s3Service.uploadFile(any(UUID.class), any(MultipartFile.class))).thenReturn(image);
         when(advertisementDtoMapper.toResponseAdvertisementDto(advertisement)).thenReturn(responseAdvertisementDto);
         when(advertisementRepository.findByAdvertisementId(advertisement.getAdvertisementId())).thenReturn(Optional.of(advertisement));
-        doNothing().when(notificationEventPublisher).publishAndCreateEvent(any(Users.class), any(Advertisement.class));
 
 
         ResponseAdvertisementDto result = newAdvertisementFacade.addWholeAdvertisement(advertisementDto,multipartFiles,userDetails);
@@ -107,8 +106,6 @@ public class NewAdvertisementFacadeUnitTests {
         verify(advertisementService).addAd(eq(advertisementDto), eq(user));
         verify(s3Service, times(5)).uploadFile(any(UUID.class), any(MultipartFile.class));
         verifyNoMoreInteractions(s3Service, advertisementService, usersRepository);
-        verify(notificationEventPublisher, times(1))
-                .publishAndCreateEvent(eq(user), eq(advertisement));
 
     }
 

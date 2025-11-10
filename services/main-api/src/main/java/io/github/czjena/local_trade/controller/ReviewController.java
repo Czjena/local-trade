@@ -2,7 +2,7 @@ package io.github.czjena.local_trade.controller;
 
 import io.github.czjena.local_trade.request.ReviewRequestDto;
 import io.github.czjena.local_trade.response.ReviewResponseDto;
-import io.github.czjena.local_trade.service.ReviewService;
+import io.github.czjena.local_trade.service.infrastructure.ReviewService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

@@ -1,23 +1,19 @@
 package io.github.czjena.local_trade.unit;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jayway.jsonpath.JsonPath;
 import io.github.czjena.local_trade.controller.ReviewController;
 import io.github.czjena.local_trade.model.Review;
 import io.github.czjena.local_trade.model.Trade;
 import io.github.czjena.local_trade.repository.ReviewRepository;
 import io.github.czjena.local_trade.request.ReviewRequestDto;
 import io.github.czjena.local_trade.response.ReviewResponseDto;
-import io.github.czjena.local_trade.service.JwtService;
-import io.github.czjena.local_trade.service.ReviewService;
-import io.github.czjena.local_trade.service.TradeService;
-import lombok.With;
+import io.github.czjena.local_trade.service.business.JwtService;
+import io.github.czjena.local_trade.service.infrastructure.ReviewService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.MediaType;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -29,7 +25,6 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;

@@ -1,7 +1,7 @@
 package io.github.czjena.local_trade.controller;
 
 import io.github.czjena.local_trade.dto.FavoriteAdvertisementDto;
-import io.github.czjena.local_trade.service.FavoriteAdvertisementService;
+import io.github.czjena.local_trade.service.infrastructure.FavoriteAdvertisementService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
 import org.springframework.security.access.prepost.PreAuthorize;
