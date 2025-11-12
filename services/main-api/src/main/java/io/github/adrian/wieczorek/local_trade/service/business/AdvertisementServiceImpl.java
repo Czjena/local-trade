@@ -64,7 +64,6 @@ public class AdvertisementServiceImpl implements AdvertisementService {
         var advertisement  = advertisementRepository.findByAdvertisementId(advertisementId)
                 .orElseThrow(() -> new EntityNotFoundException("Advertisement not found"));
         return advertisementDtoMapper.toResponseAdvertisementDto(advertisement);
-
     }
 
     @Override

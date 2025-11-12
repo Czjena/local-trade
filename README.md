@@ -1,4 +1,4 @@
-[![CI Build Status](https://img.shields.io/github/actions/workflow/status/Czjena/local-trade/build-and-test.yml?branch=main&style=for-the-badge)](https://github.com/Czjena/local-trade/actions)
+[![CI Build Status](https://img.shields.io/github/actions/workflow/status//local-trade/build-and-test.yml?branch=main&style=for-the-badge)](https://github.com/WieczorekAdrian/local-trade/actions)
 [![Test Coverage](https://img.shields.io/badge/coverage-84%25-brightgreen?style=for-the-badge)](https://shields.io)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
 [![Java 17](https://img.shields.io/badge/Java-17-blue.svg?style=for-the-badge)](https://www.java.com)
@@ -39,7 +39,7 @@ It supports user listings, messaging, ratings, and media management — designed
 This project places a strong emphasis on code quality and reliability.
 
 - 84% Code Test Coverage (verified by Jacoco).
-- Over 150 unit and integration tests.
+- Over 170 unit and integration tests.
 - Testcontainers are used for full end-to-end integration tests with real instances of PostgreSQL, Redis, MinIO, and RabbitMQ in isolated containers.
 - CI/CD Pipeline (GitHub Actions) automatically builds and tests the application on every commit.
 - Static code analysis and quality monitoring using Qodana
@@ -93,7 +93,7 @@ REDIS_PORT=6379
 Clone the project and start all services using Docker Compose:
 
 ```bash
-git clone [https://github.com/Czjena/local-trade.git](https://github.com/Czjena/local-trade.git)
+git clone [https://github.com/WieczorekAdrian/local-trade.git](https://github.com/WieczorekAdrian/local-trade.git)
 cd local-trade
 docker-compose up --build
 ```

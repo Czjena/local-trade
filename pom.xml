@@ -11,12 +11,12 @@
         <relativePath/>
     </parent>
 
-    <groupId>io.github.czjena</groupId>
-    <artifactId>local-tradeEntity-platform</artifactId>
+    <groupId>io.github.WieczorekAdrian</groupId>
+    <artifactId>local-trade-platform</artifactId>
     <version>0.0.1-SNAPSHOT</version>
 
     <packaging>pom</packaging>
-    <name>local-tradeEntity-platform</name>
+    <name>local-trade-platform</name>
 
     <modules>
         <module>services/main-api</module>
