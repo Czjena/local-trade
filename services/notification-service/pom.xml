@@ -4,14 +4,14 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>io.github.czjena</groupId>
-        <artifactId>local-tradeEntity-platform</artifactId>
+        <groupId>io.github.WieczorekAdrian</groupId>
+        <artifactId>local-trade-platform</artifactId>
         <version>0.0.1-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath> </parent>
 
-    <artifactId>local-tradeEntity-notification-system</artifactId>
+    <artifactId>local-trade-notification-system</artifactId>
     <name>notification-service</name>
-    <description>Notification system for local-tradeEntity-platform</description>
+    <description>Notification system for local-trade-platform</description>
 
     <properties>
         <spring.config.import>optional:file:${project.basedir}/.env[.properties]</spring.config.import>
@@ -70,7 +70,7 @@
         </dependency>
 
         <dependency>
-            <groupId>io.github.czjena</groupId> <artifactId>common-dtos</artifactId>
+            <groupId>io.github.WieczorekAdrian</groupId> <artifactId>common-dtos</artifactId>
             <version>${project.version}</version> </dependency>
 
 

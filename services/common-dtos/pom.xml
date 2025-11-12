@@ -5,15 +5,15 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>io.github.czjena</groupId>
-        <artifactId>local-tradeEntity-platform</artifactId>
+        <groupId>io.github.WieczorekAdrian</groupId>
+        <artifactId>local-trade-platform</artifactId>
         <version>0.0.1-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <artifactId>common-dtos</artifactId>
     <packaging>jar</packaging> <name>common-dtos</name>
-    <description>Common dtos for local-tradeEntity-platform</description>
+    <description>Common dtos for local-trade-platform</description>
 
     <dependencies>
         <dependency>
