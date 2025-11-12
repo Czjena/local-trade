@@ -1,5 +1,5 @@
 
-FROM local-tradeEntity-builder AS builder
+FROM local-trade-builder AS builder
 
 
 FROM eclipse-temurin:17-jre-jammy
