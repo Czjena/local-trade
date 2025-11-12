@@ -1,11 +1,11 @@
-[![CI Build Status](https://img.shields.io/github/actions/workflow/status/Czjena/local-trade/build-and-test.yml?branch=main&style=for-the-badge)](https://github.com/Czjena/local-trade/actions)
+[![CI Build Status](https://img.shields.io/github/actions/workflow/status/Czjena/local-tradeEntity/build-and-test.yml?branch=main&style=for-the-badge)](https://github.com/Czjena/local-tradeEntity/actions)
 [![Test Coverage](https://img.shields.io/badge/coverage-84%25-brightgreen?style=for-the-badge)](https://shields.io)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
 [![Java 17](https://img.shields.io/badge/Java-17-blue.svg?style=for-the-badge)](https://www.java.com)
 [![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.x-brightgreen.svg?style=for-the-badge)](https://spring.io/projects/spring-boot)
-# local-trade: Backend API Platform
+# local-tradeEntity: Backend API Platform
 
-A full-featured Spring Boot backend REST API for a local advertisement trading platform.
+A full-featured Spring Boot backend REST API for a local advertisementEntity trading platform.
 It supports user listings, messaging, ratings, and media management — designed for scalability and real-world deployment.
 
 ## Tech Stack
@@ -15,7 +15,7 @@ It supports user listings, messaging, ratings, and media management — designed
 - **RabbitMQ** – asynchronous message broker
 - **Azure Blob Storage** – **target cloud storage solution**
 - **Redis** – caching and token storage  
-- **MinIO / AWS S3** – image storage and thumbnail generation  
+- **MinIO / AWS S3** – imageEntity storage and thumbnail generation  
 - **Testcontainers** – integration testing environment  
 - **Maven** – build and dependency management  
 - **Docker & Docker Compose** – containerized deployment  
@@ -25,7 +25,7 @@ It supports user listings, messaging, ratings, and media management — designed
 
 ## Core Features
 - JWT authentication with access and refresh tokens
-- S3/MinIO integration with automatic image thumbnail generation
+- S3/MinIO integration with automatic imageEntity thumbnail generation
 - "Add to favourites" and user listing tracking
 - Real-time chat using WebSockets
 - Categories and filtering with pagination
@@ -93,8 +93,8 @@ REDIS_PORT=6379
 Clone the project and start all services using Docker Compose:
 
 ```bash
-git clone [https://github.com/Czjena/local-trade.git](https://github.com/Czjena/local-trade.git)
-cd local-trade
+git clone [https://github.com/Czjena/local-tradeEntity.git](https://github.com/Czjena/local-tradeEntity.git)
+cd local-tradeEntity
 docker-compose up --build
 ```
 
@@ -140,7 +140,7 @@ See the LICENSE file for details.
 
 ### Project Roadmap
 
-[IN PROGRESS] Dynamic Filters: Implementing a fully dynamic, category-specific filtering system (similar to OLX/Allegro) using JSONB attributes in the database.
+[IN PROGRESS] Dynamic Filters: Implementing a fully dynamic, categoryEntity-specific filtering system (similar to OLX/Allegro) using JSONB attributes in the database.
 
 [IN PROGRESS] User Dashboard: Creating an aggregated BFF (Backend-for-Frontend) endpoint for the user dashboard.
 
@@ -157,7 +157,7 @@ See the LICENSE file for details.
 
 [PLANNED] **Replacing AWS S3 / MinIO with Azure Blob Storage to consolidate all services within a single cloud provider.**
 
-[PLANNED] AI-based Image Moderation: Integration with an external API for image moderation.
+[PLANNED] AI-based Image Moderation: Integration with an external API for imageEntity moderation.
 
 [PLANNED] Frontend Integration: Full integration with a React/Next.js frontend.
 
