@@ -3,6 +3,7 @@ package io.github.czjena.local_trade.service.business;
 import io.github.czjena.local_trade.model.Advertisement;
 import io.github.czjena.local_trade.repository.AdvertisementRepository;
 import io.github.czjena.local_trade.service.infrastructure.AdvertisementSecurityService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -11,11 +12,11 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class AdvertisementSecurityServiceImpl implements AdvertisementSecurityService {
     private final AdvertisementRepository advertisementRepository;
-    public AdvertisementSecurityServiceImpl(AdvertisementRepository advertisementRepository) {
-        this.advertisementRepository = advertisementRepository;
-    }
+
+
     @Override
     public boolean isOwner(Authentication authentication, Integer advertisement) {
         String username = authentication.getName();

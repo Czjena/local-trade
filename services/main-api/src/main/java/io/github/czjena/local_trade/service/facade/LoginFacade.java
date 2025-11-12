@@ -6,19 +6,18 @@ import io.github.czjena.local_trade.response.LoginResponse;
 import io.github.czjena.local_trade.service.infrastructure.AuthenticationService;
 import io.github.czjena.local_trade.service.business.JwtService;
 import io.github.czjena.local_trade.service.infrastructure.RefreshTokenService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class LoginFacade {
+
     private final AuthenticationService authenticationService;
     private final JwtService jwtService;
     private final RefreshTokenService refreshTokenService;
 
-    public LoginFacade(AuthenticationService authenticationService, JwtService jwtService, RefreshTokenService refreshTokenService) {
-        this.authenticationService = authenticationService;
-        this.jwtService = jwtService;
-        this.refreshTokenService = refreshTokenService;
-    }
+
 
     public LoginResponse authenticateAndAssignNewRefreshToken(LoginDto loginDto){
         Users authenticatedUser  = authenticationService.authenticate(loginDto);

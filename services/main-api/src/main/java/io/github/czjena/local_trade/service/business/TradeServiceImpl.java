@@ -13,6 +13,7 @@ import io.github.czjena.local_trade.request.TradeInitiationRequestDto;
 import io.github.czjena.local_trade.response.TradeResponseDto;
 import io.github.czjena.local_trade.service.infrastructure.TradeService;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +24,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class TradeServiceImpl implements TradeService {
 
     private final AdvertisementRepository advertisementRepository;
@@ -31,13 +33,6 @@ public class TradeServiceImpl implements TradeService {
     private final TradeResponseDtoMapper tradeResponseDtoMapper;
 
 
-    public TradeServiceImpl(TradeRepository tradeRepository, UsersRepository usersRepository, AdvertisementRepository advertisementRepository, TradeResponseDtoMapper tradeResponseDtoMapper) {
-        this.usersRepository = usersRepository;
-        this.advertisementRepository = advertisementRepository;
-        this.tradeRepository = tradeRepository;
-        this.tradeResponseDtoMapper = tradeResponseDtoMapper;
-
-    }
 
     @Transactional
     @Override

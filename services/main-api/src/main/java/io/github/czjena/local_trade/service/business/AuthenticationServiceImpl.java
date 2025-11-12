@@ -7,6 +7,7 @@ import io.github.czjena.local_trade.model.Users;
 import io.github.czjena.local_trade.repository.UsersRepository;
 import io.github.czjena.local_trade.service.facade.UserEventFacade;
 import io.github.czjena.local_trade.service.infrastructure.AuthenticationService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -20,25 +21,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class AuthenticationServiceImpl implements AuthenticationService {
 
     private final UsersRepository userRepository;
-
     private final PasswordEncoder passwordEncoder;
-
     private final AuthenticationManager authenticationManager;
     private final UserEventFacade userEventFacade;
 
-    public AuthenticationServiceImpl(
-            UsersRepository userRepository,
-            AuthenticationManager authenticationManager,
-            PasswordEncoder passwordEncoder,
-            UserEventFacade userEventFacade) {
-        this.authenticationManager = authenticationManager;
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.userEventFacade = userEventFacade;
-    }
+
 
     @Override
     @Transactional

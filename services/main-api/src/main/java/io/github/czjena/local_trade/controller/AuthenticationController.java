@@ -10,6 +10,7 @@ import io.github.czjena.local_trade.service.infrastructure.AuthenticationService
 import io.github.czjena.local_trade.service.infrastructure.RefreshTokenService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,17 +19,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/auth")
+@RequiredArgsConstructor
 public class AuthenticationController {
 
     private final AuthenticationService authenticationService;
     private final RefreshTokenService refreshTokenService;
     private final LoginFacade loginFacade;
 
-    public AuthenticationController(AuthenticationService authenticationService, RefreshTokenService refreshTokenService, LoginFacade loginFacade) {
-        this.authenticationService = authenticationService;
-        this.refreshTokenService = refreshTokenService;
-        this.loginFacade = loginFacade;
-    }
 
     @PostMapping("/signup")
     public ResponseEntity<Void> register(@RequestBody @Valid RegisterUsersDto registerUserDto) {

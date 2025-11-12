@@ -14,6 +14,7 @@ import io.github.czjena.local_trade.service.infrastructure.AdvertisementService;
 import io.github.czjena.local_trade.service.infrastructure.NotificationEventPublisher;
 import io.github.czjena.local_trade.service.infrastructure.S3Service;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,25 +24,16 @@ import java.io.IOException;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class NewAdvertisementFacade {
+
     private final AdvertisementService advertisementService;
     private final S3Service s3Service;
     private final UsersRepository usersRepository;
     private final AdvertisementDtoMapper advertisementDtoMapper;
     private final AdvertisementRepository advertisementRepository;
 
-    public NewAdvertisementFacade(AdvertisementService advertisementService,
-                                  S3Service s3Service,
-                                  UsersRepository usersRepository,
-                                  AdvertisementDtoMapper advertisementDtoMapper,
-                                  AdvertisementRepository advertisementRepository
-                                  ) {
-        this.advertisementService = advertisementService;
-        this.s3Service = s3Service;
-        this.usersRepository = usersRepository;
-        this.advertisementDtoMapper = advertisementDtoMapper;
-        this.advertisementRepository = advertisementRepository;
-    }
+
 
     @Transactional
     public ResponseAdvertisementDto addWholeAdvertisement(RequestAdvertisementDto advertisementDto, List<MultipartFile> images, UserDetails userDetails) throws IOException {

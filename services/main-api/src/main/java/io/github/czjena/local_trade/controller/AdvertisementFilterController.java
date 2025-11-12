@@ -2,8 +2,9 @@ package io.github.czjena.local_trade.controller;
 
 import io.github.czjena.local_trade.dto.AdvertisementFilterDto;
 import io.github.czjena.local_trade.response.ResponseAdvertisementDto;
-import io.github.czjena.local_trade.service.business.AdvertisementFilterService;
+import io.github.czjena.local_trade.service.infrastructure.AdvertisementFilterService;
 import io.swagger.v3.oas.annotations.Operation;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -15,12 +16,11 @@ import java.math.BigDecimal;
 
 @RestController
 @RequestMapping("/advertisements")
+@RequiredArgsConstructor
 public class AdvertisementFilterController {
+
     private final AdvertisementFilterService advertisementFilterService;
 
-    public AdvertisementFilterController(AdvertisementFilterService advertisementFilterService) {
-        this.advertisementFilterService = advertisementFilterService;
-    }
     @GetMapping("/search")
     @Operation(summary = "Filter advertisements", description = "Sortowanie po polu \", allowableValues = {\"PRICE\",\"TITLE\",\"CREATED_AT} , Kierunek Sortowania SortDirection allowableValues = ASC,DESC")
     public ResponseEntity<Page<ResponseAdvertisementDto>> filterAndPageAdvertisements(

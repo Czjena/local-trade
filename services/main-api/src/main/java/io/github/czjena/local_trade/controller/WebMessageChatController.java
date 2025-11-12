@@ -5,6 +5,7 @@ import io.github.czjena.local_trade.dto.ChatMessagePayload;
 import io.github.czjena.local_trade.model.ChatMessage;
 import io.github.czjena.local_trade.service.infrastructure.ChatMessageService;
 import io.swagger.v3.oas.annotations.Operation;
+import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -17,14 +18,11 @@ import java.security.Principal;
 
 
 @Controller
+@RequiredArgsConstructor
 public class WebMessageChatController {
     private final ChatMessageService chatMessageService;
     private final SimpMessagingTemplate simpMessagingTemplate;
 
-    public WebMessageChatController(ChatMessageService chatMessageService, SimpMessagingTemplate simpMessagingTemplate) {
-        this.chatMessageService = chatMessageService;
-        this.simpMessagingTemplate = simpMessagingTemplate;
-    }
 
     @MessageMapping("/chat.sendMessage.public")
     @SendTo("/topic/public")

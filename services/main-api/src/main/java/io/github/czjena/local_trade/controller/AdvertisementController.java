@@ -10,6 +10,7 @@ import io.github.czjena.local_trade.response.SimpleAdvertisementResponseDto;
 import io.github.czjena.local_trade.service.infrastructure.AdvertisementService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 
@@ -25,15 +26,12 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/advertisements")
+@RequiredArgsConstructor
 public class AdvertisementController {
 
     private final AdvertisementService advertisementService;
     private final NewAdvertisementFacade  newAdvertisementFacade;
 
-    public AdvertisementController(AdvertisementService advertisementService, NewAdvertisementFacade newAdvertisementFacade) {
-        this.advertisementService = advertisementService;
-        this.newAdvertisementFacade = newAdvertisementFacade;
-    }
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/add")

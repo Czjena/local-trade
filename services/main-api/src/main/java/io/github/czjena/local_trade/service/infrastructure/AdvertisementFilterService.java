@@ -1,4 +1,4 @@
-package io.github.czjena.local_trade.service.business;
+package io.github.czjena.local_trade.service.infrastructure;
 
 import io.github.czjena.local_trade.dto.AdvertisementFilterDto;
 import io.github.czjena.local_trade.model.Advertisement;

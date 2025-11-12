@@ -3,6 +3,7 @@ package io.github.czjena.local_trade.controller;
 
 import io.github.czjena.dtos.NotificationEvent;
 import io.github.czjena.local_trade.service.infrastructure.NotificationEventPublisher;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,13 +14,12 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api")
+@RequiredArgsConstructor
 public class TestController {
 
     private final NotificationEventPublisher eventPublisher;
 
-    public TestController(NotificationEventPublisher eventPublisher) {
-        this.eventPublisher = eventPublisher;
-    }
+
 
     @GetMapping("/hello")
     public String hello() {

@@ -7,6 +7,7 @@ import io.github.czjena.local_trade.model.Users;
 import io.github.czjena.local_trade.repository.RefreshTokenRepository;
 import io.github.czjena.local_trade.response.LoginResponse;
 import io.github.czjena.local_trade.service.infrastructure.RefreshTokenService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,17 +15,13 @@ import java.time.Instant;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class RefreshTokenServiceImpl implements RefreshTokenService {
 
     private final RefreshTokenRepository refreshTokenRepository;
-
     private final JwtService jwtService;
 
 
-    public RefreshTokenServiceImpl(RefreshTokenRepository refreshTokenRepository, JwtService jwtService) {
-        this.refreshTokenRepository = refreshTokenRepository;
-        this.jwtService = jwtService;
-    }
 
     @Override
     @Transactional

@@ -5,7 +5,9 @@ import io.github.czjena.local_trade.mappers.AdvertisementDtoMapper;
 import io.github.czjena.local_trade.model.Advertisement;
 import io.github.czjena.local_trade.repository.AdvertisementRepository;
 import io.github.czjena.local_trade.response.ResponseAdvertisementDto;
+import io.github.czjena.local_trade.service.infrastructure.AdvertisementFilterService;
 import jakarta.persistence.criteria.Predicate;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -17,13 +19,13 @@ import java.util.List;
 
 
 @Service
+@RequiredArgsConstructor
 public class AdvertisementFilterServiceImpl implements AdvertisementFilterService {
+
     private final AdvertisementRepository advertisementRepository;
     private final AdvertisementDtoMapper advertisementDtoMapper;
-    public AdvertisementFilterServiceImpl(AdvertisementRepository advertisementRepository, AdvertisementDtoMapper advertisementDtoMapper) {
-        this.advertisementRepository = advertisementRepository;
-        this.advertisementDtoMapper = advertisementDtoMapper;
-    }
+
+
     @Override
     public Specification<Advertisement> getSpecification(AdvertisementFilterDto filter) {
         return (root, query, cb) -> {
