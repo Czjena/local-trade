@@ -1,4 +1,4 @@
-[![CI Build Status](https://img.shields.io/github/actions/workflow/status//local-trade/build-and-test.yml?branch=main&style=for-the-badge)](https://github.com/WieczorekAdrian/local-trade/actions)
+[![CI Build Status](https://img.shields.io/github/actions/workflow/status/WieczorekAdrian/local-trade/build-and-test.yml?branch=main&style=for-the-badge)](https://github.com/WieczorekAdrian/local-trade/actions)
 [![Test Coverage](https://img.shields.io/badge/coverage-84%25-brightgreen?style=for-the-badge)](https://shields.io)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
 [![Java 17](https://img.shields.io/badge/Java-17-blue.svg?style=for-the-badge)](https://www.java.com)
