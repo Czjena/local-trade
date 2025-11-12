@@ -12,11 +12,11 @@
     </parent>
 
     <groupId>io.github.czjena</groupId>
-    <artifactId>local-trade-platform</artifactId>
+    <artifactId>local-tradeEntity-platform</artifactId>
     <version>0.0.1-SNAPSHOT</version>
 
     <packaging>pom</packaging>
-    <name>local-trade-platform</name>
+    <name>local-tradeEntity-platform</name>
 
     <modules>
         <module>services/main-api</module>

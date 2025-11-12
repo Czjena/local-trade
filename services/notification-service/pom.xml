@@ -5,13 +5,13 @@
 
     <parent>
         <groupId>io.github.czjena</groupId>
-        <artifactId>local-trade-platform</artifactId>
+        <artifactId>local-tradeEntity-platform</artifactId>
         <version>0.0.1-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath> </parent>
 
-    <artifactId>local-trade-notification-system</artifactId>
+    <artifactId>local-tradeEntity-notification-system</artifactId>
     <name>notification-service</name>
-    <description>Notification system for local-trade-platform</description>
+    <description>Notification system for local-tradeEntity-platform</description>
 
     <properties>
         <spring.config.import>optional:file:${project.basedir}/.env[.properties]</spring.config.import>

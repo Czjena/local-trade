@@ -6,14 +6,14 @@
 
     <parent>
         <groupId>io.github.czjena</groupId>
-        <artifactId>local-trade-platform</artifactId>
+        <artifactId>local-tradeEntity-platform</artifactId>
         <version>0.0.1-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <artifactId>common-dtos</artifactId>
     <packaging>jar</packaging> <name>common-dtos</name>
-    <description>Common dtos for local-trade-platform</description>
+    <description>Common dtos for local-tradeEntity-platform</description>
 
     <dependencies>
         <dependency>

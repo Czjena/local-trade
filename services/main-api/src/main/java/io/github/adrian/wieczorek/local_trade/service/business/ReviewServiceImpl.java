@@ -1,0 +1,152 @@
+package io.github.adrian.wieczorek.local_trade.service.business;
+
+import io.github.adrian.wieczorek.local_trade.enums.TradeStatus;
+import io.github.adrian.wieczorek.local_trade.exceptions.ConflictException;
+import io.github.adrian.wieczorek.local_trade.exceptions.TradeAccessDenied;
+import io.github.adrian.wieczorek.local_trade.exceptions.TradeReviewedConflictException;
+import io.github.adrian.wieczorek.local_trade.exceptions.UserNotFoundException;
+import io.github.adrian.wieczorek.local_trade.mappers.ReviewResponseDtoMapper;
+import io.github.adrian.wieczorek.local_trade.model.ReviewEntity;
+import io.github.adrian.wieczorek.local_trade.model.TradeEntity;
+import io.github.adrian.wieczorek.local_trade.model.UsersEntity;
+import io.github.adrian.wieczorek.local_trade.repository.ReviewRepository;
+import io.github.adrian.wieczorek.local_trade.repository.TradeRepository;
+import io.github.adrian.wieczorek.local_trade.repository.UsersRepository;
+import io.github.adrian.wieczorek.local_trade.request.ReviewRequestDto;
+import io.github.adrian.wieczorek.local_trade.response.ReviewResponseDto;
+import io.github.adrian.wieczorek.local_trade.service.infrastructure.ReviewService;
+import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
+
+@Slf4j
+@Service
+@RequiredArgsConstructor
+public class ReviewServiceImpl implements ReviewService {
+
+    private final ReviewRepository reviewRepository;
+    private final UsersRepository usersRepository;
+    private final ReviewResponseDtoMapper reviewResponseDtoMapper;
+    private final TradeRepository tradeRepository;
+
+
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<ReviewResponseDto> getAllMyReviews(UserDetails userDetails) {
+        log.info("Getting all reviews for user {}", userDetails.getUsername());
+        UsersEntity user = usersRepository.findByEmail(userDetails.getUsername())
+                .orElseThrow(() -> {
+                    log.info("User {} not found while fetching reviews" , userDetails.getUsername());
+                    return new UserNotFoundException("User " + userDetails.getUsername());
+                });
+
+        List<ReviewEntity> reviewEntities = reviewRepository.findAllByReviewedUserOrReviewer(user, user);
+
+        if(reviewEntities.isEmpty()) {
+            log.info("No reviews found for user with email {}", userDetails.getUsername());
+            return Collections.emptyList();
+        }
+
+        log.info("Found {} reviews for user {}", reviewEntities.size(), userDetails.getUsername());
+        return reviewEntities.stream().map(reviewResponseDtoMapper::toDto).toList();
+
+    }
+
+    @Transactional
+    @Override
+    public ReviewResponseDto postReview(UserDetails userDetails, UUID tradeId, ReviewRequestDto reviewRequestDto) {
+        log.info("Creating new review");
+
+        UsersEntity loggedInUser = usersRepository.findByEmail(userDetails.getUsername())
+                .orElseThrow(() -> new UserNotFoundException("User " + userDetails.getUsername()));
+        TradeEntity completedTradeEntity = tradeRepository.findByTradeId(tradeId)
+                .orElseThrow(() -> {
+                    log.info("Trade with id {} not found while creating review", tradeId);
+                    return new EntityNotFoundException("Trade not found");
+                });
+
+        var seller  = completedTradeEntity.getSeller();
+        var buyer = completedTradeEntity.getBuyer();
+
+        if(!loggedInUser.equals(buyer)&&!loggedInUser.equals(seller)) {
+            log.warn("Logged in user is not a part of this trade and can't post this review");
+            throw new TradeAccessDenied("Logged in user is not a part of this trade and not able to post this review" + userDetails.getUsername());
+        }
+        if(!completedTradeEntity.getStatus().equals(TradeStatus.COMPLETED)) {
+            log.warn("Trade {} is not in completed status", completedTradeEntity.getId());
+            throw new ConflictException("Trade " + completedTradeEntity.getId() + " is not in completed status");
+        }
+        if (reviewRepository.existsByTradeEntityAndReviewer(completedTradeEntity, loggedInUser)) {
+            log.warn("User {} has already reviewed this trade {}", loggedInUser.getUsername(), tradeId);
+            throw new TradeReviewedConflictException("You have already reviewed this trade");
+        }
+
+        UsersEntity reviewedUser = loggedInUser.equals(buyer) ? seller : buyer;
+
+            log.info("User {} is reviewing user {}", loggedInUser.getUsername(), reviewedUser.getUsername());
+            var review = ReviewEntity.builder()
+                    .reviewer(loggedInUser)
+                    .reviewedUser(reviewedUser)
+                    .tradeEntity(completedTradeEntity)
+                    .comment(reviewRequestDto.comment())
+                    .rating(reviewRequestDto.rating())
+                    .build();
+         ReviewEntity savedReviewEntity = reviewRepository.save(review);
+        log.info("User {} successfully posted review", loggedInUser.getUsername());
+            if(loggedInUser.equals(buyer)) {
+                completedTradeEntity.setBuyerLeftReview(true);
+            }else {
+                completedTradeEntity.setSellerLeftReview(true);
+            }
+            this.updateUserRating(reviewedUser);
+            tradeRepository.save(completedTradeEntity);
+
+        return reviewResponseDtoMapper.toDto(savedReviewEntity);
+    }
+
+    @Transactional
+    @Override
+    public void deleteReviewByAdmin(UserDetails userDetails, UUID reviewId) {
+        log.info("Deleting  review");
+        UsersEntity user = usersRepository.findByEmail(userDetails.getUsername())
+                .orElseThrow(() -> new UserNotFoundException("User not found "));
+        log.info("User {} with role {} has been found ", userDetails.getUsername(), user.getRole());
+        ReviewEntity reviewEntity = reviewRepository.findByReviewId(reviewId)
+                .orElseThrow(() -> new EntityNotFoundException("Review with id " + reviewId + " not found"));
+        log.info("Review {} with id {} has been found ", reviewEntity, reviewEntity.getId());
+
+        reviewRepository.delete(reviewEntity);
+        log.info("User {} successfully deleted review {}", userDetails.getUsername(), reviewEntity.getId());
+
+    }
+    private void updateUserRating(UsersEntity user){
+        log.info("Updating user rating");
+        List<ReviewEntity> reviewEntities = reviewRepository.findAllByReviewedUser(user);
+
+        if(reviewEntities.isEmpty()) {
+            log.info("No reviews found for user with id: {}", user.getId());
+            user.setAverageRating(0.0);
+            user.setRatingCount(0);
+        }else {
+            log.info("Found : {} reviews for user with users id :  {}", reviewEntities.size(), user.getId());
+            double ratingSum = reviewEntities.stream().mapToDouble(ReviewEntity::getRating).sum();
+            double averageRating = ratingSum / reviewEntities.size();
+            double roundedAverage = Math.round(averageRating * 10.0) / 10.0;
+            user.setAverageRating(roundedAverage);
+            user.setRatingCount(reviewEntities.size());
+        }
+
+        usersRepository.save(user);
+        log.info("User {} successfully updated user rating {}", user.getId(), user.getAverageRating());
+    }
+}
+
+
