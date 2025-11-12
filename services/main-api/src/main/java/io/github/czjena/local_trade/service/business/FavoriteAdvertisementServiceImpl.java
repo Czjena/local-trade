@@ -9,6 +9,7 @@ import io.github.czjena.local_trade.repository.AdvertisementRepository;
 import io.github.czjena.local_trade.repository.UsersRepository;
 import io.github.czjena.local_trade.service.infrastructure.FavoriteAdvertisementService;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,16 +20,13 @@ import java.util.stream.Collectors;
 
 
 @Service
+@RequiredArgsConstructor
 public class FavoriteAdvertisementServiceImpl implements FavoriteAdvertisementService {
+
     private final AdvertisementRepository advertisementRepository;
     private final UsersRepository usersRepository;
     private final FavoriteAdvertisementMapper favoriteAdvertisementMapper;
 
-    public FavoriteAdvertisementServiceImpl(AdvertisementRepository advertisementRepository, UsersRepository usersRepository, FavoriteAdvertisementMapper favoriteAdvertisementMapper) {
-        this.advertisementRepository = advertisementRepository;
-        this.usersRepository = usersRepository;
-        this.favoriteAdvertisementMapper = favoriteAdvertisementMapper;
-    }
 
     @Override
     @Transactional(readOnly = true)

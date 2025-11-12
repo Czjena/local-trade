@@ -4,6 +4,7 @@ import io.github.czjena.local_trade.dto.UpdateUserDto;
 import io.github.czjena.local_trade.dto.UserResponseDto;
 import io.github.czjena.local_trade.model.Users;
 import io.github.czjena.local_trade.service.infrastructure.UsersService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -13,12 +14,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/users")
+@RequiredArgsConstructor
 public class UsersController {
     private final UsersService usersService;
 
-    public UsersController(UsersService usersService) {
-        this.usersService = usersService;
-    }
 
     @GetMapping("/me")
     public ResponseEntity<Users> authenticatedUser() {

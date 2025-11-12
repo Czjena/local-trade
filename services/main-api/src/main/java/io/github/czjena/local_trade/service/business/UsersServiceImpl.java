@@ -9,6 +9,7 @@ import io.github.czjena.local_trade.repository.UsersRepository;
 
 
 import io.github.czjena.local_trade.service.infrastructure.UsersService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -20,17 +21,13 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class UsersServiceImpl implements UsersService {
 
     private final UsersRepository usersRepository;
-
     private final BCryptPasswordEncoder passwordEncoder;
 
-    public UsersServiceImpl(UsersRepository usersRepository, BCryptPasswordEncoder passwordEncoder) {
-        this.usersRepository = usersRepository;
-        this.passwordEncoder = passwordEncoder;
 
-    }
     @Override
     @Transactional(readOnly = true)
     public List<Users> allUsers() {

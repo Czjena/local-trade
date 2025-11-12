@@ -9,6 +9,7 @@ import io.github.czjena.local_trade.repository.ImageRepository;
 import io.github.czjena.local_trade.service.infrastructure.S3Service;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.imgscalr.Scalr;
@@ -32,6 +33,7 @@ import java.util.UUID;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class S3ServiceImpl implements S3Service {
 
     private final S3Client s3Client;
@@ -41,12 +43,6 @@ public class S3ServiceImpl implements S3Service {
     private final S3Presigner s3Presigner;
 
 
-    public S3ServiceImpl(S3Client s3Client, AdvertisementRepository advertisementRepository, ImageRepository imageRepository, S3Presigner s3Presigner) {
-        this.s3Client = s3Client;
-        this.advertisementRepository =  advertisementRepository;
-        this.imageRepository = imageRepository;
-        this.s3Presigner = s3Presigner;
-    }
 
     @Override
     public PutObjectRequest putObject(String bucketName, String key, @Nullable String content) {

@@ -13,6 +13,7 @@ It supports user listings, messaging, ratings, and media management — designed
 - **Spring Boot** (REST API, WebSocket chat, validation)
 - **PostgreSQL** – relational database
 - **RabbitMQ** – asynchronous message broker
+- **Azure Blob Storage** – **target cloud storage solution**
 - **Redis** – caching and token storage  
 - **MinIO / AWS S3** – image storage and thumbnail generation  
 - **Testcontainers** – integration testing environment  
@@ -74,6 +75,8 @@ s3.useMinio=false
 ```
 Switches the configuration to use a live AWS S3 bucket.
 
+**Cloud Note:** The project currently supports MinIO (local) and AWS S3. The roadmap includes a planned full pivot to **Azure Blob Storage** and production deployment on the Azure platform.
+
 This profile requires additional configuration (like AWS credentials, region, and bucket name) to be provided in the relevant application-secret.yml profile.
 
 ### Redis configuration
@@ -113,19 +116,17 @@ This command automatically provisions PostgreSQL, Redis, and MinIO containers fo
 
 ### API documentation is available via the following endpoints:
 Swagger UI: /swagger-ui.html
-
-OpenAPI v3 Specification: /v3/api-docs
+, OpenAPI v3 Specification: /v3/api-docs
 
 ### CI/CD Pipeline
-The GitHub Actions workflow executes the following:
+- The GitHub Actions workflow executes the following:
 
-Build and test using Maven,
+- Build and test using Maven
 
-Code quality checks via Qodana,
+- Code quality checks via Qodana
 
-Static analysis and test coverage reports.
+- Static analysis and test coverage reports
 
-### Architectural Overview
 ### Architectural Overview
 - **Multi-service Monorepo:** The platform is built as a monorepo containing multiple independent services (e.g., `main-api`, `notification-service`).
 - **Event-Driven:** Services communicate asynchronously using **RabbitMQ** for a decoupled and resilient architecture.
@@ -146,8 +147,15 @@ See the LICENSE file for details.
 [IN PROGRESS] Notification System: The core microservice architecture is now implemented.
 - [DONE] Extracted a separate `notification-service` microservice.
 - [DONE] Integrated asynchronous communication using **RabbitMQ**.
-- [PLANNED] Implementing full notification logic (e.g., email sending via SendGrid/Mailgun).
+- **[DONE] Implementing full notification logic (e.g., email sending via a dedicated email service worker consuming RabbitMQ events).**
 - [PLANNED] Adding user notification preferences.
+
+
+*[PLANNED] Azure Deployment and Storage Pivot:**
+
+[PLANNED] **Full migration of the target production environment to the Azure platform (e.g., Azure App Service / AKS).**
+
+[PLANNED] **Replacing AWS S3 / MinIO with Azure Blob Storage to consolidate all services within a single cloud provider.**
 
 [PLANNED] AI-based Image Moderation: Integration with an external API for image moderation.
 
@@ -156,6 +164,6 @@ See the LICENSE file for details.
 ### Contributing
 This is an open-source project, and contributions are welcome! Feel free to open an issue to discuss a new feature or submit a pull request with your improvements. All contributions will be reviewed.
 ## Author
-Adrian Wieczorek (Czjena)
+Adrian Wieczorek
 
-GitHub: @Czjena
+GitHub: @WieczorekAdrian

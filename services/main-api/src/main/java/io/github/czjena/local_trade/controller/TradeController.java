@@ -5,6 +5,7 @@ import io.github.czjena.local_trade.request.TradeStatusRequestDto;
 import io.github.czjena.local_trade.response.TradeResponseDto;
 import io.github.czjena.local_trade.service.infrastructure.TradeService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -16,12 +17,12 @@ import java.net.URI;
 
 @RestController
 @RequestMapping("/trades")
+@RequiredArgsConstructor
 public class TradeController {
+
     private final TradeService tradeService;
 
-    public TradeController(TradeService tradeService) {
-        this.tradeService = tradeService;
-    }
+
     @PreAuthorize("isAuthenticated()")
     @PostMapping()
     public ResponseEntity<TradeResponseDto> tradeInitiation(@AuthenticationPrincipal UserDetails userDetails, @Valid @RequestBody TradeInitiationRequestDto tradeRequestDto) {

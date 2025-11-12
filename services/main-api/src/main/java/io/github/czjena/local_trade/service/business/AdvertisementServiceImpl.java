@@ -15,6 +15,7 @@ import io.github.czjena.local_trade.response.ResponseAdvertisementDto;
 import io.github.czjena.local_trade.response.SimpleAdvertisementResponseDto;
 import io.github.czjena.local_trade.service.infrastructure.AdvertisementService;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -25,6 +26,7 @@ import java.util.UUID;
 
 
 @Service
+@RequiredArgsConstructor
 public class AdvertisementServiceImpl implements AdvertisementService {
 
     private final AdvertisementRepository advertisementRepository;
@@ -34,14 +36,6 @@ public class AdvertisementServiceImpl implements AdvertisementService {
     private final SimpleAdvertisementDtoMapper simpleAdvertisementDtoMapper;
     private final AdvertisementDtoMapper advertisementDtoMapper;
 
-    public AdvertisementServiceImpl(SimpleAdvertisementDtoMapper simpleAdvertisementDtoMapper, AdvertisementRepository advertisementRepository, CategoryRepository categoryRepository, AdvertisementMapper advertisementMapper, UsersRepository usersRepository, AdvertisementDtoMapper advertisementDtoMapper) {
-        this.advertisementRepository = advertisementRepository;
-        this.categoryRepository = categoryRepository;
-        this.advertisementMapper = advertisementMapper;
-        this.usersRepository = usersRepository;
-        this.simpleAdvertisementDtoMapper = simpleAdvertisementDtoMapper;
-        this.advertisementDtoMapper = advertisementDtoMapper;
-    }
 
     @Override
     @Transactional

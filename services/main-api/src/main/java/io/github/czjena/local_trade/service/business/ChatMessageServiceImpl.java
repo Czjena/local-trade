@@ -8,6 +8,7 @@ import io.github.czjena.local_trade.model.Users;
 import io.github.czjena.local_trade.repository.ChatMessageRepository;
 import io.github.czjena.local_trade.repository.UsersRepository;
 import io.github.czjena.local_trade.service.infrastructure.ChatMessageService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,14 +20,11 @@ import java.util.Comparator;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class ChatMessageServiceImpl implements ChatMessageService {
     private final ChatMessageRepository chatMessageRepository;
     private final UsersRepository usersRepository;
 
-    public ChatMessageServiceImpl(ChatMessageRepository chatMessageRepository, UsersRepository usersRepository) {
-        this.chatMessageRepository = chatMessageRepository;
-        this.usersRepository = usersRepository;
-    }
 
     @Override
     @Transactional

@@ -16,6 +16,7 @@ import io.github.czjena.local_trade.request.ReviewRequestDto;
 import io.github.czjena.local_trade.response.ReviewResponseDto;
 import io.github.czjena.local_trade.service.infrastructure.ReviewService;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -27,18 +28,15 @@ import java.util.UUID;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class ReviewServiceImpl implements ReviewService {
+
     private final ReviewRepository reviewRepository;
     private final UsersRepository usersRepository;
     private final ReviewResponseDtoMapper reviewResponseDtoMapper;
     private final TradeRepository tradeRepository;
 
-    public ReviewServiceImpl(ReviewRepository reviewRepository, UsersRepository usersRepository, ReviewResponseDtoMapper reviewResponseDtoMapper, TradeRepository tradeRepository) {
-        this.reviewRepository = reviewRepository;
-        this.usersRepository = usersRepository;
-        this.reviewResponseDtoMapper = reviewResponseDtoMapper;
-        this.tradeRepository = tradeRepository;
-    }
+
 
     @Transactional(readOnly = true)
     @Override

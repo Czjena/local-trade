@@ -4,6 +4,7 @@ import io.github.czjena.local_trade.request.ReviewRequestDto;
 import io.github.czjena.local_trade.response.ReviewResponseDto;
 import io.github.czjena.local_trade.service.infrastructure.ReviewService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -16,12 +17,11 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/reviews")
+@RequiredArgsConstructor
 public class ReviewController {
     private final ReviewService reviewService;
 
-    public ReviewController(ReviewService reviewService) {
-        this.reviewService = reviewService;
-    }
+
 
     @GetMapping
     @PreAuthorize("isAuthenticated()")

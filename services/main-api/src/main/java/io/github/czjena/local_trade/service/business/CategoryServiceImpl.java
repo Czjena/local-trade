@@ -8,6 +8,7 @@ import io.github.czjena.local_trade.repository.AdvertisementRepository;
 import io.github.czjena.local_trade.repository.CategoryRepository;
 import io.github.czjena.local_trade.service.infrastructure.CategoryService;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -16,16 +17,13 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository categoryRepository;
     private final AdvertisementRepository advertisementRepository;
     private final CategoryMapper categoryMapper;
 
-    public CategoryServiceImpl(CategoryRepository categoryRepository, AdvertisementRepository advertisementRepository, CategoryMapper categoryMapper) {
-        this.advertisementRepository = advertisementRepository;
-        this.categoryRepository = categoryRepository;
-        this.categoryMapper = categoryMapper;
-    }
+
 @Transactional(readOnly = true)
 @Override
 public List<Advertisement> findAllAdvertisementsByCategoryId(Integer categoryId) {
