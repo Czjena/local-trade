@@ -2,14 +2,14 @@ package io.github.adrian.wieczorek.local_trade.integration;
 
 import io.github.adrian.wieczorek.dtos.NotificationEvent;
 
-import io.github.adrian.wieczorek.local_trade.model.AdvertisementEntity;
-import io.github.adrian.wieczorek.local_trade.model.CategoryEntity;
-import io.github.adrian.wieczorek.local_trade.model.UsersEntity;
-import io.github.adrian.wieczorek.local_trade.repository.AdvertisementRepository;
-import io.github.adrian.wieczorek.local_trade.repository.CategoryRepository;
-import io.github.adrian.wieczorek.local_trade.repository.UsersRepository;
-import io.github.adrian.wieczorek.local_trade.service.facade.AdvertisementEventFacade;
-import io.github.adrian.wieczorek.local_trade.service.infrastructure.NotificationEventPublisher;
+import io.github.adrian.wieczorek.local_trade.service.advertisement.AdvertisementEntity;
+import io.github.adrian.wieczorek.local_trade.service.category.CategoryEntity;
+import io.github.adrian.wieczorek.local_trade.service.user.UsersEntity;
+import io.github.adrian.wieczorek.local_trade.service.advertisement.AdvertisementRepository;
+import io.github.adrian.wieczorek.local_trade.service.category.CategoryRepository;
+import io.github.adrian.wieczorek.local_trade.service.user.UsersRepository;
+import io.github.adrian.wieczorek.local_trade.service.advertisement.facade.AdvertisementEventFacade;
+import io.github.adrian.wieczorek.local_trade.service.rabbit.NotificationEventPublisher;
 import io.github.adrian.wieczorek.local_trade.testutils.AdUtils;
 import io.github.adrian.wieczorek.local_trade.testutils.CategoryUtils;
 import io.github.adrian.wieczorek.local_trade.testutils.UserUtils;

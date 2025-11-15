@@ -2,11 +2,11 @@ package io.github.adrian.wieczorek.local_trade.integration;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.adrian.wieczorek.local_trade.dto.ImageDto;
-import io.github.adrian.wieczorek.local_trade.model.AdvertisementEntity;
-import io.github.adrian.wieczorek.local_trade.model.ImageEntity;
-import io.github.adrian.wieczorek.local_trade.repository.AdvertisementRepository;
-import io.github.adrian.wieczorek.local_trade.repository.ImageRepository;
+import io.github.adrian.wieczorek.local_trade.service.image.dto.ImageDto;
+import io.github.adrian.wieczorek.local_trade.service.advertisement.AdvertisementEntity;
+import io.github.adrian.wieczorek.local_trade.service.image.ImageEntity;
+import io.github.adrian.wieczorek.local_trade.service.advertisement.AdvertisementRepository;
+import io.github.adrian.wieczorek.local_trade.service.image.ImageRepository;
 import io.github.adrian.wieczorek.local_trade.testutils.AdUtilsIntegrationTests;
 import io.jsonwebtoken.io.IOException;
 import jakarta.transaction.Transactional;

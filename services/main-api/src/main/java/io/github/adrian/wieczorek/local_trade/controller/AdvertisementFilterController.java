@@ -1,8 +1,8 @@
 package io.github.adrian.wieczorek.local_trade.controller;
 
-import io.github.adrian.wieczorek.local_trade.dto.AdvertisementFilterDto;
-import io.github.adrian.wieczorek.local_trade.response.ResponseAdvertisementDto;
-import io.github.adrian.wieczorek.local_trade.service.infrastructure.AdvertisementFilterService;
+import io.github.adrian.wieczorek.local_trade.service.advertisement.dto.AdvertisementFilterDto;
+import io.github.adrian.wieczorek.local_trade.service.advertisement.dto.ResponseAdvertisementDto;
+import io.github.adrian.wieczorek.local_trade.service.advertisement.service.AdvertisementFilterService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

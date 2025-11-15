@@ -1,13 +1,13 @@
 package io.github.adrian.wieczorek.local_trade.controller;
 
-import io.github.adrian.wieczorek.local_trade.dto.AdvertisementUpdateDto;
-import io.github.adrian.wieczorek.local_trade.service.facade.NewAdvertisementFacade;
+import io.github.adrian.wieczorek.local_trade.service.advertisement.dto.AdvertisementUpdateDto;
+import io.github.adrian.wieczorek.local_trade.service.advertisement.facade.NewAdvertisementFacade;
 
 
-import io.github.adrian.wieczorek.local_trade.request.RequestAdvertisementDto;
-import io.github.adrian.wieczorek.local_trade.response.ResponseAdvertisementDto;
-import io.github.adrian.wieczorek.local_trade.response.SimpleAdvertisementResponseDto;
-import io.github.adrian.wieczorek.local_trade.service.infrastructure.AdvertisementService;
+import io.github.adrian.wieczorek.local_trade.service.advertisement.dto.RequestAdvertisementDto;
+import io.github.adrian.wieczorek.local_trade.service.advertisement.dto.ResponseAdvertisementDto;
+import io.github.adrian.wieczorek.local_trade.service.advertisement.dto.SimpleAdvertisementResponseDto;
+import io.github.adrian.wieczorek.local_trade.service.advertisement.service.AdvertisementService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;

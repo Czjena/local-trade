@@ -1,7 +1,7 @@
 package io.github.adrian.wieczorek.local_trade.controller;
 
-import io.github.adrian.wieczorek.local_trade.dto.CategoryDto;
-import io.github.adrian.wieczorek.local_trade.service.infrastructure.CategoryService;
+import io.github.adrian.wieczorek.local_trade.service.category.dto.CategoryDto;
+import io.github.adrian.wieczorek.local_trade.service.category.service.CategoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

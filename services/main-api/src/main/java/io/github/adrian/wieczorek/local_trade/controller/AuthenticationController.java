@@ -1,13 +1,13 @@
 package io.github.adrian.wieczorek.local_trade.controller;
 
-import io.github.adrian.wieczorek.local_trade.dto.LoginDto;
-import io.github.adrian.wieczorek.local_trade.dto.RefreshTokenRequest;
-import io.github.adrian.wieczorek.local_trade.dto.RegisterUsersDto;
-import io.github.adrian.wieczorek.local_trade.service.facade.LoginFacade;
+import io.github.adrian.wieczorek.local_trade.service.user.dto.LoginDto;
+import io.github.adrian.wieczorek.local_trade.service.refreshtoken.dto.RefreshTokenRequest;
+import io.github.adrian.wieczorek.local_trade.service.user.dto.RegisterUsersDto;
+import io.github.adrian.wieczorek.local_trade.service.user.facade.LoginFacade;
 
-import io.github.adrian.wieczorek.local_trade.response.LoginResponse;
-import io.github.adrian.wieczorek.local_trade.service.infrastructure.AuthenticationService;
-import io.github.adrian.wieczorek.local_trade.service.infrastructure.RefreshTokenService;
+import io.github.adrian.wieczorek.local_trade.service.user.dto.LoginResponse;
+import io.github.adrian.wieczorek.local_trade.service.user.service.AuthenticationService;
+import io.github.adrian.wieczorek.local_trade.service.refreshtoken.service.RefreshTokenService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

@@ -1,9 +1,9 @@
 package io.github.adrian.wieczorek.local_trade.controller;
 
-import io.github.adrian.wieczorek.local_trade.dto.UpdateUserDto;
-import io.github.adrian.wieczorek.local_trade.dto.UserResponseDto;
-import io.github.adrian.wieczorek.local_trade.model.UsersEntity;
-import io.github.adrian.wieczorek.local_trade.service.infrastructure.UsersService;
+import io.github.adrian.wieczorek.local_trade.service.user.dto.UpdateUserDto;
+import io.github.adrian.wieczorek.local_trade.service.user.dto.UserResponseDto;
+import io.github.adrian.wieczorek.local_trade.service.user.UsersEntity;
+import io.github.adrian.wieczorek.local_trade.service.user.service.UsersService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;

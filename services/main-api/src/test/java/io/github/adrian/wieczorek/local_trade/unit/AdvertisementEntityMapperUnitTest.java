@@ -1,8 +1,8 @@
 package io.github.adrian.wieczorek.local_trade.unit;
 
-import io.github.adrian.wieczorek.local_trade.dto.AdvertisementUpdateDto;
-import io.github.adrian.wieczorek.local_trade.mappers.AdvertisementMapper;
-import io.github.adrian.wieczorek.local_trade.model.AdvertisementEntity;
+import io.github.adrian.wieczorek.local_trade.service.advertisement.dto.AdvertisementUpdateDto;
+import io.github.adrian.wieczorek.local_trade.service.advertisement.mapper.AdvertisementMapper;
+import io.github.adrian.wieczorek.local_trade.service.advertisement.AdvertisementEntity;
 import io.github.adrian.wieczorek.local_trade.testutils.AdUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

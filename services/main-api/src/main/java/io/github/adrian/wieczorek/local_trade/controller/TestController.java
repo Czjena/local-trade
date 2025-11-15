@@ -2,7 +2,7 @@ package io.github.adrian.wieczorek.local_trade.controller;
 
 
 import io.github.adrian.wieczorek.dtos.NotificationEvent;
-import io.github.adrian.wieczorek.local_trade.service.infrastructure.NotificationEventPublisher;
+import io.github.adrian.wieczorek.local_trade.service.rabbit.NotificationEventPublisher;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;

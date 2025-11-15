@@ -1,8 +1,8 @@
 package io.github.adrian.wieczorek.local_trade.controller;
 
-import io.github.adrian.wieczorek.local_trade.dto.ImageDto;
-import io.github.adrian.wieczorek.local_trade.mappers.ImageMapper;
-import io.github.adrian.wieczorek.local_trade.service.infrastructure.S3Service;
+import io.github.adrian.wieczorek.local_trade.service.image.dto.ImageDto;
+import io.github.adrian.wieczorek.local_trade.service.image.mapper.ImageMapper;
+import io.github.adrian.wieczorek.local_trade.service.image.service.S3Service;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

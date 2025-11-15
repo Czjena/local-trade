@@ -1,9 +1,9 @@
 package io.github.adrian.wieczorek.local_trade.testutils;
 
 import io.github.adrian.wieczorek.local_trade.enums.TradeStatus;
-import io.github.adrian.wieczorek.local_trade.response.SimpleAdvertisementResponseDto;
-import io.github.adrian.wieczorek.local_trade.response.SimpleUserResponseDto;
-import io.github.adrian.wieczorek.local_trade.response.TradeResponseDto;
+import io.github.adrian.wieczorek.local_trade.service.advertisement.dto.SimpleAdvertisementResponseDto;
+import io.github.adrian.wieczorek.local_trade.service.user.dto.SimpleUserResponseDto;
+import io.github.adrian.wieczorek.local_trade.service.trade.dto.TradeResponseDto;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

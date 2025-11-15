@@ -1,8 +1,8 @@
 package io.github.adrian.wieczorek.local_trade.controller;
 
-import io.github.adrian.wieczorek.local_trade.request.ReviewRequestDto;
-import io.github.adrian.wieczorek.local_trade.response.ReviewResponseDto;
-import io.github.adrian.wieczorek.local_trade.service.infrastructure.ReviewService;
+import io.github.adrian.wieczorek.local_trade.service.review.dto.ReviewRequestDto;
+import io.github.adrian.wieczorek.local_trade.service.review.dto.ReviewResponseDto;
+import io.github.adrian.wieczorek.local_trade.service.review.service.ReviewService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

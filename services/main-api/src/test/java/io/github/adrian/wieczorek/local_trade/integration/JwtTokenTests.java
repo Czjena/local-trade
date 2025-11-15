@@ -1,14 +1,14 @@
 package io.github.adrian.wieczorek.local_trade.integration;
 
 import io.github.adrian.wieczorek.local_trade.controller.AuthenticationController;
-import io.github.adrian.wieczorek.local_trade.dto.LoginDto;
-import io.github.adrian.wieczorek.local_trade.dto.RefreshTokenRequest;
-import io.github.adrian.wieczorek.local_trade.model.UsersEntity;
-import io.github.adrian.wieczorek.local_trade.repository.RefreshTokenRepository;
-import io.github.adrian.wieczorek.local_trade.repository.UsersRepository;
-import io.github.adrian.wieczorek.local_trade.response.LoginResponse;
-import io.github.adrian.wieczorek.local_trade.service.business.JwtService;
-import io.github.adrian.wieczorek.local_trade.service.business.TestJwtUtils;
+import io.github.adrian.wieczorek.local_trade.service.user.dto.LoginDto;
+import io.github.adrian.wieczorek.local_trade.service.refreshtoken.dto.RefreshTokenRequest;
+import io.github.adrian.wieczorek.local_trade.service.user.UsersEntity;
+import io.github.adrian.wieczorek.local_trade.service.refreshtoken.RefreshTokenRepository;
+import io.github.adrian.wieczorek.local_trade.service.user.UsersRepository;
+import io.github.adrian.wieczorek.local_trade.service.user.dto.LoginResponse;
+import io.github.adrian.wieczorek.local_trade.service.user.service.JwtService;
+import io.github.adrian.wieczorek.local_trade.service.user.service.TestJwtUtils;
 import io.jsonwebtoken.*;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;

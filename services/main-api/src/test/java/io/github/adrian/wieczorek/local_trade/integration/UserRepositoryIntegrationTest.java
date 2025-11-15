@@ -1,13 +1,13 @@
 package io.github.adrian.wieczorek.local_trade.integration;
 
-import io.github.adrian.wieczorek.local_trade.dto.UpdateUserDto;
+import io.github.adrian.wieczorek.local_trade.service.user.dto.UpdateUserDto;
 import io.github.adrian.wieczorek.local_trade.exceptions.UserNotFoundException;
 
-import io.github.adrian.wieczorek.local_trade.model.UsersEntity;
-import io.github.adrian.wieczorek.local_trade.repository.ChatMessageRepository;
-import io.github.adrian.wieczorek.local_trade.repository.UsersRepository;
+import io.github.adrian.wieczorek.local_trade.service.user.UsersEntity;
+import io.github.adrian.wieczorek.local_trade.service.chat.ChatMessageRepository;
+import io.github.adrian.wieczorek.local_trade.service.user.UsersRepository;
 
-import io.github.adrian.wieczorek.local_trade.service.infrastructure.UsersService;
+import io.github.adrian.wieczorek.local_trade.service.user.service.UsersService;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 

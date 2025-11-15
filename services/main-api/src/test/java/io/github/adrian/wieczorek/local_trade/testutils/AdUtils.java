@@ -1,11 +1,11 @@
 package io.github.adrian.wieczorek.local_trade.testutils;
 
-import io.github.adrian.wieczorek.local_trade.dto.AdvertisementUpdateDto;
-import io.github.adrian.wieczorek.local_trade.model.AdvertisementEntity;
-import io.github.adrian.wieczorek.local_trade.model.CategoryEntity;
-import io.github.adrian.wieczorek.local_trade.model.UsersEntity;
-import io.github.adrian.wieczorek.local_trade.request.RequestAdvertisementDto;
-import io.github.adrian.wieczorek.local_trade.response.ResponseAdvertisementDto;
+import io.github.adrian.wieczorek.local_trade.service.advertisement.dto.AdvertisementUpdateDto;
+import io.github.adrian.wieczorek.local_trade.service.advertisement.AdvertisementEntity;
+import io.github.adrian.wieczorek.local_trade.service.category.CategoryEntity;
+import io.github.adrian.wieczorek.local_trade.service.user.UsersEntity;
+import io.github.adrian.wieczorek.local_trade.service.advertisement.dto.RequestAdvertisementDto;
+import io.github.adrian.wieczorek.local_trade.service.advertisement.dto.ResponseAdvertisementDto;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;

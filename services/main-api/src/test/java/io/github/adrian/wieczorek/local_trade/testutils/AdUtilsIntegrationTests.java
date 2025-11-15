@@ -1,11 +1,11 @@
 package io.github.adrian.wieczorek.local_trade.testutils;
 
-import io.github.adrian.wieczorek.local_trade.model.AdvertisementEntity;
-import io.github.adrian.wieczorek.local_trade.model.CategoryEntity;
-import io.github.adrian.wieczorek.local_trade.model.UsersEntity;
-import io.github.adrian.wieczorek.local_trade.repository.AdvertisementRepository;
-import io.github.adrian.wieczorek.local_trade.repository.CategoryRepository;
-import io.github.adrian.wieczorek.local_trade.repository.UsersRepository;
+import io.github.adrian.wieczorek.local_trade.service.advertisement.AdvertisementEntity;
+import io.github.adrian.wieczorek.local_trade.service.category.CategoryEntity;
+import io.github.adrian.wieczorek.local_trade.service.user.UsersEntity;
+import io.github.adrian.wieczorek.local_trade.service.advertisement.AdvertisementRepository;
+import io.github.adrian.wieczorek.local_trade.service.category.CategoryRepository;
+import io.github.adrian.wieczorek.local_trade.service.user.UsersRepository;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;

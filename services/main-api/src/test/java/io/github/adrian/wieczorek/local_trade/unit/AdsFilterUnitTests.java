@@ -1,12 +1,12 @@
 package io.github.adrian.wieczorek.local_trade.unit;
 
-import io.github.adrian.wieczorek.local_trade.dto.AdvertisementFilterDto;
-import io.github.adrian.wieczorek.local_trade.mappers.AdvertisementDtoMapper;
-import io.github.adrian.wieczorek.local_trade.model.AdvertisementEntity;
-import io.github.adrian.wieczorek.local_trade.model.CategoryEntity;
-import io.github.adrian.wieczorek.local_trade.repository.AdvertisementRepository;
-import io.github.adrian.wieczorek.local_trade.response.ResponseAdvertisementDto;
-import io.github.adrian.wieczorek.local_trade.service.business.AdvertisementFilterServiceImpl;
+import io.github.adrian.wieczorek.local_trade.service.advertisement.dto.AdvertisementFilterDto;
+import io.github.adrian.wieczorek.local_trade.service.advertisement.mapper.AdvertisementDtoMapper;
+import io.github.adrian.wieczorek.local_trade.service.advertisement.AdvertisementEntity;
+import io.github.adrian.wieczorek.local_trade.service.category.CategoryEntity;
+import io.github.adrian.wieczorek.local_trade.service.advertisement.AdvertisementRepository;
+import io.github.adrian.wieczorek.local_trade.service.advertisement.dto.ResponseAdvertisementDto;
+import io.github.adrian.wieczorek.local_trade.service.advertisement.service.AdvertisementFilterServiceImpl;
 import io.github.adrian.wieczorek.local_trade.testutils.AdFiltersUtils;
 import io.github.adrian.wieczorek.local_trade.testutils.AdUtils;
 import io.github.adrian.wieczorek.local_trade.testutils.CategoryUtils;

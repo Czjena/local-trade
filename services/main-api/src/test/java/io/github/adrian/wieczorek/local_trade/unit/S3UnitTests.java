@@ -1,9 +1,9 @@
 package io.github.adrian.wieczorek.local_trade.unit;
 
-import io.github.adrian.wieczorek.local_trade.model.ImageEntity;
-import io.github.adrian.wieczorek.local_trade.repository.AdvertisementRepository;
-import io.github.adrian.wieczorek.local_trade.repository.ImageRepository;
-import io.github.adrian.wieczorek.local_trade.service.business.S3ServiceImpl;
+import io.github.adrian.wieczorek.local_trade.service.image.ImageEntity;
+import io.github.adrian.wieczorek.local_trade.service.advertisement.AdvertisementRepository;
+import io.github.adrian.wieczorek.local_trade.service.image.ImageRepository;
+import io.github.adrian.wieczorek.local_trade.service.image.service.S3ServiceImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;

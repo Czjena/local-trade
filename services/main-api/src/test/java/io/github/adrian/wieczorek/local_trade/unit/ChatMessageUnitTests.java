@@ -1,13 +1,13 @@
 package io.github.adrian.wieczorek.local_trade.unit;
 
-import io.github.adrian.wieczorek.local_trade.dto.ChatMessageDto;
-import io.github.adrian.wieczorek.local_trade.dto.ChatMessagePayload;
+import io.github.adrian.wieczorek.local_trade.service.chat.dto.ChatMessageDto;
+import io.github.adrian.wieczorek.local_trade.service.chat.dto.ChatMessagePayload;
 import io.github.adrian.wieczorek.local_trade.exceptions.UserNotFoundException;
-import io.github.adrian.wieczorek.local_trade.model.ChatMessageEntity;
-import io.github.adrian.wieczorek.local_trade.model.UsersEntity;
-import io.github.adrian.wieczorek.local_trade.repository.ChatMessageRepository;
-import io.github.adrian.wieczorek.local_trade.repository.UsersRepository;
-import io.github.adrian.wieczorek.local_trade.service.business.ChatMessageServiceImpl;
+import io.github.adrian.wieczorek.local_trade.service.chat.ChatMessageEntity;
+import io.github.adrian.wieczorek.local_trade.service.user.UsersEntity;
+import io.github.adrian.wieczorek.local_trade.service.chat.ChatMessageRepository;
+import io.github.adrian.wieczorek.local_trade.service.user.UsersRepository;
+import io.github.adrian.wieczorek.local_trade.service.chat.service.ChatMessageServiceImpl;
 import io.github.adrian.wieczorek.local_trade.testutils.UserUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

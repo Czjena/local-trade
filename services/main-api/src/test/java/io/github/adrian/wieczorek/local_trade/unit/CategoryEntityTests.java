@@ -1,12 +1,12 @@
 package io.github.adrian.wieczorek.local_trade.unit;
 
-import io.github.adrian.wieczorek.local_trade.dto.CategoryDto;
-import io.github.adrian.wieczorek.local_trade.mappers.CategoryMapper;
-import io.github.adrian.wieczorek.local_trade.model.AdvertisementEntity;
-import io.github.adrian.wieczorek.local_trade.model.CategoryEntity;
-import io.github.adrian.wieczorek.local_trade.repository.AdvertisementRepository;
-import io.github.adrian.wieczorek.local_trade.repository.CategoryRepository;
-import io.github.adrian.wieczorek.local_trade.service.business.CategoryServiceImpl;
+import io.github.adrian.wieczorek.local_trade.service.category.dto.CategoryDto;
+import io.github.adrian.wieczorek.local_trade.service.category.mapper.CategoryMapper;
+import io.github.adrian.wieczorek.local_trade.service.advertisement.AdvertisementEntity;
+import io.github.adrian.wieczorek.local_trade.service.category.CategoryEntity;
+import io.github.adrian.wieczorek.local_trade.service.advertisement.AdvertisementRepository;
+import io.github.adrian.wieczorek.local_trade.service.category.CategoryRepository;
+import io.github.adrian.wieczorek.local_trade.service.category.service.CategoryServiceImpl;
 import io.github.adrian.wieczorek.local_trade.testutils.AdUtils;
 import io.github.adrian.wieczorek.local_trade.testutils.CategoryUtils;
 import jakarta.persistence.EntityNotFoundException;

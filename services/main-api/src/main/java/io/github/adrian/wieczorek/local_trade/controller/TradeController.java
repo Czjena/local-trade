@@ -1,9 +1,9 @@
 package io.github.adrian.wieczorek.local_trade.controller;
 
-import io.github.adrian.wieczorek.local_trade.request.TradeInitiationRequestDto;
-import io.github.adrian.wieczorek.local_trade.request.TradeStatusRequestDto;
-import io.github.adrian.wieczorek.local_trade.response.TradeResponseDto;
-import io.github.adrian.wieczorek.local_trade.service.infrastructure.TradeService;
+import io.github.adrian.wieczorek.local_trade.service.trade.dto.TradeInitiationRequestDto;
+import io.github.adrian.wieczorek.local_trade.service.trade.dto.TradeStatusRequestDto;
+import io.github.adrian.wieczorek.local_trade.service.trade.dto.TradeResponseDto;
+import io.github.adrian.wieczorek.local_trade.service.trade.service.TradeService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
