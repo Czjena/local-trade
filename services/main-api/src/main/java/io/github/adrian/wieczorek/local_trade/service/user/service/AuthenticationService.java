@@ -12,6 +12,5 @@ public interface AuthenticationService {
     UsersEntity signup(RegisterUsersDto dto);
     @Transactional
     UsersEntity authenticate(LoginDto dto);
-
     List<String> getAuthenticatedRoles();
 }

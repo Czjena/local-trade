@@ -83,7 +83,4 @@ public class UsersEntity implements UserDetails {
         return userId != null ? userId.hashCode() : 0;
     }
 
-
-
-
 }
