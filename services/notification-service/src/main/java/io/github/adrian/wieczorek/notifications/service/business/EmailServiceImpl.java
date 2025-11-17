@@ -6,6 +6,7 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage; // Ważny import
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -54,7 +55,7 @@ public class EmailServiceImpl implements EmailService {
 
             log.info("Successfully sent email with added advert {}", toEmail);
 
-        } catch (MessagingException e) {
+        } catch (MessagingException | MailException e) {
             log.error("Error when sending email to: with error: {}: {}", toEmail, e.getMessage());
             throw new EmailNotSendException("Error when sending email" + toEmail, e);
         }
@@ -76,7 +77,7 @@ public class EmailServiceImpl implements EmailService {
             helper.setText(htmlBody,true);
             mailSender.send(mimeMessage);
             log.info("Successfully sent welcome email to: {}", toEmail);
-        }catch (MessagingException e) {
+        }catch (MessagingException | MailException e) {
             log.error("Error when sending welcoming email to: with error: {}: {}", toEmail, e.getMessage());
             throw new EmailNotSendException("Error when sending email" + toEmail, e);
         }

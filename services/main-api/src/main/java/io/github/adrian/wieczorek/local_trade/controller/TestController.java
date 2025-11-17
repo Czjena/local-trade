@@ -19,8 +19,6 @@ public class TestController {
 
     private final NotificationEventPublisher eventPublisher;
 
-
-
     @GetMapping("/hello")
     public String hello() {
         return "hello ";
@@ -38,30 +36,5 @@ public class TestController {
         return "hello3";
     }
 
-    @GetMapping("/test-notification")
-    public String testNotification() {
-
-        Map<String, String> fakeContext = Map.of(
-                    "adId", "test-ad-id-123",
-                    "adTitle", "Testing advert",
-                    "userName", "Adrian"
-            );
-
-            NotificationEvent event = new NotificationEvent(
-                    "AD_CREATED",
-                    UUID.randomUUID(),
-                    fakeContext
-            );
-
-            String routingKey = "notification.event.ad_created";
-
-
-            try {
-                eventPublisher.publishEvent(event, routingKey);
-            } catch (Exception e) {
-                return "Błąd przy wysyłaniu: " + e.getMessage();
-            }
-            return "OK! Zdarzenie testowe wysłane do RabbitMQ. Sprawdź logi 'notification-service'!";
-        }
 }
 
