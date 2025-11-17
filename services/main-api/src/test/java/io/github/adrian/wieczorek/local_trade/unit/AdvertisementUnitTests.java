@@ -12,11 +12,9 @@ import io.github.adrian.wieczorek.local_trade.service.advertisement.Advertisemen
 import io.github.adrian.wieczorek.local_trade.service.category.CategoryRepository;
 import io.github.adrian.wieczorek.local_trade.service.user.UsersRepository;
 import io.github.adrian.wieczorek.local_trade.service.advertisement.dto.RequestAdvertisementDto;
-import io.github.adrian.wieczorek.local_trade.service.advertisement.dto.ResponseAdvertisementDto;
 import io.github.adrian.wieczorek.local_trade.service.advertisement.dto.SimpleAdvertisementResponseDto;
 import io.github.adrian.wieczorek.local_trade.service.advertisement.service.AdvertisementServiceImpl;
 import io.github.adrian.wieczorek.local_trade.testutils.AdUtils;
-import io.github.adrian.wieczorek.local_trade.testutils.CategoryUtils;
 import io.github.adrian.wieczorek.local_trade.testutils.UserUtils;
 import jakarta.persistence.EntityNotFoundException;
 import org.jetbrains.annotations.NotNull;
@@ -31,7 +29,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -41,7 +38,7 @@ import static org.mockito.Mockito.*;
 
 
 @ExtendWith(MockitoExtension.class)
-public class AdUnitTests {
+public class AdvertisementUnitTests {
 
     @Mock
     private AdvertisementRepository advertisementRepository;

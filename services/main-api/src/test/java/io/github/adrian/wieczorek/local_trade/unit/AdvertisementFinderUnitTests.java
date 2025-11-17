@@ -68,4 +68,6 @@ public class AdvertisementFinderUnitTests {
         Assertions.assertEquals(advertisementEntity.getAdvertisementId(),responseAdvertisementDto.advertisementId());
         Assertions.assertEquals(advertisementEntity.getPrice(),responseAdvertisementDto.price());
     }
+
+
 }
