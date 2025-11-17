@@ -7,6 +7,5 @@ import java.util.UUID;
 
 public interface AdvertisementSecurityService {
     boolean isOwner(Authentication authentication, Integer advertisement);
-
     boolean isOwner(UserDetails userDetails, UUID advertisementId);
 }

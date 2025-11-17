@@ -20,8 +20,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 
-import resources.AbstractIntegrationTest;
-
 import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -64,6 +62,7 @@ public class UserRepositoryIntegrationTest extends AbstractIntegrationTest {
         assertEquals("test", savedUser.getName(), "User name should be test");
         assertEquals("test", savedUser.getPassword(), "User password should be test");
     }
+
     @Test
     @Transactional
     void whenUpdatingUser_thenUserUpdatedCorrectly() {
@@ -74,15 +73,12 @@ public class UserRepositoryIntegrationTest extends AbstractIntegrationTest {
         user.setName("test");
         UsersEntity savedUser = usersRepository.save(user);
 
-        Authentication auth = new UsernamePasswordAuthenticationToken(user, null, new ArrayList<>());
-        SecurityContextHolder.getContext().setAuthentication(auth);
-
         UpdateUserDto updateUserDto = new UpdateUserDto();
 
         updateUserDto.setEmail("test123@test.com");
         updateUserDto.setPassword("test123");
         updateUserDto.setName("test123");
-        usersService.updateCurrentUser(updateUserDto);
+        usersService.updateCurrentUser(updateUserDto, savedUser.getEmail());
 
         UsersEntity updatedUser = usersRepository.findById(savedUser.getId()).get();
 
@@ -100,10 +96,9 @@ public class UserRepositoryIntegrationTest extends AbstractIntegrationTest {
         updateUserDto.setPassword("test");
         updateUserDto.setName("test");
 
-        Authentication auth = new UsernamePasswordAuthenticationToken(null, null, new ArrayList<>());
-        SecurityContextHolder.getContext().setAuthentication(auth);
+        String fakeEmail = "fakeEmail@fakeEmail.com";
 
-        UserNotFoundException ex = assertThrows(UserNotFoundException.class, () -> usersService.updateCurrentUser(updateUserDto));
+        assertThrows(UserNotFoundException.class, () -> usersService.updateCurrentUser(updateUserDto,fakeEmail));
 
     }
 

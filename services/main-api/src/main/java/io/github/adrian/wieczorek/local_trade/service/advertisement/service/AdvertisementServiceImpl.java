@@ -33,8 +33,6 @@ public class AdvertisementServiceImpl implements AdvertisementService {
     private final AdvertisementMapper advertisementMapper;
     private final UsersRepository usersRepository;
     private final SimpleAdvertisementDtoMapper simpleAdvertisementDtoMapper;
-    private final AdvertisementDtoMapper advertisementDtoMapper;
-
 
     @Override
     @Transactional
@@ -55,14 +53,6 @@ public class AdvertisementServiceImpl implements AdvertisementService {
          AdvertisementEntity savedAd = advertisementRepository.save(ad);
 
          return simpleAdvertisementDtoMapper.advertisementToSimpleDto(savedAd);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public ResponseAdvertisementDto getAdvertisementById(UUID advertisementId) {
-        var advertisement  = advertisementRepository.findByAdvertisementId(advertisementId)
-                .orElseThrow(() -> new EntityNotFoundException("Advertisement not found"));
-        return advertisementDtoMapper.toResponseAdvertisementDto(advertisement);
     }
 
     @Override

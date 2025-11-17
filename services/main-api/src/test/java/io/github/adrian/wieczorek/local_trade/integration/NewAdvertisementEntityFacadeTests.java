@@ -27,7 +27,6 @@ import org.testcontainers.containers.MinIOContainer;
 import org.testcontainers.containers.RabbitMQContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import resources.AbstractIntegrationTest;
 import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.*;

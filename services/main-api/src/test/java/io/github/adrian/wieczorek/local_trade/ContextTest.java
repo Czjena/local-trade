@@ -1,12 +1,13 @@
-package io.github.adrian.wieczorek.local_trade.integration;
+package io.github.adrian.wieczorek.local_trade;
 
+import io.github.adrian.wieczorek.local_trade.integration.AbstractIntegrationTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
-import resources.AbstractIntegrationTest;
+
 @ActiveProfiles("test")
 @SpringBootTest
 @ExtendWith(MockitoExtension.class)

@@ -25,7 +25,6 @@ import org.springframework.web.socket.WebSocketHttpHeaders;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.messaging.WebSocketStompClient;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import resources.AbstractIntegrationTest;
 import org.springframework.messaging.simp.stomp.StompFrameHandler;
 import java.lang.reflect.Type;
 import java.util.UUID;

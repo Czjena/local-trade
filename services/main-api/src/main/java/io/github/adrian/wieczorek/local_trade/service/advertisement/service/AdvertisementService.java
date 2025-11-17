@@ -12,8 +12,6 @@ import java.util.UUID;
 public interface AdvertisementService {
     @Transactional
     SimpleAdvertisementResponseDto addAd(RequestAdvertisementDto dto, UserDetails userDetails);
-    @Transactional(readOnly = true)
-    ResponseAdvertisementDto getAdvertisementById(UUID advertisementId);
     @Transactional
     AdvertisementUpdateDto changeAdvertisement(AdvertisementUpdateDto dto, UserDetails userDetails, Integer advertisementId);
     @Transactional

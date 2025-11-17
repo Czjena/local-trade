@@ -1,5 +1,5 @@
 
-package resources;
+package io.github.adrian.wieczorek.local_trade.integration;
 
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.PostgreSQLContainer;

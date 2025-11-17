@@ -8,8 +8,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 public interface UsersService {
-    @Transactional(readOnly = true)
-    List<UsersEntity> allUsers();
     @Transactional
-    UserResponseDto updateCurrentUser(UpdateUserDto dto);
+    UserResponseDto updateCurrentUser(UpdateUserDto dto,String email);
+    @Transactional
+    UsersEntity getCurrentUser(String email);
 }
