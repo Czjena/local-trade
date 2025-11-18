@@ -8,6 +8,7 @@ import io.github.adrian.wieczorek.local_trade.service.user.UsersEntity;
 import io.github.adrian.wieczorek.local_trade.service.chat.ChatMessageRepository;
 import io.github.adrian.wieczorek.local_trade.service.user.UsersRepository;
 import io.github.adrian.wieczorek.local_trade.service.chat.service.ChatMessageServiceImpl;
+import io.github.adrian.wieczorek.local_trade.service.user.service.UsersService;
 import io.github.adrian.wieczorek.local_trade.testutils.UserUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -34,7 +35,7 @@ public class ChatMessageUnitTests {
     @InjectMocks
     ChatMessageServiceImpl chatMessageService;
     @Mock
-    UsersRepository usersRepository;
+    UsersService usersService;
 
     @Test
     public void whenSearchingForRecipientAndSenderAndSendingMessage_thenReturnChatMessage() {
@@ -47,8 +48,8 @@ public class ChatMessageUnitTests {
 
         ChatMessagePayload payload = new ChatMessagePayload("Test message");
 
-        when(usersRepository.findByEmail(principal.getName())).thenReturn(Optional.of(user1));
-        when(usersRepository.findByEmail(user2.getEmail())).thenReturn(Optional.of(user2));
+        when(usersService.getCurrentUser(principal.getName())).thenReturn(user1);
+        when(usersService.getCurrentUser(user2.getEmail())).thenReturn(user2);
         when(chatMessageRepository.save(any(ChatMessageEntity.class))).thenAnswer(i -> i.getArgument(0));
 
         ChatMessageDto chatMessage = chatMessageService.createAndSaveMessageForPrivateUser(payload,principal,user2.getEmail());
@@ -72,7 +73,7 @@ public class ChatMessageUnitTests {
         when(principal.getName()).thenReturn(user1.getEmail());
         ChatMessagePayload payload = new ChatMessagePayload("Test message");
 
-        when(usersRepository.findByEmail(user1.getEmail())).thenReturn(Optional.empty());
+        when(usersService.getCurrentUser(principal.getName())).thenThrow(UserNotFoundException.class);
 
         Assertions.assertThrows(UserNotFoundException.class, () -> chatMessageService.createAndSaveMessageForPrivateUser(payload,principal,user1.getEmail()));
         verify(chatMessageRepository, never()).save(any(ChatMessageEntity.class));
@@ -86,8 +87,8 @@ public class ChatMessageUnitTests {
         Principal principal = Mockito.mock(Principal.class);
         when(principal.getName()).thenReturn(user1.getUsername());
         ChatMessagePayload payload = new ChatMessagePayload("Test message");
-        when(usersRepository.findByEmail(principal.getName())).thenReturn(Optional.of(user1));
-        when(usersRepository.findByEmail(user2.getEmail())).thenReturn(Optional.empty());
+        when(usersService.getCurrentUser(principal.getName())).thenReturn(user1);
+        when(usersService.getCurrentUser(user2.getEmail())).thenThrow(UserNotFoundException.class);
 
         Assertions.assertThrows(UserNotFoundException.class, () -> chatMessageService.createAndSaveMessageForPrivateUser(payload,principal,user2.getEmail()));
         verify(chatMessageRepository, never()).save(any(ChatMessageEntity.class));
@@ -116,8 +117,8 @@ public class ChatMessageUnitTests {
         chatHistory2.add(messageFromRecipient);
         UserDetails userDetails = Mockito.mock(UserDetails.class);
         when(userDetails.getUsername()).thenReturn(user1.getUsername());
-        when(usersRepository.findByName(userDetails.getUsername())).thenReturn(Optional.of(user1));
-        when(usersRepository.findByName(user2.getName())).thenReturn(Optional.of(user2));
+       when(usersService.getCurrentUser(userDetails.getUsername())).thenReturn(user1);
+        when(usersService.getCurrentUser(user2.getName())).thenReturn(user2);
 
         when(chatMessageRepository.findBySenderAndRecipient(user1, user2)).thenReturn(chatHistory);
         when(chatMessageRepository.findBySenderAndRecipient(user2, user1)).thenReturn(chatHistory2);
@@ -132,17 +133,18 @@ public class ChatMessageUnitTests {
     }
 
     @Test
-    public void whenSearchingForRecipientAndSenderAndSendingMessageRecipientFound_thenReturnUserFound() {
+    public void whenSearchingForRecipient_andRecipientNotFound_thenThrowException() {
         UsersEntity user1 = UserUtils.createUserRoleUser();
         UsersEntity user2 = UserUtils.createUserRoleUser();
         user2.setName("user2");
 
         UserDetails userDetails = Mockito.mock(UserDetails.class);
-        when(userDetails.getUsername()).thenReturn(user1.getUsername());
 
-        when(usersRepository.findByName(userDetails.getUsername())).thenReturn(Optional.empty());
+        when(userDetails.getUsername()).thenReturn(user1.getUsername());
+        when(usersService.getCurrentUser(userDetails.getUsername())).thenReturn(user1);
+
+        when(usersService.getCurrentUser(user2.getName())).thenThrow(UserNotFoundException.class);
 
         Assertions.assertThrows(UserNotFoundException.class, () -> chatMessageService.getChatHistory(userDetails,user2.getName()));
-        verify(usersRepository, never()).findByName(user2.getName());
     }
 }
