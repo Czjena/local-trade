@@ -1,6 +1,7 @@
 package io.github.adrian.wieczorek.local_trade.controller;
 
 import io.github.adrian.wieczorek.local_trade.service.category.dto.CategoryDto;
+import io.github.adrian.wieczorek.local_trade.service.category.service.CategoryFinder;
 import io.github.adrian.wieczorek.local_trade.service.category.service.CategoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
@@ -18,11 +19,12 @@ import java.util.List;
 public class CategoryController {
 
     private final CategoryService categoryService;
+    private final CategoryFinder categoryFinder;
 
     @GetMapping
     @Operation(summary = "Get all categories")
     public ResponseEntity<List<CategoryDto>> getAllCategories() {
-        List<CategoryDto> categories = categoryService.getAllCategories();
+        List<CategoryDto> categories = categoryFinder.getAllCategories();
         return ResponseEntity.ok(categories);
     }
     @PreAuthorize("hasRole('ADMIN')")

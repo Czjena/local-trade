@@ -11,6 +11,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -32,6 +33,7 @@ public class AdminControllerIntegrationTests extends AbstractIntegrationTest {
 
     @Test
     @WithMockUser(value = "testadmin@test.com", roles = "ADMIN")
+    @Transactional
     void shouldReturnListOfAllUsers() throws Exception {
         UsersEntity admin = UserUtils.createUserRoleAdmin();
         UsersEntity user = UserUtils.createUserRoleUser();
@@ -49,6 +51,7 @@ public class AdminControllerIntegrationTests extends AbstractIntegrationTest {
     }
     @Test
     @WithMockUser(value = "testadmin@test.com", roles = "ADMIN")
+    @Transactional
     void shouldReturnListOfEmpty() throws Exception {
         mockMvc.perform(get("/admin/users/all"))
                 .andExpect(status().isOk())
@@ -56,6 +59,7 @@ public class AdminControllerIntegrationTests extends AbstractIntegrationTest {
     }
     @Test
     @WithMockUser(value = "user@roleuser.com", roles = "USER")
+    @Transactional
     void shouldThrowAccessDenied() throws Exception {
         mockMvc.perform(get("/admin/users/all"))
                 .andExpect(status().isForbidden());

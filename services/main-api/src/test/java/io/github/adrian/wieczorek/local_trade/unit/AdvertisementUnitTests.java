@@ -6,7 +6,9 @@ import io.github.adrian.wieczorek.local_trade.service.advertisement.mapper.Adver
 import io.github.adrian.wieczorek.local_trade.service.advertisement.mapper.SimpleAdvertisementDtoMapper;
 import io.github.adrian.wieczorek.local_trade.service.advertisement.AdvertisementEntity;
 import io.github.adrian.wieczorek.local_trade.service.advertisement.service.AdvertisementFinder;
+import io.github.adrian.wieczorek.local_trade.service.advertisement.service.AdvertisementService;
 import io.github.adrian.wieczorek.local_trade.service.category.CategoryEntity;
+import io.github.adrian.wieczorek.local_trade.service.category.service.CategoryService;
 import io.github.adrian.wieczorek.local_trade.service.user.UsersEntity;
 import io.github.adrian.wieczorek.local_trade.service.advertisement.AdvertisementRepository;
 import io.github.adrian.wieczorek.local_trade.service.category.CategoryRepository;
@@ -14,6 +16,7 @@ import io.github.adrian.wieczorek.local_trade.service.user.UsersRepository;
 import io.github.adrian.wieczorek.local_trade.service.advertisement.dto.RequestAdvertisementDto;
 import io.github.adrian.wieczorek.local_trade.service.advertisement.dto.SimpleAdvertisementResponseDto;
 import io.github.adrian.wieczorek.local_trade.service.advertisement.service.AdvertisementServiceImpl;
+import io.github.adrian.wieczorek.local_trade.service.user.service.UsersService;
 import io.github.adrian.wieczorek.local_trade.testutils.AdUtils;
 import io.github.adrian.wieczorek.local_trade.testutils.UserUtils;
 import jakarta.persistence.EntityNotFoundException;
@@ -45,9 +48,9 @@ public class AdvertisementUnitTests {
     @Mock
     private CategoryRepository categoryRepository;
     @Mock
-    private UsersRepository usersRepository;
+    private UsersService usersService;
     @Mock
-    private AdvertisementFinder advertisementFinder;
+    private CategoryService categoryService;
 
     @InjectMocks
     private AdvertisementServiceImpl advertisementService;
@@ -76,9 +79,9 @@ public class AdvertisementUnitTests {
 
 
         UserDetails userDetails = mock(UserDetails.class);
-        when(usersRepository.findByEmail(userDetails.getUsername())).thenReturn(Optional.of(user));
+        when(usersService.getCurrentUser(userDetails.getUsername())).thenReturn(user);
 
-        when(categoryRepository.findById(any())).thenReturn(Optional.of(categoryEntity));
+        when(categoryService.getCategoryEntityById(any())).thenReturn(categoryEntity);
 
 
 
@@ -134,10 +137,11 @@ public class AdvertisementUnitTests {
         AdvertisementEntity ad = AdUtils.createAdvertisement();
         ad.setUser(user);
         UserDetails userDetails = Mockito.mock(UserDetails.class);
-        when(usersRepository.findByEmail(userDetails.getUsername())).thenReturn(Optional.of(user));
+        when(usersService.getCurrentUser(userDetails.getUsername())).thenReturn(user);
         AdvertisementUpdateDto dto = new AdvertisementUpdateDto(null, null, null, null, null);
         when(advertisementRepository.findByUserAndId(user, ad.getId()))
                 .thenReturn(Optional.of(ad));
+
 
         advertisementService.changeAdvertisement(dto, userDetails, ad.getId());
         verify(advertisementMapper).updateAdvertisementFromDtoSkipNull(dto, ad);
@@ -149,7 +153,7 @@ public class AdvertisementUnitTests {
         AdvertisementEntity ad = AdUtils.createAdvertisement();
         ad.setUser(user);
         UserDetails userDetails = Mockito.mock(UserDetails.class);
-        when(usersRepository.findByEmail(userDetails.getUsername())).thenReturn(Optional.of(user));
+        when(usersService.getCurrentUser(userDetails.getUsername())).thenReturn(user);
         when(advertisementRepository.findByUserAndId(user, ad.getId()))
                 .thenReturn(Optional.of(ad));
         advertisementService.deleteAdvertisement(userDetails, ad.getId());
@@ -159,7 +163,7 @@ public class AdvertisementUnitTests {
     void deleteAdvertisement_throwsEntityNotFoundException() {
         UsersEntity user = UserUtils.createUserRoleUser();
         UserDetails userDetails = Mockito.mock(UserDetails.class);
-        when(usersRepository.findByEmail(userDetails.getUsername())).thenReturn(Optional.of(user));
+        when(usersService.getCurrentUser(userDetails.getUsername())).thenReturn(user);
         int id = 999;
         when(advertisementRepository.findByUserAndId(user, id)).thenReturn(Optional.empty());
 

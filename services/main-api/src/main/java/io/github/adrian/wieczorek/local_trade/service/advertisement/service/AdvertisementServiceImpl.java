@@ -3,6 +3,8 @@ package io.github.adrian.wieczorek.local_trade.service.advertisement.service;
 import io.github.adrian.wieczorek.local_trade.service.advertisement.AdvertisementEntity;
 import io.github.adrian.wieczorek.local_trade.service.advertisement.AdvertisementRepository;
 import io.github.adrian.wieczorek.local_trade.service.advertisement.dto.AdvertisementUpdateDto;
+import io.github.adrian.wieczorek.local_trade.service.category.CategoryEntity;
+import io.github.adrian.wieczorek.local_trade.service.category.service.CategoryService;
 import io.github.adrian.wieczorek.local_trade.service.user.UsersEntity;
 import io.github.adrian.wieczorek.local_trade.service.category.CategoryRepository;
 import io.github.adrian.wieczorek.local_trade.service.user.UsersRepository;
@@ -13,8 +15,10 @@ import io.github.adrian.wieczorek.local_trade.service.advertisement.mapper.Adver
 import io.github.adrian.wieczorek.local_trade.service.advertisement.mapper.AdvertisementMapper;
 import io.github.adrian.wieczorek.local_trade.service.advertisement.mapper.AdvertisementMapperToAdvertisementUpdateDto;
 import io.github.adrian.wieczorek.local_trade.service.advertisement.mapper.SimpleAdvertisementDtoMapper;
+import io.github.adrian.wieczorek.local_trade.service.user.service.UsersService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -26,21 +30,25 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AdvertisementServiceImpl implements AdvertisementService {
 
     private final AdvertisementRepository advertisementRepository;
-    private final CategoryRepository categoryRepository;
+    private final CategoryService categoryService;
+    private final UsersService usersService;
     private final AdvertisementMapper advertisementMapper;
-    private final UsersRepository usersRepository;
     private final SimpleAdvertisementDtoMapper simpleAdvertisementDtoMapper;
 
     @Override
     @Transactional
     public SimpleAdvertisementResponseDto addAd(RequestAdvertisementDto dto, UserDetails userDetails) {
-        UsersEntity user = usersRepository.findByEmail(userDetails.getUsername())
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        log.info("Attempting to add advertisement for user {}", userDetails.getUsername());
+        UsersEntity user = usersService.getCurrentUser(userDetails.getUsername());
+        log.debug("User with id found with email {}", user.getEmail());
+        CategoryEntity category = categoryService.getCategoryEntityById(dto.categoryId());
+        log.debug("Category with id found with name {}", category.getName());
         AdvertisementEntity ad = AdvertisementEntity.builder()
-                .categoryEntity(categoryRepository.findById(dto.categoryId()).orElseThrow(() -> new EntityNotFoundException("Category not found")))
+                .categoryEntity(category)
                 .price(dto.price())
                 .title(dto.title())
                 .image(dto.image())
@@ -51,6 +59,7 @@ public class AdvertisementServiceImpl implements AdvertisementService {
                 .build();
 
          AdvertisementEntity savedAd = advertisementRepository.save(ad);
+         log.info("Successfully added advertisement for user {}", userDetails.getUsername());
 
          return simpleAdvertisementDtoMapper.advertisementToSimpleDto(savedAd);
     }
@@ -58,28 +67,32 @@ public class AdvertisementServiceImpl implements AdvertisementService {
     @Override
     @Transactional
     public AdvertisementUpdateDto changeAdvertisement(AdvertisementUpdateDto dto, UserDetails userDetails, Integer advertisementId) {
-        UsersEntity user = usersRepository.findByEmail(userDetails.getUsername())
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        log.info("Attempting to change advertisement for user {}", userDetails.getUsername());
+        UsersEntity user = usersService.getCurrentUser(userDetails.getUsername());
+        log.debug("User with id found with email:  {}", user.getEmail());
         AdvertisementEntity ad = advertisementRepository.findByUserAndId(user, advertisementId)
                 .orElseThrow(() -> new EntityNotFoundException("Advertisement not found"));
+        log.debug("Advertisement found with UUID: {}", advertisementId);
         if (!ad.getUser().equals(user)) {
-            throw new AccessDeniedException("Access denied");
+            throw new AccessDeniedException("Access denied for user "+user.getUsername());
         }
         advertisementMapper.updateAdvertisementFromDtoSkipNull(dto, ad);
         AdvertisementUpdateDto updatedDto = AdvertisementMapperToAdvertisementUpdateDto.toDto(ad);
         advertisementRepository.save(ad);
+        log.info("Successfully changed advertisement for user {}", userDetails.getUsername());
         return updatedDto;
     }
 
     @Override
     @Transactional
     public void deleteAdvertisement(UserDetails userDetails, Integer advertisementId) {
-        UsersEntity user = usersRepository.findByEmail(userDetails.getUsername())
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        log.info("Attempting to delete advertisement with id {}", advertisementId);
+        UsersEntity user = usersService.getCurrentUser(userDetails.getUsername());
+        log.debug("User found with id {}", user.getId());
         AdvertisementEntity ad = advertisementRepository.findByUserAndId(user, advertisementId)
                 .orElseThrow(() -> new EntityNotFoundException("Advertisement not found"));
+        log.debug("Advertisement with id {} has been found", advertisementId);
         advertisementRepository.delete(ad);
+        log.info("Deleted advertisement with id {}", advertisementId);
     }
-
-
 }

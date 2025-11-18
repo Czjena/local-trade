@@ -8,6 +8,7 @@ import io.github.adrian.wieczorek.local_trade.service.advertisement.Advertisemen
 import io.github.adrian.wieczorek.local_trade.service.category.CategoryRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -17,46 +18,13 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;
-    private final AdvertisementRepository advertisementRepository;
     private final CategoryMapper categoryMapper;
 
 
-@Transactional(readOnly = true)
-@Override
-public List<AdvertisementEntity> findAllAdvertisementsByCategoryId(Integer categoryId) {
-        if (categoryRepository.findById(categoryId).isPresent()) {
-            return advertisementRepository.findByCategoryEntityId(categoryId);
-        }
-        throw new EntityNotFoundException("Category not found");
-    }
-    @Transactional(readOnly = true)
-    @Override
-    public String getCategoryNameForEndPoints(Integer categoryId) {
-        return categoryRepository.findById(categoryId)
-                .map(CategoryEntity::getName)
-                .orElseThrow(() -> new EntityNotFoundException("Category not found"));
-
-    }
-    @Transactional(readOnly = true)
-    @Override
-    public Integer getCategoryIdForEndPointsFromAdvertisement(Integer advertisementId) {
-        return advertisementRepository.findById(advertisementId)
-                .map(AdvertisementEntity::getCategoryEntity)
-                .map(CategoryEntity::getId)
-                .orElseThrow(() -> new EntityNotFoundException("Category not found"));
-
-    }
-    @Cacheable("categories")
-    @Transactional(readOnly = true)
-    @Override
-    public List<CategoryDto> getAllCategories() {
-        return categoryRepository.findAll().stream()
-                .map(categoryMapper::postCategoryToDto)
-                .toList();
-    }
     @CacheEvict(value = "categories", allEntries = true)
     @Transactional
     @Override
@@ -68,6 +36,7 @@ public List<AdvertisementEntity> findAllAdvertisementsByCategoryId(Integer categ
         CategoryEntity savedCategoryEntity = categoryRepository.save(newCategoryEntity);
         return categoryMapper.postCategoryToDto(savedCategoryEntity);
     }
+
     @CacheEvict(value = "categories", allEntries = true)
     @Transactional
     @Override
@@ -86,6 +55,8 @@ public List<AdvertisementEntity> findAllAdvertisementsByCategoryId(Integer categ
         CategoryEntity Saved = categoryRepository.save(categoryEntity);
         return categoryMapper.postCategoryToDto(Saved);
     }
+
+
     @Transactional
     @CacheEvict(value = "categories", allEntries = true)
     @Override
@@ -93,11 +64,15 @@ public List<AdvertisementEntity> findAllAdvertisementsByCategoryId(Integer categ
         if(!categoryRepository.existsById(categoryId)) {
             throw new EntityNotFoundException("Category not found");
         }
-        long adCount = advertisementRepository.countByCategoryEntityId(categoryId);
-        if (adCount == 0) {
             categoryRepository.deleteById(categoryId);
-        }else {
-            throw new EntityNotFoundException("Cannot delete category it is in use by:" + adCount + "advertisements");
-        }
     }
+
+    @Transactional
+    @Override
+    public CategoryEntity getCategoryEntityById(Integer id){
+        log.debug("Getting category with id {}", id);
+        return categoryRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Category not found with id " + id));
+    }
+
 }

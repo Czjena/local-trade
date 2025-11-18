@@ -21,6 +21,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class ChatMessageServiceImpl implements ChatMessageService {
+
     private final ChatMessageRepository chatMessageRepository;
     private final UsersRepository usersRepository;
 

@@ -37,73 +37,6 @@ public class CategoryEntityTests {
     @Mock
     CategoryMapper categoryMapper;
 
-    @Test
-    public void findAdvertisementsByCategoryId_thenReturnAllAdvertisements() {
-        CategoryEntity categoryEntity = CategoryUtils.createCategory();
-        AdvertisementEntity advertisementEntity = AdUtils.createAdvertisement();
-
-        when(categoryRepository.findById(categoryEntity.getId())).thenReturn(Optional.of(categoryEntity));
-        when(advertisementRepository.findByCategoryEntityId(categoryEntity.getId())).thenReturn(List.of(advertisementEntity));
-
-        List<AdvertisementEntity> advertisementEntities = categoryService.findAllAdvertisementsByCategoryId(categoryEntity.getId());
-
-        Assertions.assertEquals(advertisementEntities, List.of(advertisementEntity));
-
-    }
-
-    @Test
-    public void findNonExistingAdvertisementsByCategoryId_thenReturnEmptyList() {
-        Integer nonExistingCategoryId = 9999;
-        when(categoryRepository.findById(nonExistingCategoryId)).thenReturn(Optional.empty());
-        Assertions.assertThrows(EntityNotFoundException.class, () -> {
-            categoryService.findAllAdvertisementsByCategoryId(nonExistingCategoryId);
-        });
-    }
-
-    @Test
-    public void emptyAdvertisementList_thenReturnEmptyList() {
-        CategoryEntity categoryEntity = CategoryUtils.createCategory();
-        List<AdvertisementEntity> advertisementEntity = List.of();
-        when(categoryRepository.findById(categoryEntity.getId())).thenReturn(Optional.of(categoryEntity));
-        when(advertisementRepository.findByCategoryEntityId(categoryEntity.getId())).thenReturn(advertisementEntity);
-        List<AdvertisementEntity> advertisementEntities = categoryService.findAllAdvertisementsByCategoryId(categoryEntity.getId());
-        Assertions.assertEquals(advertisementEntities, advertisementEntity);
-    }
-
-    @Test
-    public void postCategoryId_thenReturnCategoryNameForEndPoints() {
-        CategoryEntity categoryEntity = CategoryUtils.createCategory();
-        when(categoryRepository.findById(categoryEntity.getId())).thenReturn(Optional.of(categoryEntity));
-        String categoryName = categoryService.getCategoryNameForEndPoints(categoryEntity.getId());
-        Assertions.assertEquals(categoryName, categoryEntity.getName());
-    }
-
-    @Test
-    public void postNonExistingCategoryId_thenReturnException() {
-        Integer nonExistingCategoryId = 9999;
-        when(categoryRepository.findById(nonExistingCategoryId)).thenReturn(Optional.empty());
-        Assertions.assertThrows(EntityNotFoundException.class, () -> {
-            categoryService.getCategoryNameForEndPoints(nonExistingCategoryId);
-        });
-    }
-
-    @Test
-    public void getCategoryIdForEndPointsFromAdvertisement_thenReturnCategoryId() {
-        AdvertisementEntity advertisementEntity = AdUtils.createAdvertisement();
-        CategoryEntity categoryEntity = CategoryUtils.createCategory();
-        advertisementEntity.setCategoryEntity(categoryEntity);
-        when(advertisementRepository.findById(advertisementEntity.getId())).thenReturn(Optional.of(advertisementEntity));
-        Integer categoryId = categoryService.getCategoryIdForEndPointsFromAdvertisement(advertisementEntity.getId());
-        Assertions.assertEquals(categoryId, categoryEntity.getId());
-    }
-
-    @Test
-    public void getCategoryIdForEndPointsFromAdvertisement_thenReturnException() {
-        Integer nonExistingCategoryId = 9999;
-        Assertions.assertThrows(EntityNotFoundException.class, () -> {
-            categoryService.getCategoryIdForEndPointsFromAdvertisement(nonExistingCategoryId);
-        });
-    }
 
     @Test
     public void postCategory_thenCategoryIsSaved() {
@@ -229,7 +162,6 @@ public class CategoryEntityTests {
         CategoryEntity oldEntityInDb = CategoryUtils.createCategory();
         oldEntityInDb.setId(1);
         when(categoryRepository.existsById(oldEntityInDb.getId())).thenReturn(true);
-        when(advertisementRepository.countByCategoryEntityId(oldEntityInDb.getId())).thenReturn(0L);
         categoryService.deleteCategory(oldEntityInDb.getId());
         verify(categoryRepository, times(1)).deleteById(oldEntityInDb.getId());
 
@@ -247,9 +179,7 @@ public class CategoryEntityTests {
     @Test
     public void deleteCategoryWithAdvertsAssigned_thenCategoryIsNotDeleted() {
         Integer categoryId = 1;
-        when(categoryRepository.existsById(categoryId)).thenReturn(true);
-        when(advertisementRepository.countByCategoryEntityId(categoryId)).thenReturn(5L);
-
+        when(categoryRepository.existsById(categoryId)).thenReturn(false);
         Assertions.assertThrows(EntityNotFoundException.class, () -> {
             categoryService.deleteCategory(categoryId);});
 

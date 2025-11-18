@@ -3,9 +3,14 @@ package io.github.adrian.wieczorek.local_trade.unit;
 import io.github.adrian.wieczorek.local_trade.service.advertisement.AdvertisementEntity;
 import io.github.adrian.wieczorek.local_trade.service.advertisement.AdvertisementRepository;
 import io.github.adrian.wieczorek.local_trade.service.advertisement.dto.ResponseAdvertisementDto;
+import io.github.adrian.wieczorek.local_trade.service.advertisement.dto.SimpleAdvertisementResponseDto;
 import io.github.adrian.wieczorek.local_trade.service.advertisement.mapper.AdvertisementDtoMapper;
+import io.github.adrian.wieczorek.local_trade.service.advertisement.mapper.SimpleAdvertisementDtoMapper;
 import io.github.adrian.wieczorek.local_trade.service.advertisement.service.AdvertisementFinder;
 import io.github.adrian.wieczorek.local_trade.service.advertisement.service.AdvertisementService;
+import io.github.adrian.wieczorek.local_trade.service.category.CategoryEntity;
+import io.github.adrian.wieczorek.local_trade.service.category.CategoryRepository;
+import io.github.adrian.wieczorek.local_trade.service.category.service.CategoryService;
 import io.github.adrian.wieczorek.local_trade.testutils.AdUtils;
 import io.github.adrian.wieczorek.local_trade.testutils.CategoryUtils;
 import jakarta.persistence.EntityNotFoundException;
@@ -17,12 +22,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.util.ArrayList;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class AdvertisementFinderUnitTests {
@@ -32,6 +35,10 @@ public class AdvertisementFinderUnitTests {
     private AdvertisementRepository advertisementRepository;
     @Mock
     private AdvertisementDtoMapper advertisementDtoMapper;
+    @Mock
+    private CategoryRepository categoryRepository;
+    @Mock
+    private SimpleAdvertisementDtoMapper simpleAdvertisementDtoMapper;
 
     @Test
     void getAdvertisementById_thenAdvertisementIsNotFound() {
@@ -64,10 +71,70 @@ public class AdvertisementFinderUnitTests {
 
         var responseAdvertisementDto = advertisementFinder.getAdvertisementById(advertisementEntity.getAdvertisementId());
 
-        Assertions.assertNotNull(responseAdvertisementDto);
-        Assertions.assertEquals(advertisementEntity.getAdvertisementId(),responseAdvertisementDto.advertisementId());
-        Assertions.assertEquals(advertisementEntity.getPrice(),responseAdvertisementDto.price());
+        assertNotNull(responseAdvertisementDto);
+        assertEquals(advertisementEntity.getAdvertisementId(),responseAdvertisementDto.advertisementId());
+        assertEquals(advertisementEntity.getPrice(),responseAdvertisementDto.price());
     }
 
+    @Test
+    public void findAdvertisementsByCategoryId_thenReturnAllAdvertisements() {
+        CategoryEntity categoryEntity = CategoryUtils.createCategory();
+        AdvertisementEntity advertisementEntity = AdUtils.createAdvertisement();
+        AdvertisementEntity advertisementEntity2 = AdUtils.createAdvertisement();
+        advertisementEntity2.setId(2);
 
+        List<AdvertisementEntity> advertisementEntities = List.of(advertisementEntity, advertisementEntity2);
+
+        SimpleAdvertisementResponseDto dto1 = new SimpleAdvertisementResponseDto(advertisementEntity.getAdvertisementId(),advertisementEntity.getTitle());
+        SimpleAdvertisementResponseDto dto2 = new SimpleAdvertisementResponseDto(advertisementEntity2.getAdvertisementId(),advertisementEntity2.getTitle());
+
+
+        when(advertisementRepository.findByCategoryEntityId(categoryEntity.getId())).thenReturn(advertisementEntities);
+
+        when(simpleAdvertisementDtoMapper.advertisementToSimpleDto(advertisementEntity)).thenReturn(dto1);
+        when(simpleAdvertisementDtoMapper.advertisementToSimpleDto(advertisementEntity2)).thenReturn(dto2);
+
+        List<SimpleAdvertisementResponseDto> resultDtos = advertisementFinder.findAllAdvertisementsByCategoryId(categoryEntity.getId());
+
+        assertNotNull(resultDtos);
+        assertEquals(2, resultDtos.size());
+        assertEquals(dto1, resultDtos.get(0));
+        assertEquals(dto2, resultDtos.get(1));
+        verify(advertisementRepository, times(1)).findByCategoryEntityId(categoryEntity.getId());
+
+        verify(simpleAdvertisementDtoMapper, times(2)).advertisementToSimpleDto(any(AdvertisementEntity.class));
+        verify(simpleAdvertisementDtoMapper, times(1)).advertisementToSimpleDto(advertisementEntity);
+        verify(simpleAdvertisementDtoMapper, times(1)).advertisementToSimpleDto(advertisementEntity2);
+}
+
+    @Test
+    public void findNonExistingAdvertisementsByCategoryId_shouldReturnEmptyList() {
+        Integer nonExistingCategoryId = 9999;
+
+        when(advertisementRepository.findByCategoryEntityId(nonExistingCategoryId))
+                .thenReturn(Collections.emptyList());
+
+        List<SimpleAdvertisementResponseDto> resultDtos =
+                advertisementFinder.findAllAdvertisementsByCategoryId(nonExistingCategoryId);
+
+        assertNotNull(resultDtos);
+        assertTrue(resultDtos.isEmpty());
+
+        verify(advertisementRepository, times(1)).findByCategoryEntityId(nonExistingCategoryId);
+        verifyNoInteractions(simpleAdvertisementDtoMapper);
+    }
+
+    @Test
+    public void emptyAdvertisementList_thenReturnEmptyList() {
+        CategoryEntity categoryEntity = CategoryUtils.createCategory();
+        List<AdvertisementEntity> advertisementEntity = List.of();
+
+        when(advertisementRepository.findByCategoryEntityId(categoryEntity.getId())).thenReturn(advertisementEntity);
+
+        List<SimpleAdvertisementResponseDto> advertisementEntities = advertisementFinder.findAllAdvertisementsByCategoryId(categoryEntity.getId());
+
+        assertNotNull(advertisementEntities);
+        assertEquals(0, advertisementEntities.size());
+        verify(advertisementRepository, times(1)).findByCategoryEntityId(categoryEntity.getId());
+    }
 }
