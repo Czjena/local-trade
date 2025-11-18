@@ -39,7 +39,7 @@ It supports user listings, messaging, ratings, and media management — designed
 This project places a strong emphasis on code quality and reliability.
 
 - 84% Code Test Coverage (verified by Jacoco).
-- Over 170 unit and integration tests.
+- Over 200 unit and integration tests.
 - Testcontainers are used for full end-to-end integration tests with real instances of PostgreSQL, Redis, MinIO, and RabbitMQ in isolated containers.
 - CI/CD Pipeline (GitHub Actions) automatically builds and tests the application on every commit.
 - Static code analysis and quality monitoring using Qodana
@@ -150,9 +150,6 @@ See the LICENSE file for details.
 - **[DONE] Implementing full notification logic (e.g., email sending via a dedicated email service worker consuming RabbitMQ events).**
 - [PLANNED] Adding user notification preferences.
 
-
-*[PLANNED] Azure Deployment and Storage Pivot:**
-
 [PLANNED] **Full migration of the target production environment to the Azure platform (e.g., Azure App Service / AKS).**
 
 [PLANNED] **Replacing AWS S3 / MinIO with Azure Blob Storage to consolidate all services within a single cloud provider.**
@@ -163,6 +160,7 @@ See the LICENSE file for details.
 
 ### Contributing
 This is an open-source project, and contributions are welcome! Feel free to open an issue to discuss a new feature or submit a pull request with your improvements. All contributions will be reviewed.
+
 ## Author
 Adrian Wieczorek
 
