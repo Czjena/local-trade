@@ -136,9 +136,9 @@ public class TradeServiceImpl implements TradeService {
     @Override
     public TradeEntity getTradeEntityByTradeId(UUID tradeId){
         log.info("Getting trade entity by trade id {}", tradeId);
-        tradeRepository.findByTradeId(tradeId).orElseThrow(() -> new EntityNotFoundException("Trade not found with UUID: " + tradeId));
+        TradeEntity trade = tradeRepository.findByTradeId(tradeId).orElseThrow(() -> new EntityNotFoundException("Trade not found with UUID: " + tradeId));
         log.debug("Trade found with UUID {}", tradeId);
-        return tradeRepository.findByTradeId(tradeId).get();
+        return trade;
     }
 
     @Transactional
