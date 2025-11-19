@@ -188,7 +188,7 @@ public class AdvertisementFilterIntegrationTests extends AbstractIntegrationTest
                                 .param("title", String.valueOf(advertisementEntities.get(0).getTitle()))
                                 .param("minPrice", "9999999")
                                 .param("page", "0")
-                                .param("size", "0"))
+                                .param("size", "10"))
 
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content.length()").value(0))
@@ -265,5 +265,50 @@ public class AdvertisementFilterIntegrationTests extends AbstractIntegrationTest
         sorted.sort(Comparator.reverseOrder());
 
         assertThat(titles).isEqualTo(sorted);
+    }
+    @Test
+    @Transactional
+    public void filterByAllCriteriaAtOnce_shouldReturnOnlyMatchingAdvertisement() throws Exception {
+        UsersEntity user = UserUtils.createUserRoleUser();
+        usersRepository.save(user);
+        CategoryEntity category = CategoryUtils.createCategoryForIntegrationTests();
+        categoryRepository.save(category);
+
+        AdvertisementEntity targetAd = new AdvertisementEntity();
+        targetAd.setUser(user);
+        targetAd.setCategoryEntity(category);
+        targetAd.setTitle("Bike");
+        targetAd.setDescription("Title");
+        targetAd.setPrice(BigDecimal.valueOf(100.00));
+        targetAd.setLocation("Warsaw");
+        targetAd.setActive(true);
+        advertisementRepository.save(targetAd);
+
+        AdvertisementEntity wrongAd = new AdvertisementEntity();
+        wrongAd.setUser(user);
+        wrongAd.setCategoryEntity(category);
+        wrongAd.setTitle("Other Bike");
+        wrongAd.setDescription("Other Title");
+        wrongAd.setPrice(BigDecimal.valueOf(50.00));
+        wrongAd.setLocation("Poznan");
+        wrongAd.setActive(true);
+        advertisementRepository.save(wrongAd);
+
+        // When & Then
+        mockMvc.perform(
+                        get("/advertisements/search")
+                                .with(csrf())
+                                .param("categoryEntityId", String.valueOf(category.getId()))
+                                .param("title", "Bike") // "
+                                .param("minPrice", "90")
+                                .param("maxPrice", "110")
+                                .param("location", "Warsaw")
+                                .param("active", "true")
+                                .param("page", "0")
+                                .param("size", "10")
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content.length()").value(1))
+                .andExpect(jsonPath("$.content[0].title").value("Bike"));
     }
 }

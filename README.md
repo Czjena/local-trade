@@ -39,8 +39,8 @@ It supports user listings, messaging, ratings, and media management — designed
 ## Testing & Quality Assurance
 This project places a strong emphasis on code quality and reliability.
 
-- 84% Code Test Coverage (verified by Jacoco).
-- Over 170 unit and integration tests.
+- 86% Code Test Coverage (verified by Jacoco).
+- Over 200 unit and integration tests.
 - Testcontainers are used for full end-to-end integration tests with real instances of PostgreSQL, Redis, MinIO, and RabbitMQ in isolated containers.
 - CI/CD Pipeline (GitHub Actions) automatically builds and tests the application on every commit.
 - Static code analysis and quality monitoring using Qodana
