@@ -1,0 +1,21 @@
+package io.github.adrian.wieczorek.local_trade.service.chat.service;
+
+import io.github.adrian.wieczorek.local_trade.service.chat.dto.ChatMessageDto;
+import io.github.adrian.wieczorek.local_trade.service.chat.dto.ChatMessagePayload;
+import io.github.adrian.wieczorek.local_trade.service.chat.ChatMessageEntity;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.security.Principal;
+import java.util.List;
+
+public interface ChatMessageService {
+    @Transactional
+    ChatMessageEntity save(ChatMessageEntity chatMessageEntity);
+
+    @Transactional
+    ChatMessageDto createAndSaveMessageForPrivateUser(ChatMessagePayload chatMessage, Principal principal, String recipientEmail);
+
+    @Transactional(readOnly = true)
+    List<ChatMessageEntity> getChatHistory(UserDetails sender, String recipientUsername);
+}

@@ -1,6 +1,6 @@
 package io.github.adrian.wieczorek.local_trade.testutils;
 
-import io.github.adrian.wieczorek.local_trade.response.SimpleAdvertisementResponseDto;
+import io.github.adrian.wieczorek.local_trade.service.advertisement.dto.SimpleAdvertisementResponseDto;
 
 import java.util.UUID;
 public class SimpleAdvertisementResponseDtoUtils {

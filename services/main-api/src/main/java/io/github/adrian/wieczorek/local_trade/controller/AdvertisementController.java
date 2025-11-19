@@ -1,13 +1,14 @@
 package io.github.adrian.wieczorek.local_trade.controller;
 
-import io.github.adrian.wieczorek.local_trade.dto.AdvertisementUpdateDto;
-import io.github.adrian.wieczorek.local_trade.service.facade.NewAdvertisementFacade;
+import io.github.adrian.wieczorek.local_trade.service.advertisement.dto.AdvertisementUpdateDto;
+import io.github.adrian.wieczorek.local_trade.service.advertisement.facade.NewAdvertisementFacade;
 
 
-import io.github.adrian.wieczorek.local_trade.request.RequestAdvertisementDto;
-import io.github.adrian.wieczorek.local_trade.response.ResponseAdvertisementDto;
-import io.github.adrian.wieczorek.local_trade.response.SimpleAdvertisementResponseDto;
-import io.github.adrian.wieczorek.local_trade.service.infrastructure.AdvertisementService;
+import io.github.adrian.wieczorek.local_trade.service.advertisement.dto.RequestAdvertisementDto;
+import io.github.adrian.wieczorek.local_trade.service.advertisement.dto.ResponseAdvertisementDto;
+import io.github.adrian.wieczorek.local_trade.service.advertisement.dto.SimpleAdvertisementResponseDto;
+import io.github.adrian.wieczorek.local_trade.service.advertisement.service.AdvertisementFinder;
+import io.github.adrian.wieczorek.local_trade.service.advertisement.service.AdvertisementService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +30,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class AdvertisementController {
 
+    private final AdvertisementFinder advertisementFinder;
     private final AdvertisementService advertisementService;
     private final NewAdvertisementFacade  newAdvertisementFacade;
 
@@ -43,7 +45,7 @@ public class AdvertisementController {
     @GetMapping("/get/{id}")
     @Operation(summary = "Get advertisement by advertisement id")
     public ResponseEntity<ResponseAdvertisementDto> getAdd(@PathVariable UUID id) {
-        ResponseAdvertisementDto advertisement = advertisementService.getAdvertisementById(id);
+        ResponseAdvertisementDto advertisement = advertisementFinder.getAdvertisementById(id);
         return ResponseEntity.ok(advertisement);
     }
 

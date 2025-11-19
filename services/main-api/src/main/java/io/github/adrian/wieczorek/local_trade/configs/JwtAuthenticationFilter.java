@@ -1,7 +1,7 @@
 package io.github.adrian.wieczorek.local_trade.configs;
 
 
-import io.github.adrian.wieczorek.local_trade.service.business.JwtService;
+import io.github.adrian.wieczorek.local_trade.service.user.service.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

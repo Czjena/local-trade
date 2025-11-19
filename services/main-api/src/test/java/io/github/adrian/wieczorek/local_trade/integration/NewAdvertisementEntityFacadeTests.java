@@ -1,12 +1,12 @@
 package io.github.adrian.wieczorek.local_trade.integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.adrian.wieczorek.local_trade.model.CategoryEntity;
-import io.github.adrian.wieczorek.local_trade.model.UsersEntity;
-import io.github.adrian.wieczorek.local_trade.repository.AdvertisementRepository;
-import io.github.adrian.wieczorek.local_trade.repository.CategoryRepository;
-import io.github.adrian.wieczorek.local_trade.repository.UsersRepository;
-import io.github.adrian.wieczorek.local_trade.request.RequestAdvertisementDto;
+import io.github.adrian.wieczorek.local_trade.service.category.CategoryEntity;
+import io.github.adrian.wieczorek.local_trade.service.user.UsersEntity;
+import io.github.adrian.wieczorek.local_trade.service.advertisement.AdvertisementRepository;
+import io.github.adrian.wieczorek.local_trade.service.category.CategoryRepository;
+import io.github.adrian.wieczorek.local_trade.service.user.UsersRepository;
+import io.github.adrian.wieczorek.local_trade.service.advertisement.dto.RequestAdvertisementDto;
 import io.github.adrian.wieczorek.local_trade.testutils.AdUtils;
 import io.github.adrian.wieczorek.local_trade.testutils.CategoryUtils;
 import io.github.adrian.wieczorek.local_trade.testutils.UserUtils;
@@ -27,7 +27,6 @@ import org.testcontainers.containers.MinIOContainer;
 import org.testcontainers.containers.RabbitMQContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import resources.AbstractIntegrationTest;
 import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.*;

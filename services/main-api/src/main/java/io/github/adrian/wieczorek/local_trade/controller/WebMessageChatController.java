@@ -1,9 +1,9 @@
 package io.github.adrian.wieczorek.local_trade.controller;
 
-import io.github.adrian.wieczorek.local_trade.dto.ChatMessageDto;
-import io.github.adrian.wieczorek.local_trade.dto.ChatMessagePayload;
-import io.github.adrian.wieczorek.local_trade.model.ChatMessageEntity;
-import io.github.adrian.wieczorek.local_trade.service.infrastructure.ChatMessageService;
+import io.github.adrian.wieczorek.local_trade.service.chat.dto.ChatMessageDto;
+import io.github.adrian.wieczorek.local_trade.service.chat.dto.ChatMessagePayload;
+import io.github.adrian.wieczorek.local_trade.service.chat.ChatMessageEntity;
+import io.github.adrian.wieczorek.local_trade.service.chat.service.ChatMessageService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.DestinationVariable;

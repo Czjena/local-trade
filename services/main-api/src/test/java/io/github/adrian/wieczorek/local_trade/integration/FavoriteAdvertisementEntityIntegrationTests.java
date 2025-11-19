@@ -1,8 +1,8 @@
 package io.github.adrian.wieczorek.local_trade.integration;
 
-import io.github.adrian.wieczorek.local_trade.model.AdvertisementEntity;
-import io.github.adrian.wieczorek.local_trade.model.UsersEntity;
-import io.github.adrian.wieczorek.local_trade.repository.UsersRepository;
+import io.github.adrian.wieczorek.local_trade.service.advertisement.AdvertisementEntity;
+import io.github.adrian.wieczorek.local_trade.service.user.UsersEntity;
+import io.github.adrian.wieczorek.local_trade.service.user.UsersRepository;
 import io.github.adrian.wieczorek.local_trade.testutils.AdUtilsIntegrationTests;
 import io.github.adrian.wieczorek.local_trade.testutils.UserUtils;
 import jakarta.transaction.Transactional;
@@ -16,7 +16,6 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import resources.AbstractIntegrationTest;
 
 import java.math.BigDecimal;
 import java.util.UUID;

@@ -1,12 +1,12 @@
 package io.github.adrian.wieczorek.local_trade.integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.adrian.wieczorek.local_trade.dto.CategoryDto;
-import io.github.adrian.wieczorek.local_trade.dto.ImageDto;
-import io.github.adrian.wieczorek.local_trade.model.CategoryEntity;
-import io.github.adrian.wieczorek.local_trade.model.UsersEntity;
-import io.github.adrian.wieczorek.local_trade.repository.CategoryRepository;
-import io.github.adrian.wieczorek.local_trade.repository.UsersRepository;
+import io.github.adrian.wieczorek.local_trade.service.category.dto.CategoryDto;
+import io.github.adrian.wieczorek.local_trade.service.image.dto.ImageDto;
+import io.github.adrian.wieczorek.local_trade.service.category.CategoryEntity;
+import io.github.adrian.wieczorek.local_trade.service.user.UsersEntity;
+import io.github.adrian.wieczorek.local_trade.service.category.CategoryRepository;
+import io.github.adrian.wieczorek.local_trade.service.user.UsersRepository;
 import io.github.adrian.wieczorek.local_trade.testutils.CategoryUtils;
 import io.github.adrian.wieczorek.local_trade.testutils.UserUtils;
 import org.junit.jupiter.api.Test;
@@ -23,7 +23,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import resources.AbstractIntegrationTest;
 
 import java.util.UUID;
 

@@ -1,7 +1,7 @@
 package io.github.adrian.wieczorek.local_trade.controller;
 
-import io.github.adrian.wieczorek.local_trade.dto.FavoriteAdvertisementDto;
-import io.github.adrian.wieczorek.local_trade.service.infrastructure.FavoriteAdvertisementService;
+import io.github.adrian.wieczorek.local_trade.service.advertisement.dto.FavoriteAdvertisementDto;
+import io.github.adrian.wieczorek.local_trade.service.advertisement.service.FavoriteAdvertisementService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;

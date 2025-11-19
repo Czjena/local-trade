@@ -1,6 +1,6 @@
 package io.github.adrian.wieczorek.local_trade.testutils;
 
-import io.github.adrian.wieczorek.local_trade.response.SimpleUserResponseDto;
+import io.github.adrian.wieczorek.local_trade.service.user.dto.SimpleUserResponseDto;
 
 public class SimpleUserResponseDtoUtils {
     Integer id = 1;

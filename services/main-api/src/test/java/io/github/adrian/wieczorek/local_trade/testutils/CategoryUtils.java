@@ -1,7 +1,7 @@
 package io.github.adrian.wieczorek.local_trade.testutils;
 
-import io.github.adrian.wieczorek.local_trade.dto.CategoryDto;
-import io.github.adrian.wieczorek.local_trade.model.CategoryEntity;
+import io.github.adrian.wieczorek.local_trade.service.category.dto.CategoryDto;
+import io.github.adrian.wieczorek.local_trade.service.category.CategoryEntity;
 
 import java.util.UUID;
 

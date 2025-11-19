@@ -1,8 +1,9 @@
 package io.github.adrian.wieczorek.local_trade.controller;
 
-import io.github.adrian.wieczorek.local_trade.dto.ImageDto;
-import io.github.adrian.wieczorek.local_trade.mappers.ImageMapper;
-import io.github.adrian.wieczorek.local_trade.service.infrastructure.S3Service;
+import io.github.adrian.wieczorek.local_trade.service.image.dto.ImageDto;
+import io.github.adrian.wieczorek.local_trade.service.image.mapper.ImageMapper;
+import io.github.adrian.wieczorek.local_trade.service.image.service.S3Finder;
+import io.github.adrian.wieczorek.local_trade.service.image.service.S3Service;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -21,6 +22,7 @@ import java.util.UUID;
 public class S3ImageController {
 
     private final S3Service s3Service;
+    private final S3Finder s3Finder;
 
 
     @PostMapping("/{id}")
@@ -38,7 +40,7 @@ public class S3ImageController {
     @GetMapping()
     @Operation(description = "Get list of all images that are saved for one advertisement")
     public ResponseEntity<List<ImageDto>> getAllImages(@RequestParam UUID advertisementId) {
-       return ResponseEntity.ok(s3Service.listFiles(advertisementId));
+       return ResponseEntity.ok(s3Finder.listFiles(advertisementId));
     }
 
     @GetMapping("/presigned/{key}")

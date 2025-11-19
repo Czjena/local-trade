@@ -1,7 +1,7 @@
 package io.github.adrian.wieczorek.local_trade.configs;
 
 
-import io.github.adrian.wieczorek.local_trade.repository.UsersRepository;
+import io.github.adrian.wieczorek.local_trade.service.user.UsersRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;

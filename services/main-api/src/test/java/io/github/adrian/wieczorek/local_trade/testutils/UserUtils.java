@@ -1,7 +1,7 @@
 package io.github.adrian.wieczorek.local_trade.testutils;
 
-import io.github.adrian.wieczorek.local_trade.dto.LoginDto;
-import io.github.adrian.wieczorek.local_trade.model.UsersEntity;
+import io.github.adrian.wieczorek.local_trade.service.user.dto.LoginDto;
+import io.github.adrian.wieczorek.local_trade.service.user.UsersEntity;
 
 import org.springframework.boot.test.context.SpringBootTest;
 

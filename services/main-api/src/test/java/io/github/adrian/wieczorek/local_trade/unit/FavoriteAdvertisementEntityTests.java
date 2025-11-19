@@ -1,11 +1,11 @@
 package io.github.adrian.wieczorek.local_trade.unit;
 
 import io.github.adrian.wieczorek.local_trade.exceptions.UserNotFoundException;
-import io.github.adrian.wieczorek.local_trade.model.AdvertisementEntity;
-import io.github.adrian.wieczorek.local_trade.model.UsersEntity;
-import io.github.adrian.wieczorek.local_trade.repository.AdvertisementRepository;
-import io.github.adrian.wieczorek.local_trade.repository.UsersRepository;
-import io.github.adrian.wieczorek.local_trade.service.business.FavoriteAdvertisementServiceImpl;
+import io.github.adrian.wieczorek.local_trade.service.advertisement.AdvertisementEntity;
+import io.github.adrian.wieczorek.local_trade.service.user.UsersEntity;
+import io.github.adrian.wieczorek.local_trade.service.advertisement.AdvertisementRepository;
+import io.github.adrian.wieczorek.local_trade.service.user.UsersRepository;
+import io.github.adrian.wieczorek.local_trade.service.advertisement.service.FavoriteAdvertisementServiceImpl;
 import io.github.adrian.wieczorek.local_trade.testutils.AdUtils;
 import io.github.adrian.wieczorek.local_trade.testutils.UserUtils;
 import jakarta.persistence.EntityNotFoundException;

@@ -2,18 +2,20 @@ package io.github.adrian.wieczorek.local_trade.unit;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.adrian.wieczorek.local_trade.controller.ReviewController;
-import io.github.adrian.wieczorek.local_trade.model.ReviewEntity;
-import io.github.adrian.wieczorek.local_trade.model.TradeEntity;
-import io.github.adrian.wieczorek.local_trade.repository.ReviewRepository;
-import io.github.adrian.wieczorek.local_trade.request.ReviewRequestDto;
-import io.github.adrian.wieczorek.local_trade.response.ReviewResponseDto;
-import io.github.adrian.wieczorek.local_trade.service.business.JwtService;
-import io.github.adrian.wieczorek.local_trade.service.infrastructure.ReviewService;
+import io.github.adrian.wieczorek.local_trade.service.review.ReviewEntity;
+import io.github.adrian.wieczorek.local_trade.service.review.service.ReviewFinder;
+import io.github.adrian.wieczorek.local_trade.service.trade.TradeEntity;
+import io.github.adrian.wieczorek.local_trade.service.review.ReviewRepository;
+import io.github.adrian.wieczorek.local_trade.service.review.dto.ReviewRequestDto;
+import io.github.adrian.wieczorek.local_trade.service.review.dto.ReviewResponseDto;
+import io.github.adrian.wieczorek.local_trade.service.user.service.JwtService;
+import io.github.adrian.wieczorek.local_trade.service.review.service.ReviewService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.MediaType;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -47,13 +49,13 @@ public class ReviewFeatureControllerUnitTests {
     JwtService jwtService;
     @MockitoBean
     JpaMetamodelMappingContext jpaMetamodelMappingContext;
-    @Mock
-    ReviewRepository reviewRepository;
+    @MockitoBean
+    private ReviewFinder reviewFinder;
+
 
     private ReviewResponseDto reviewResponseDto;
     private List<ReviewResponseDto> reviewResponseDtoList;
     private TradeEntity tradeEntity;
-    private UserDetails userDetails;
 
 
 
@@ -67,14 +69,14 @@ public class ReviewFeatureControllerUnitTests {
 
         tradeEntity = new TradeEntity();
         tradeEntity.setTradeId(reviewResponseDto.reviewId());
-        userDetails = mock(UserDetails.class);
+        UserDetails userDetails = mock(UserDetails.class);
 
     }
     @Test
     @WithMockUser("test@test.com")
     public void getAllMyReviewsControllerTest_returnsOk() throws Exception {
 
-        when(reviewService.getAllMyReviews(any(UserDetails.class))).thenReturn(reviewResponseDtoList);
+        when(reviewFinder.getAllMyReviews(any(UserDetails.class))).thenReturn(reviewResponseDtoList);
 
         mockMvc.perform(get("/reviews")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -98,7 +100,7 @@ public class ReviewFeatureControllerUnitTests {
     @Test
     @WithMockUser("test@test.com")
     public void getAllMyReviewsControllerTestButReturnsNothing() throws Exception {
-        when(reviewService.getAllMyReviews(any(UserDetails.class))).thenReturn(List.of());
+        when(reviewFinder.getAllMyReviews(any(UserDetails.class))).thenReturn(List.of());
 
         mockMvc.perform(get("/reviews"))
                 .andExpect(status().isOk());

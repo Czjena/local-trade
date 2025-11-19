@@ -1,7 +1,7 @@
 package io.github.adrian.wieczorek.local_trade.integration;
 
-import io.github.adrian.wieczorek.local_trade.model.UsersEntity;
-import io.github.adrian.wieczorek.local_trade.repository.UsersRepository;
+import io.github.adrian.wieczorek.local_trade.service.user.UsersEntity;
+import io.github.adrian.wieczorek.local_trade.service.user.UsersRepository;
 import io.github.adrian.wieczorek.local_trade.testutils.UserUtils;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +13,6 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import resources.AbstractIntegrationTest;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
