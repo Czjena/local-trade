@@ -163,8 +163,20 @@ See the LICENSE file for details.
 
 [PLANNED] Frontend Integration: Full integration with a React/Next.js frontend.
 
-### Contributing
-This is an open-source project, and contributions are welcome! Feel free to open an issue to discuss a new feature or submit a pull request with your improvements. All contributions will be reviewed.
+# Contributing to Local Trade Platform
+
+Hi! I'm happy you want to contribute. This is a portfolio project, but I treat it seriously.
+
+## How to start?
+1. Pick an issue.
+2. Fork the repository.
+3. Create a branch (`feat/your-feature` or `fix/issue-number`).
+4. **Run tests!** (`mvn test`). Ensure everything is green.
+5. Submit a Pull Request.
+
+## Requirements
+- Java 17
+- Docker (for Testcontainers)
 
 ## Author
 
