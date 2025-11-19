@@ -94,8 +94,10 @@ REDIS_PORT=6379
 Clone the project and start all services using Docker Compose:
 
 ```bash
-git clone [https://github.com/WieczorekAdrian/local-trade.git](https://github.com/WieczorekAdrian/local-trade.git)
+git clone https://github.com/WieczorekAdrian/local-trade.git (https://github.com/WieczorekAdrian/local-trade.git)
+
 cd local-trade
+
 docker-compose up --build
 ```
 
