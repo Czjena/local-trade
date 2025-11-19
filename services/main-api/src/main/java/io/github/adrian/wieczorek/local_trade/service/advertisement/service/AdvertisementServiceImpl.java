@@ -95,4 +95,13 @@ public class AdvertisementServiceImpl implements AdvertisementService {
         advertisementRepository.delete(ad);
         log.info("Deleted advertisement with id {}", advertisementId);
     }
+    @Override
+    @Transactional
+    public AdvertisementEntity getCurrentAdvertisement(UUID advertisementId){
+        log.info("Attempting to get advertisement with id {}", advertisementId);
+        var advertisementEntity = advertisementRepository.findByAdvertisementId(advertisementId)
+                .orElseThrow(() -> new EntityNotFoundException("Advertisement not found with id " + advertisementId));
+        log.debug("Advertisement found with id {}", advertisementId);
+        return advertisementEntity;
+    }
 }

@@ -9,8 +9,6 @@ import java.util.List;
 import java.util.UUID;
 
 public interface ReviewService {
-    @Transactional(readOnly = true)
-    List<ReviewResponseDto> getAllMyReviews(UserDetails userDetails);
     @Transactional
     ReviewResponseDto postReview(UserDetails userDetails, UUID tradeId, ReviewRequestDto reviewRequestDto);
     @Transactional

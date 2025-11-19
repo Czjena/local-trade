@@ -1,5 +1,6 @@
 package io.github.adrian.wieczorek.local_trade.service.advertisement.service;
 
+import io.github.adrian.wieczorek.local_trade.service.advertisement.AdvertisementEntity;
 import io.github.adrian.wieczorek.local_trade.service.advertisement.dto.AdvertisementUpdateDto;
 import io.github.adrian.wieczorek.local_trade.service.advertisement.dto.RequestAdvertisementDto;
 import io.github.adrian.wieczorek.local_trade.service.advertisement.dto.ResponseAdvertisementDto;
@@ -16,4 +17,6 @@ public interface AdvertisementService {
     AdvertisementUpdateDto changeAdvertisement(AdvertisementUpdateDto dto, UserDetails userDetails, Integer advertisementId);
     @Transactional
     void deleteAdvertisement(UserDetails userDetails, Integer advertisementId);
+    @Transactional
+    AdvertisementEntity getCurrentAdvertisement(UUID advertisementId);
 }

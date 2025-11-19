@@ -54,6 +54,14 @@ public class UsersServiceImpl implements UsersService {
       log.debug("Found user {}", user);
       return user;
     }
+    @Override
+    @Transactional
+    public UsersEntity saveUser(UsersEntity user){
+        log.debug("Saving current user {}", user);
+        usersRepository.save(user);
+        log.debug("Saved user {}", user);
+        return user;
+    }
 }
 
 

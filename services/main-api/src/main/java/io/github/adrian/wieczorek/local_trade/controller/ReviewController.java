@@ -2,6 +2,7 @@ package io.github.adrian.wieczorek.local_trade.controller;
 
 import io.github.adrian.wieczorek.local_trade.service.review.dto.ReviewRequestDto;
 import io.github.adrian.wieczorek.local_trade.service.review.dto.ReviewResponseDto;
+import io.github.adrian.wieczorek.local_trade.service.review.service.ReviewFinder;
 import io.github.adrian.wieczorek.local_trade.service.review.service.ReviewService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -19,14 +20,14 @@ import java.util.UUID;
 @RequestMapping("/reviews")
 @RequiredArgsConstructor
 public class ReviewController {
+
     private final ReviewService reviewService;
-
-
+    private final ReviewFinder reviewFinder;
 
     @GetMapping
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<ReviewResponseDto>> getMyReviews(@AuthenticationPrincipal UserDetails userDetails) {
-        return ResponseEntity.ok(reviewService.getAllMyReviews(userDetails));
+        return ResponseEntity.ok(reviewFinder.getAllMyReviews(userDetails));
     }
 
     @PreAuthorize("isAuthenticated()")

@@ -2,6 +2,8 @@ package io.github.adrian.wieczorek.local_trade.service.trade.service;
 
 import io.github.adrian.wieczorek.local_trade.enums.TradeStatus;
 import io.github.adrian.wieczorek.local_trade.exceptions.UserNotFoundException;
+import io.github.adrian.wieczorek.local_trade.service.advertisement.service.AdvertisementService;
+import io.github.adrian.wieczorek.local_trade.service.review.ReviewRepository;
 import io.github.adrian.wieczorek.local_trade.service.trade.mapper.TradeResponseDtoMapper;
 import io.github.adrian.wieczorek.local_trade.service.advertisement.AdvertisementEntity;
 import io.github.adrian.wieczorek.local_trade.service.trade.TradeEntity;
@@ -11,8 +13,10 @@ import io.github.adrian.wieczorek.local_trade.service.trade.TradeRepository;
 import io.github.adrian.wieczorek.local_trade.service.user.UsersRepository;
 import io.github.adrian.wieczorek.local_trade.service.trade.dto.TradeInitiationRequestDto;
 import io.github.adrian.wieczorek.local_trade.service.trade.dto.TradeResponseDto;
+import io.github.adrian.wieczorek.local_trade.service.user.service.UsersService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,25 +25,23 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class TradeServiceImpl implements TradeService {
 
-    private final AdvertisementRepository advertisementRepository;
-    private final UsersRepository usersRepository;
+    private final AdvertisementService advertisementService;
     private final TradeRepository tradeRepository;
     private final TradeResponseDtoMapper tradeResponseDtoMapper;
-
-
+    private final UsersService usersService;
 
     @Transactional
     @Override
     public TradeResponseDto tradeInitiation(UserDetails userDetails, TradeInitiationRequestDto tradeInitiationRequestDto) {
-        UsersEntity buyer = usersRepository.findByEmail(userDetails.getUsername())
-                .orElseThrow(() -> new UserNotFoundException("User not found"));
-        AdvertisementEntity advertisementEntity = advertisementRepository.findByAdvertisementId(tradeInitiationRequestDto.advertisementId())
-                .orElseThrow(() -> new EntityNotFoundException("Advertisement not found"));
+        UsersEntity buyer = usersService.getCurrentUser(userDetails.getUsername());
+        AdvertisementEntity advertisementEntity = advertisementService.getCurrentAdvertisement(tradeInitiationRequestDto.advertisementId());
 
         UsersEntity seller = advertisementEntity.getUser();
 
@@ -67,9 +69,8 @@ public class TradeServiceImpl implements TradeService {
     @Transactional
     @Override
     public TradeResponseDto tradeIsComplete(UserDetails userDetails, Long tradeId) {
+        UsersEntity loggedInUser = usersService.getCurrentUser(userDetails.getUsername());
         TradeEntity tradeEntity = tradeRepository.findById(tradeId).orElseThrow(() -> new EntityNotFoundException("Trade not found"));
-        UsersEntity loggedInUser = usersRepository.findByEmail(userDetails.getUsername())
-                .orElseThrow(() -> new UserNotFoundException("User not found"));
         if (!tradeEntity.getStatus().equals(TradeStatus.PROPOSED)) {
             throw new IllegalArgumentException("Trade is NOT PROPOSED, Current status is " + tradeEntity.getStatus());
         }
@@ -97,8 +98,7 @@ public class TradeServiceImpl implements TradeService {
     @Transactional
     @Override
     public TradeResponseDto tradeIsCancelled(UserDetails userDetails, Long tradeId) {
-            UsersEntity loggedInUser = usersRepository.findByEmail(userDetails.getUsername())
-                    .orElseThrow(() -> new UserNotFoundException("User not found"));
+            UsersEntity loggedInUser = usersService.getCurrentUser(userDetails.getUsername());
             TradeEntity tradeEntity =  tradeRepository.findById(tradeId).orElseThrow(() -> new EntityNotFoundException("Trade not found"));
             Integer buyerId = tradeEntity.getBuyer().getId();
             Integer sellerId= tradeEntity.getSeller().getId();
@@ -119,6 +119,7 @@ public class TradeServiceImpl implements TradeService {
             tradeEntity.setStatus(TradeStatus.CANCELLED);
             return tradeResponseDtoMapper.tradeToTradeResponseDto(tradeRepository.save(tradeEntity));
     }
+
     @Transactional
     @Override
     public TradeResponseDto updateTradeStatus(UserDetails userDetails, Long tradeId, TradeStatus tradeStatus) {
@@ -128,16 +129,24 @@ public class TradeServiceImpl implements TradeService {
             default -> throw new IllegalArgumentException("Trade status not implemented");
         };
     }
-    @Transactional(readOnly = true)
+
+
+
+    @Transactional
     @Override
-    public List<TradeResponseDto> getAllMyTrades(UserDetails userDetails){
-        UsersEntity user = usersRepository.findByEmail(userDetails.getUsername())
-                .orElseThrow(() -> new UserNotFoundException("User not found"));
-        List<TradeEntity> tradeEntities = tradeRepository.findAllByBuyerOrSeller(user,user);
+    public TradeEntity getTradeEntityByTradeId(UUID tradeId){
+        log.info("Getting trade entity by trade id {}", tradeId);
+        tradeRepository.findByTradeId(tradeId).orElseThrow(() -> new EntityNotFoundException("Trade not found with UUID: " + tradeId));
+        log.debug("Trade found with UUID {}", tradeId);
+        return tradeRepository.findByTradeId(tradeId).get();
+    }
 
-       return  tradeEntities.stream()
-                .map(tradeResponseDtoMapper::tradeToTradeResponseDto)
-                .toList();
-
+    @Transactional
+    @Override
+    public TradeEntity saveTrade(TradeEntity trade){
+        log.info("Attempting to save trade with UUID{}", trade.getTradeId());
+        tradeRepository.save(trade);
+        log.debug("Trade saved with UUID {}", trade.getTradeId());
+        return trade;
     }
 }

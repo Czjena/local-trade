@@ -8,12 +8,14 @@ import io.github.adrian.wieczorek.local_trade.exceptions.UserNotFoundException;
 import io.github.adrian.wieczorek.local_trade.service.review.mapper.ReviewResponseDtoMapper;
 import io.github.adrian.wieczorek.local_trade.service.review.ReviewEntity;
 import io.github.adrian.wieczorek.local_trade.service.trade.TradeEntity;
+import io.github.adrian.wieczorek.local_trade.service.trade.service.TradeService;
 import io.github.adrian.wieczorek.local_trade.service.user.UsersEntity;
 import io.github.adrian.wieczorek.local_trade.service.review.ReviewRepository;
 import io.github.adrian.wieczorek.local_trade.service.trade.TradeRepository;
 import io.github.adrian.wieczorek.local_trade.service.user.UsersRepository;
 import io.github.adrian.wieczorek.local_trade.service.review.dto.ReviewRequestDto;
 import io.github.adrian.wieczorek.local_trade.service.review.dto.ReviewResponseDto;
+import io.github.adrian.wieczorek.local_trade.service.user.service.UsersService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,47 +33,19 @@ import java.util.UUID;
 public class ReviewServiceImpl implements ReviewService {
 
     private final ReviewRepository reviewRepository;
-    private final UsersRepository usersRepository;
+    private final UsersService usersService;
     private final ReviewResponseDtoMapper reviewResponseDtoMapper;
-    private final TradeRepository tradeRepository;
+    private final TradeService tradeService;
 
 
-
-    @Transactional(readOnly = true)
-    @Override
-    public List<ReviewResponseDto> getAllMyReviews(UserDetails userDetails) {
-        log.info("Getting all reviews for user {}", userDetails.getUsername());
-        UsersEntity user = usersRepository.findByEmail(userDetails.getUsername())
-                .orElseThrow(() -> {
-                    log.info("User {} not found while fetching reviews" , userDetails.getUsername());
-                    return new UserNotFoundException("User " + userDetails.getUsername());
-                });
-
-        List<ReviewEntity> reviewEntities = reviewRepository.findAllByReviewedUserOrReviewer(user, user);
-
-        if(reviewEntities.isEmpty()) {
-            log.info("No reviews found for user with email {}", userDetails.getUsername());
-            return Collections.emptyList();
-        }
-
-        log.info("Found {} reviews for user {}", reviewEntities.size(), userDetails.getUsername());
-        return reviewEntities.stream().map(reviewResponseDtoMapper::toDto).toList();
-
-    }
 
     @Transactional
     @Override
     public ReviewResponseDto postReview(UserDetails userDetails, UUID tradeId, ReviewRequestDto reviewRequestDto) {
         log.info("Creating new review");
 
-        UsersEntity loggedInUser = usersRepository.findByEmail(userDetails.getUsername())
-                .orElseThrow(() -> new UserNotFoundException("User " + userDetails.getUsername()));
-        TradeEntity completedTradeEntity = tradeRepository.findByTradeId(tradeId)
-                .orElseThrow(() -> {
-                    log.info("Trade with id {} not found while creating review", tradeId);
-                    return new EntityNotFoundException("Trade not found");
-                });
-
+        UsersEntity loggedInUser = usersService.getCurrentUser(userDetails.getUsername());
+        TradeEntity completedTradeEntity = tradeService.getTradeEntityByTradeId(tradeId);
         var seller  = completedTradeEntity.getSeller();
         var buyer = completedTradeEntity.getBuyer();
 
@@ -106,7 +80,8 @@ public class ReviewServiceImpl implements ReviewService {
                 completedTradeEntity.setSellerLeftReview(true);
             }
             this.updateUserRating(reviewedUser);
-            tradeRepository.save(completedTradeEntity);
+
+            tradeService.saveTrade(completedTradeEntity);
 
         return reviewResponseDtoMapper.toDto(savedReviewEntity);
     }
@@ -115,8 +90,7 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     public void deleteReviewByAdmin(UserDetails userDetails, UUID reviewId) {
         log.info("Deleting  review");
-        UsersEntity user = usersRepository.findByEmail(userDetails.getUsername())
-                .orElseThrow(() -> new UserNotFoundException("User not found "));
+        UsersEntity user = usersService.getCurrentUser(userDetails.getUsername());
         log.info("User {} with role {} has been found ", userDetails.getUsername(), user.getRole());
         ReviewEntity reviewEntity = reviewRepository.findByReviewId(reviewId)
                 .orElseThrow(() -> new EntityNotFoundException("Review with id " + reviewId + " not found"));
@@ -143,7 +117,7 @@ public class ReviewServiceImpl implements ReviewService {
             user.setRatingCount(reviewEntities.size());
         }
 
-        usersRepository.save(user);
+        usersService.saveUser(user);
         log.info("User {} successfully updated user rating {}", user.getId(), user.getAverageRating());
     }
 }

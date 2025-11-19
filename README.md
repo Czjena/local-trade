@@ -34,6 +34,7 @@ It supports user listings, messaging, ratings, and media management — designed
 - Swagger UI for API documentation
 - One-command startup with Docker Compose
 - Environment Configuration
+- Event-Driven Architecture: Asynchronous messaging via RabbitMQ for notifications.
 
 ## Testing & Quality Assurance
 This project places a strong emphasis on code quality and reliability.
@@ -127,12 +128,13 @@ Swagger UI: /swagger-ui.html
 
 - Static analysis and test coverage reports
 
+
 ### Architectural Overview
-- **Multi-service Monorepo:** The platform is built as a monorepo containing multiple independent services (e.g., `main-api`, `notification-service`).
-- **Event-Driven:** Services communicate asynchronously using **RabbitMQ** for a decoupled and resilient architecture.
-- **Layered Architecture:** Each individual service internally follows a clean layered architecture (controller → service → repository).
-- **Fully Containerized:** The entire system (all services, DB, cache, broker, storage) is orchestrated via Docker Compose for one-command startup.
-- **Test-Driven:** External integrations (S3, Redis, DB, RabbitMQ) are all tested in the CI pipeline using **Testcontainers**.
+- **Multi-service Monorepo:** The platform is built as a monorepo containing independent services (e.g., `main-api`, `notification-service`) orchestrated via Docker Compose.
+- **Event-Driven Design:** Services communicate asynchronously using **RabbitMQ** for decoupled operations (e.g., triggering emails or notifications), ensuring resilience and non-blocking API responses.
+- **Modular & Domain-Centric:** The core service enforces **strict domain isolation**. Cross-domain repository access is prohibited (e.g., *Trade Domain* interacts with *Advertisement Domain* only via Service interfaces), which prevents tight coupling and ensures clean boundaries.
+- **Infrastructure-as-Code (Local):** The entire stack (DB, Cache, Broker, Storage) is fully containerized using Docker.
+- **Reliability First:** Integration tests run against real infrastructure instances using **Testcontainers**, not mocks, guaranteeing production-like behavior during testing.
 
 ### License
 This project is licensed under the MIT License.
@@ -145,13 +147,11 @@ See the LICENSE file for details.
 [IN PROGRESS] User Dashboard: Creating an aggregated BFF (Backend-for-Frontend) endpoint for the user dashboard.
 
 [IN PROGRESS] Notification System: The core microservice architecture is now implemented.
-- [DONE] Extracted a separate `notification-service` microservice.
-- [DONE] Integrated asynchronous communication using **RabbitMQ**.
-- **[DONE] Implementing full notification logic (e.g., email sending via a dedicated email service worker consuming RabbitMQ events).**
-- [PLANNED] Adding user notification preferences.
+
+[PLANNED] Adding user notification preferences.
 
 
-*[PLANNED] Azure Deployment and Storage Pivot:**
+*[PLANNED] Azure Deployment and Storage Pivot:*
 
 [PLANNED] **Full migration of the target production environment to the Azure platform (e.g., Azure App Service / AKS).**
 
@@ -163,7 +163,9 @@ See the LICENSE file for details.
 
 ### Contributing
 This is an open-source project, and contributions are welcome! Feel free to open an issue to discuss a new feature or submit a pull request with your improvements. All contributions will be reviewed.
+
 ## Author
+
 Adrian Wieczorek
 
 GitHub: @WieczorekAdrian

@@ -1,5 +1,6 @@
 package io.github.adrian.wieczorek.local_trade.service.image.service;
 
+import io.github.adrian.wieczorek.local_trade.service.advertisement.service.AdvertisementService;
 import io.github.adrian.wieczorek.local_trade.service.image.dto.ImageDto;
 import io.github.adrian.wieczorek.local_trade.service.image.mapper.ImageMapper;
 import io.github.adrian.wieczorek.local_trade.service.advertisement.AdvertisementEntity;
@@ -36,10 +37,10 @@ import java.util.UUID;
 public class S3ServiceImpl implements S3Service {
 
     private final S3Client s3Client;
-    private final AdvertisementRepository advertisementRepository;
     private final String bucketName = "advertisements";
     private final ImageRepository imageRepository;
     private final S3Presigner s3Presigner;
+    private final AdvertisementService advertisementService;
 
 
 
@@ -55,8 +56,7 @@ public class S3ServiceImpl implements S3Service {
     @Override
     @Transactional
     public ImageEntity uploadFile(UUID advertisementId, MultipartFile file) throws IOException {
-        AdvertisementEntity ad = advertisementRepository.findByAdvertisementId(advertisementId)
-                .orElseThrow(() -> new EntityNotFoundException("Advertisement not found"));
+        AdvertisementEntity ad = advertisementService.getCurrentAdvertisement(advertisementId);
         ImageEntity imageEntity = new ImageEntity();
         imageEntity.setAdvertisementEntity(ad);
         String fileName = UUID.randomUUID() + "." + FilenameUtils.getExtension(file.getOriginalFilename());
@@ -100,20 +100,6 @@ public class S3ServiceImpl implements S3Service {
         imageRepository.delete(imageEntity);
     }
 
-    @Override
-    @Transactional(readOnly = true)
-    public List<ImageDto> listFiles(UUID advertisementId) {
-        AdvertisementEntity ad = advertisementRepository.findByAdvertisementId(advertisementId)
-                .orElseThrow(() -> new EntityNotFoundException("Advertisement not found"));
-        List<ImageEntity> imageEntities = imageRepository.findAllByAdvertisementEntity(ad);
-
-        return imageEntities.stream().map(image -> {
-            String thumbnailKey = image.getKey().replace("full/", "thumbnail/");
-            image.setUrl(generatePresignedUrl(image.getKey(), Duration.ofHours(1)));
-            image.setThumbnailUrl(generatePresignedUrl(thumbnailKey, Duration.ofHours(1)));
-            return ImageMapper.ImagetoImageDto(image);
-        }).toList();
-    }
 
 
     @Override

@@ -18,8 +18,6 @@ public interface S3Service {
     ImageEntity uploadFile(UUID advertisementId, MultipartFile file) throws IOException;
     @Transactional
     void deleteFile(UUID imageId);
-    @Transactional(readOnly = true)
-    List<ImageDto> listFiles(UUID advertisementId);
     byte[] generateThumbnail(MultipartFile file) throws IOException;
     String generatePresignedUrl(String key, Duration duration);
 }

@@ -12,8 +12,6 @@ public class RabbitNotificationEventPublisher implements NotificationEventPublis
 
     private final RabbitTemplate rabbitTemplate;
 
-
-
     @Override
     public void publishEvent(NotificationEvent event, String routingKey) {
         rabbitTemplate.convertAndSend(

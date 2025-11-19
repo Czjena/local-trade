@@ -12,4 +12,6 @@ public interface UsersService {
     UserResponseDto updateCurrentUser(UpdateUserDto dto,String email);
     @Transactional
     UsersEntity getCurrentUser(String email);
+    @Transactional
+    UsersEntity saveUser(UsersEntity user);
 }
