@@ -1,9 +1,9 @@
 package io.github.adrian.wieczorek.local_trade.unit;
 
 import io.github.adrian.wieczorek.local_trade.enums.TradeStatus;
-import io.github.adrian.wieczorek.local_trade.exceptions.ConflictException;
+import io.github.adrian.wieczorek.local_trade.exceptions.GlobalConflictException;
 import io.github.adrian.wieczorek.local_trade.exceptions.TradeAccessDenied;
-import io.github.adrian.wieczorek.local_trade.exceptions.TradeReviewedConflictException;
+import io.github.adrian.wieczorek.local_trade.exceptions.TradeReviewedGlobalConflictException;
 import io.github.adrian.wieczorek.local_trade.exceptions.UserNotFoundException;
 import io.github.adrian.wieczorek.local_trade.service.review.mapper.ReviewResponseDtoMapper;
 import io.github.adrian.wieczorek.local_trade.service.review.ReviewEntity;
@@ -24,7 +24,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -192,7 +191,7 @@ public class ReviewServiceImplUnitTests {
         when(usersService.getCurrentUser(userDetails.getUsername())).thenReturn(reviewedUser);
         when(tradeService.getTradeEntityByTradeId(tradeEntity.getTradeId())).thenReturn(tradeEntity);
 
-        Assertions.assertThrows(ConflictException.class, () -> reviewService.postReview(userDetails, tradeEntity.getTradeId(), reviewRequestDto));
+        Assertions.assertThrows(GlobalConflictException.class, () -> reviewService.postReview(userDetails, tradeEntity.getTradeId(), reviewRequestDto));
 
         verify(reviewRepository, never()).save(any(ReviewEntity.class));
         verify(usersService, never()).saveUser(any(UsersEntity.class));
@@ -210,7 +209,7 @@ public class ReviewServiceImplUnitTests {
         when(tradeService.getTradeEntityByTradeId(tradeEntity.getTradeId())).thenReturn(tradeEntity);
         when(reviewRepository.existsByTradeEntityAndReviewer(tradeEntity, reviewedUser)).thenReturn(Boolean.TRUE);
 
-        Assertions.assertThrows(TradeReviewedConflictException.class, () -> reviewService.postReview(userDetails, tradeEntity.getTradeId(), reviewRequestDto));
+        Assertions.assertThrows(TradeReviewedGlobalConflictException.class, () -> reviewService.postReview(userDetails, tradeEntity.getTradeId(), reviewRequestDto));
 
         verify(reviewRepository, never()).save(any(ReviewEntity.class));
         verify(usersService, never()).saveUser(any(UsersEntity.class));
