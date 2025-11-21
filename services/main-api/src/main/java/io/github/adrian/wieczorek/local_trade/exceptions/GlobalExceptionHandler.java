@@ -3,10 +3,9 @@ package io.github.adrian.wieczorek.local_trade.exceptions;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.security.SignatureException;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ProblemDetail;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AccountStatusException;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -15,109 +14,87 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
+import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j // 1. Dodajemy logger
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-    @ExceptionHandler(Exception.class)
-    public ProblemDetail handleSecurityException(Exception exception) {
-        ProblemDetail errorDetail = null;
 
-        // TODO send this stack trace to an observability tool
-        exception.printStackTrace();
-
-        if (exception instanceof BadCredentialsException) {
-            errorDetail = ProblemDetail.forStatusAndDetail(HttpStatusCode.valueOf(401), exception.getMessage());
-            errorDetail.setProperty("description", "The username or password is incorrect");
-
-            return errorDetail;
-        }
-
-        if (exception instanceof AccountStatusException) {
-            errorDetail = ProblemDetail.forStatusAndDetail(HttpStatusCode.valueOf(403), exception.getMessage());
-            errorDetail.setProperty("description", "The account is locked");
-        }
-
-        if (exception instanceof AccessDeniedException) {
-            errorDetail = ProblemDetail.forStatusAndDetail(HttpStatusCode.valueOf(403), exception.getMessage());
-            errorDetail.setProperty("description", "You are not authorized to access this resource");
-        }
-
-        if (exception instanceof SignatureException) {
-            errorDetail = ProblemDetail.forStatusAndDetail(HttpStatusCode.valueOf(403), exception.getMessage());
-            errorDetail.setProperty("description", "The JWT signature is invalid");
-        }
-
-        if (exception instanceof ExpiredJwtException) {
-            errorDetail = ProblemDetail.forStatusAndDetail(HttpStatusCode.valueOf(403), exception.getMessage());
-            errorDetail.setProperty("description", "The JWT token has expired");
-        }
-
-        if (errorDetail == null) {
-            errorDetail = ProblemDetail.forStatusAndDetail(HttpStatusCode.valueOf(500), exception.getMessage());
-            errorDetail.setProperty("description", "Unknown internal server error.");
-        }
-
-        return errorDetail;
+    @ExceptionHandler(BadCredentialsException.class)
+    public ProblemDetail handleBadCredentials(BadCredentialsException ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, ex.getMessage());
+        problemDetail.setTitle("Authentication Failure");
+        problemDetail.setProperty("error_code", "BAD_CREDENTIALS"); // Opcjonalne własne pola
+        return problemDetail;
     }
 
-    @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<String> handleEntityNotFound(EntityNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    @ExceptionHandler({
+            AccessDeniedException.class,
+            AccountStatusException.class,
+            SignatureException.class,
+            ExpiredJwtException.class
+    })
+    public ProblemDetail handleAccessDenied(Exception ex) {
+        log.warn("Security exception: {}", ex.getMessage());
+
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN, ex.getMessage());
+        problemDetail.setTitle("Access Denied");
+
+        if (ex instanceof ExpiredJwtException) {
+            problemDetail.setProperty("description", "The JWT token has expired");
+        } else if (ex instanceof SignatureException) {
+            problemDetail.setProperty("description", "The JWT signature is invalid");
+        }
+
+        return problemDetail;
     }
+
+    @ExceptionHandler({EntityNotFoundException.class, ResourceNotFoundException.class})
+    public ProblemDetail handleNotFound(Exception ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
+        problemDetail.setTitle("Resource Not Found");
+        return problemDetail;
+    }
+
+    @ExceptionHandler(GlobalConflictException.class)
+    public ProblemDetail handleConflict(GlobalConflictException ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.getMessage());
+        problemDetail.setTitle("Conflict");
+        return problemDetail;
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String, String>> handleValidationExceptions(
-            MethodArgumentNotValidException ex) {
-
+    public ProblemDetail handleValidationExceptions(MethodArgumentNotValidException ex) {
         Map<String, String> errors = new HashMap<>();
-
         ex.getBindingResult().getFieldErrors().forEach(error ->
                 errors.put(error.getField(), error.getDefaultMessage())
         );
 
-        return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "Validation failed");
+        problemDetail.setTitle("Validation Error");
+        problemDetail.setProperty("field_errors", errors); // Dodajemy mapę błędów do standardowego pola
+        return problemDetail;
     }
+
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public ResponseEntity<Map<String, String>> handleTypeMismatch(MethodArgumentTypeMismatchException ex) {
+    public ProblemDetail handleTypeMismatch(MethodArgumentTypeMismatchException ex) {
+        String requiredType = (ex.getRequiredType() != null) ? ex.getRequiredType().getSimpleName() : "unknown";
+        String detail = String.format("Parameter '%s' has an invalid value: '%s'. Required type is '%s'.",
+                ex.getName(), ex.getValue(), requiredType);
 
-        Class<?> requiredType = ex.getRequiredType();
-        String typeName = (requiredType != null) ? requiredType.getSimpleName() : "unknown";
-
-        String error = String.format("Parameter '%s' has an invalid value: '%s'. Required type is '%s'.",
-                ex.getName(),
-                ex.getValue(),
-                typeName);
-
-        Map<String, String> errorBody = Map.of(
-                "status", "400",
-                "error", "Bad Request",
-                "message", error
-        );
-
-        return new ResponseEntity<>(errorBody, HttpStatus.BAD_REQUEST);
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, detail);
+        problemDetail.setTitle("Type Mismatch");
+        return problemDetail;
     }
-    @ExceptionHandler(ConflictException.class)
-    public ResponseEntity<Map<String, String>> handleConflict(ConflictException ex) {
 
-        Map<String, String> errorBody = Map.of(
-                "status", "409",
-                "error", "Conflict",
-                "message", ex.getMessage() // Pobierze wiadomość, np. "Trade 1 is not in completed status"
-        );
+    @ExceptionHandler(Exception.class)
+    public ProblemDetail handleGlobalException(Exception ex) {
+        log.error("Unexpected error occurred: ", ex);
 
-        return new ResponseEntity<>(errorBody, HttpStatus.CONFLICT);
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, "An internal server error occurred.");
+        problemDetail.setTitle("Internal Server Error");
+        return problemDetail;
     }
-    @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<Map<String, String>> handleNotFound(ResourceNotFoundException ex) {
-
-        Map<String, String> errorBody = Map.of(
-                "status", "404",
-                "error", "Not Found",
-                "message", ex.getMessage() // Pobierze wiadomość, np. "User not found"
-        );
-
-        return new ResponseEntity<>(errorBody, HttpStatus.NOT_FOUND);
-    }
-// ...
-    }
+}

@@ -1,18 +1,15 @@
 package io.github.adrian.wieczorek.local_trade.service.review.service;
 
 import io.github.adrian.wieczorek.local_trade.enums.TradeStatus;
-import io.github.adrian.wieczorek.local_trade.exceptions.ConflictException;
+import io.github.adrian.wieczorek.local_trade.exceptions.GlobalConflictException;
 import io.github.adrian.wieczorek.local_trade.exceptions.TradeAccessDenied;
-import io.github.adrian.wieczorek.local_trade.exceptions.TradeReviewedConflictException;
-import io.github.adrian.wieczorek.local_trade.exceptions.UserNotFoundException;
+import io.github.adrian.wieczorek.local_trade.exceptions.TradeReviewedGlobalConflictException;
 import io.github.adrian.wieczorek.local_trade.service.review.mapper.ReviewResponseDtoMapper;
 import io.github.adrian.wieczorek.local_trade.service.review.ReviewEntity;
 import io.github.adrian.wieczorek.local_trade.service.trade.TradeEntity;
 import io.github.adrian.wieczorek.local_trade.service.trade.service.TradeService;
 import io.github.adrian.wieczorek.local_trade.service.user.UsersEntity;
 import io.github.adrian.wieczorek.local_trade.service.review.ReviewRepository;
-import io.github.adrian.wieczorek.local_trade.service.trade.TradeRepository;
-import io.github.adrian.wieczorek.local_trade.service.user.UsersRepository;
 import io.github.adrian.wieczorek.local_trade.service.review.dto.ReviewRequestDto;
 import io.github.adrian.wieczorek.local_trade.service.review.dto.ReviewResponseDto;
 import io.github.adrian.wieczorek.local_trade.service.user.service.UsersService;
@@ -23,7 +20,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -55,11 +51,11 @@ public class ReviewServiceImpl implements ReviewService {
         }
         if(!completedTradeEntity.getStatus().equals(TradeStatus.COMPLETED)) {
             log.warn("Trade {} is not in completed status", completedTradeEntity.getId());
-            throw new ConflictException("Trade " + completedTradeEntity.getId() + " is not in completed status");
+            throw new GlobalConflictException("Trade " + completedTradeEntity.getId() + " is not in completed status");
         }
         if (reviewRepository.existsByTradeEntityAndReviewer(completedTradeEntity, loggedInUser)) {
             log.warn("User {} has already reviewed this trade {}", loggedInUser.getUsername(), tradeId);
-            throw new TradeReviewedConflictException("You have already reviewed this trade");
+            throw new TradeReviewedGlobalConflictException("You have already reviewed this trade");
         }
 
         UsersEntity reviewedUser = loggedInUser.equals(buyer) ? seller : buyer;
