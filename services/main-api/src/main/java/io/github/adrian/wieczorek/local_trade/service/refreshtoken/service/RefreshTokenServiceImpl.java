@@ -1,6 +1,7 @@
 package io.github.adrian.wieczorek.local_trade.service.refreshtoken.service;
 
-import io.github.adrian.wieczorek.local_trade.service.user.service.JwtService;
+import io.github.adrian.wieczorek.local_trade.exceptions.UserLogOutException;
+import io.github.adrian.wieczorek.local_trade.security.JwtService;
 import io.github.adrian.wieczorek.local_trade.service.refreshtoken.dto.RefreshTokenRequest;
 import io.github.adrian.wieczorek.local_trade.exceptions.UserNotFoundException;
 import io.github.adrian.wieczorek.local_trade.service.refreshtoken.RefreshTokenEntity;
@@ -8,6 +9,8 @@ import io.github.adrian.wieczorek.local_trade.service.user.UsersEntity;
 import io.github.adrian.wieczorek.local_trade.service.refreshtoken.RefreshTokenRepository;
 import io.github.adrian.wieczorek.local_trade.service.user.dto.LoginResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,11 +19,15 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class RefreshTokenServiceImpl implements RefreshTokenService {
+
 
     private final RefreshTokenRepository refreshTokenRepository;
     private final JwtService jwtService;
 
+    @Value("${security.jwt.refresh-token.expiration}")
+    private long refreshTokenExpirationMs;
 
 
     @Override
@@ -29,32 +36,45 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
         RefreshTokenEntity refreshTokenEntity = RefreshTokenEntity.builder()
                 .usersEntity(user)
                 .token(UUID.randomUUID().toString())
-                .expires(Instant.now().plusMillis(600000))
+                .expires(Instant.now().plusMillis(refreshTokenExpirationMs))
                 .build();
         return refreshTokenRepository.save(refreshTokenEntity);
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public LoginResponse generateNewTokenFromRefresh(RefreshTokenRequest refreshTokenRequest) {
-        return refreshTokenRepository.findByToken((refreshTokenRequest.getToken()))
+        String requestToken = refreshTokenRequest.getToken();
+
+        return refreshTokenRepository.findByToken(requestToken)
                 .map(this::verifyExpiry)
-                .map(RefreshTokenEntity::getUsersEntity)
-                .map(Users -> {
-                    String accessToken = jwtService.generateToken(Users);
+                .map(refreshToken -> {
+
+                    UsersEntity user = refreshToken.getUsersEntity();
+
+
+                    refreshTokenRepository.delete(refreshToken);
+
+
+                    RefreshTokenEntity newRefreshToken = createRefreshToken(user);
+
+                    String newAccessToken = jwtService.generateToken(user);
+
+                    log.info("Rotated refresh token for user: {}", user.getEmail());
+
                     return LoginResponse.builder()
-                            .token(accessToken)
-                            .refreshToken((refreshTokenRequest.getToken()))
+                            .token(newAccessToken)
+                            .refreshToken(newRefreshToken.getToken())
                             .build();
-                }).orElseThrow(() -> new UserNotFoundException("User not found"));
+                })
+                .orElseThrow(() -> new UserNotFoundException("Refresh token not found or revoked"));
     }
 
     @Override
-    @Transactional
     public RefreshTokenEntity verifyExpiry(RefreshTokenEntity token) {
-        if(token.getExpires().compareTo(Instant.now())<0){
+        if (token.getExpires().compareTo(Instant.now()) < 0) {
             refreshTokenRepository.delete(token);
-            throw new RuntimeException("Token is expired please sign in again");
+            throw new UserLogOutException("Refresh token was expired. Please make a new sign in request");
         }
         return token;
     }

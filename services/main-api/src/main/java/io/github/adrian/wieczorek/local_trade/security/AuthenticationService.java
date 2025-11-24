@@ -1,4 +1,4 @@
-package io.github.adrian.wieczorek.local_trade.service.user.service;
+package io.github.adrian.wieczorek.local_trade.security;
 
 import io.github.adrian.wieczorek.local_trade.service.user.dto.LoginDto;
 import io.github.adrian.wieczorek.local_trade.service.user.dto.RegisterUsersDto;
@@ -13,4 +13,5 @@ public interface AuthenticationService {
     @Transactional
     UsersEntity authenticate(LoginDto dto);
     List<String> getAuthenticatedRoles();
+    public void logout(String authHeader, String refreshToken);
 }

@@ -1,4 +1,4 @@
-package io.github.adrian.wieczorek.local_trade.service.user.service;
+package io.github.adrian.wieczorek.local_trade.security;
 
 import io.github.adrian.wieczorek.local_trade.service.user.UsersEntity;
 import io.jsonwebtoken.Jwts;

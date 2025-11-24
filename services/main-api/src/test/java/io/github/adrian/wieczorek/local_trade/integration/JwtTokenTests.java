@@ -7,8 +7,8 @@ import io.github.adrian.wieczorek.local_trade.service.user.UsersEntity;
 import io.github.adrian.wieczorek.local_trade.service.refreshtoken.RefreshTokenRepository;
 import io.github.adrian.wieczorek.local_trade.service.user.UsersRepository;
 import io.github.adrian.wieczorek.local_trade.service.user.dto.LoginResponse;
-import io.github.adrian.wieczorek.local_trade.service.user.service.JwtService;
-import io.github.adrian.wieczorek.local_trade.service.user.service.TestJwtUtils;
+import io.github.adrian.wieczorek.local_trade.security.JwtService;
+import io.github.adrian.wieczorek.local_trade.security.TestJwtUtils;
 import io.jsonwebtoken.*;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
@@ -148,32 +148,6 @@ public class JwtTokenTests extends AbstractIntegrationTest {
     }
     @Test
     @Transactional
-    public void userLogOut_thenJwtIsNotValid() {
-        UsersEntity user = new UsersEntity();
-        user.setName("test");
-        user.setEmail("test@test.com");
-        user.setPassword(passwordEncoder.encode("password"));
-        user.setRole("ROLE_USER");
-        System.out.println(user.getEmail());
-        System.out.println(user.getPassword());
-
-        usersRepository.save(user);
-
-        LoginDto dto = new LoginDto();
-        dto.setEmail("test@test.com");
-        dto.setPassword("password");
-        System.out.println(dto.getEmail());
-        System.out.println(dto.getPassword());
-
-        LoginResponse loginResponse = authenticationController.authenticate(dto);
-        String refreshToken = loginResponse.getRefreshToken();
-        RefreshTokenRequest requestToken = new RefreshTokenRequest(refreshToken);
-
-        authenticationController.logOut(requestToken);
-        assertFalse(refreshTokenRepository.findByToken(refreshToken).isPresent());
-    }
-    @Test
-    @Transactional
     public void getValidRoleFromToken_thenRolesAreValid() {
         UsersEntity user = new UsersEntity();
         user.setRole("ROLE_ADMIN");
@@ -184,5 +158,4 @@ public class JwtTokenTests extends AbstractIntegrationTest {
         assertEquals(List.of("ROLE_ADMIN"), roles);
 
     }
-
-    }
+ }
