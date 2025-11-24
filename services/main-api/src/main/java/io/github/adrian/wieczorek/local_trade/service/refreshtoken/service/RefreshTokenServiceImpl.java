@@ -1,6 +1,6 @@
 package io.github.adrian.wieczorek.local_trade.service.refreshtoken.service;
 
-import io.github.adrian.wieczorek.local_trade.service.user.service.JwtService;
+import io.github.adrian.wieczorek.local_trade.security.JwtService;
 import io.github.adrian.wieczorek.local_trade.service.refreshtoken.dto.RefreshTokenRequest;
 import io.github.adrian.wieczorek.local_trade.exceptions.UserNotFoundException;
 import io.github.adrian.wieczorek.local_trade.service.refreshtoken.RefreshTokenEntity;

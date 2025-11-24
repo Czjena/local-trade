@@ -2,7 +2,7 @@ package io.github.adrian.wieczorek.local_trade.configs;
 
 import io.github.adrian.wieczorek.local_trade.exceptions.UserNotFoundException;
 import io.github.adrian.wieczorek.local_trade.service.user.UsersRepository;
-import io.github.adrian.wieczorek.local_trade.service.user.service.JwtService;
+import io.github.adrian.wieczorek.local_trade.security.JwtService;
 import lombok.NonNull;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;

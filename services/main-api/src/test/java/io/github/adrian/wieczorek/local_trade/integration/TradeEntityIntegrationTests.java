@@ -12,7 +12,7 @@ import io.github.adrian.wieczorek.local_trade.service.trade.TradeRepository;
 import io.github.adrian.wieczorek.local_trade.service.user.UsersRepository;
 import io.github.adrian.wieczorek.local_trade.service.trade.dto.TradeInitiationRequestDto;
 import io.github.adrian.wieczorek.local_trade.service.trade.dto.TradeStatusRequestDto;
-import io.github.adrian.wieczorek.local_trade.service.user.service.JwtService;
+import io.github.adrian.wieczorek.local_trade.security.JwtService;
 import io.github.adrian.wieczorek.local_trade.testutils.AdUtils;
 import io.github.adrian.wieczorek.local_trade.testutils.CategoryUtils;
 import io.github.adrian.wieczorek.local_trade.testutils.UserUtils;

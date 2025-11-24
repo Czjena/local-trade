@@ -3,13 +3,14 @@ package io.github.adrian.wieczorek.local_trade.unit;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.adrian.wieczorek.local_trade.controller.TradeController;
 import io.github.adrian.wieczorek.local_trade.enums.TradeStatus;
+import io.github.adrian.wieczorek.local_trade.security.JwtBlacklistService;
 import io.github.adrian.wieczorek.local_trade.service.advertisement.AdvertisementEntity;
 import io.github.adrian.wieczorek.local_trade.service.trade.dto.TradeInitiationRequestDto;
 import io.github.adrian.wieczorek.local_trade.service.trade.dto.TradeStatusRequestDto;
 import io.github.adrian.wieczorek.local_trade.service.advertisement.dto.SimpleAdvertisementResponseDto;
 import io.github.adrian.wieczorek.local_trade.service.user.dto.SimpleUserResponseDto;
 import io.github.adrian.wieczorek.local_trade.service.trade.dto.TradeResponseDto;
-import io.github.adrian.wieczorek.local_trade.service.user.service.JwtService;
+import io.github.adrian.wieczorek.local_trade.security.JwtService;
 import io.github.adrian.wieczorek.local_trade.service.trade.service.TradeService;
 import io.github.adrian.wieczorek.local_trade.testutils.AdUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -44,6 +45,8 @@ public class TradeControllerUnitTests {
     TradeService tradeService;
     @MockitoBean
     JpaMetamodelMappingContext jpaMetamodelMappingContext;
+    @MockitoBean
+    JwtBlacklistService jwtBlacklistService;
 
     @Autowired
     private ObjectMapper objectMapper;

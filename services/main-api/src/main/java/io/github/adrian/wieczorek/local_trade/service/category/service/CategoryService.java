@@ -11,10 +11,8 @@ public interface CategoryService {
 
     @Transactional
     CategoryDto postCategory(CategoryDto category);
-
     @Transactional
     CategoryDto changeCategory(Integer id, CategoryDto categoryDto);
-
     @Transactional
     void deleteCategory(Integer categoryId);
     @Transactional

@@ -6,9 +6,10 @@ import io.github.adrian.wieczorek.local_trade.service.user.dto.RegisterUsersDto;
 import io.github.adrian.wieczorek.local_trade.service.user.facade.LoginFacade;
 
 import io.github.adrian.wieczorek.local_trade.service.user.dto.LoginResponse;
-import io.github.adrian.wieczorek.local_trade.service.user.service.AuthenticationService;
+import io.github.adrian.wieczorek.local_trade.security.AuthenticationService;
 import io.github.adrian.wieczorek.local_trade.service.refreshtoken.service.RefreshTokenService;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -44,8 +45,8 @@ public class AuthenticationController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<?> logOut(@RequestBody @Valid RefreshTokenRequest refreshTokenRequest) {
-        refreshTokenService.revokeRefreshToken(refreshTokenRequest.getToken());
+    public ResponseEntity<Void> logOut(HttpServletRequest request,@RequestBody @Valid RefreshTokenRequest refreshTokenRequest) {
+        authenticationService.logout(request.getHeader("Authorization"),refreshTokenRequest.getToken());
         return ResponseEntity.ok().build();
     }
 }

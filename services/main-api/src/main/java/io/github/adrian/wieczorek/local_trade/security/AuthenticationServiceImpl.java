@@ -1,12 +1,14 @@
-package io.github.adrian.wieczorek.local_trade.service.user.service;
+package io.github.adrian.wieczorek.local_trade.security;
 
 
+import io.github.adrian.wieczorek.local_trade.service.refreshtoken.service.RefreshTokenService;
 import io.github.adrian.wieczorek.local_trade.service.user.dto.LoginDto;
 import io.github.adrian.wieczorek.local_trade.service.user.dto.RegisterUsersDto;
 import io.github.adrian.wieczorek.local_trade.service.user.UsersEntity;
 import io.github.adrian.wieczorek.local_trade.service.user.UsersRepository;
 import io.github.adrian.wieczorek.local_trade.service.user.facade.UserEventFacade;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -17,16 +19,21 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AuthenticationServiceImpl implements AuthenticationService {
 
     private final UsersRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final UserEventFacade userEventFacade;
+    private final JwtService jwtService;
+    private final JwtBlacklistService jwtBlacklistService;
+    private final RefreshTokenService refreshTokenService;
 
 
 
@@ -63,4 +70,29 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         currentUser.getAuthorities().stream().map(GrantedAuthority::getAuthority).forEach(listOfRoles::add);
         return listOfRoles;
     }
+
+    @Override
+    @Transactional
+    public void logout(String authHeader, String refreshToken) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            log.warn("Logout attempt without valid Bearer token");
+            return;
+        }
+            String jwt  = authHeader.substring(7);
+            String userEmail = jwtService.extractUsername(jwt);
+            log.info("Processing logout attempt for user {}", userEmail);
+
+            refreshTokenService.revokeRefreshToken(refreshToken);
+
+            Date expiration = jwtService.extractExpiration(jwt);
+            long now = System.currentTimeMillis();
+            long ttlInSeconds = (expiration.getTime() - now) / 1000;
+        if (ttlInSeconds > 0) {
+            jwtBlacklistService.blacklistToken(jwt, ttlInSeconds);
+            log.info("Access token for user {} blacklisted for {} seconds", userEmail, ttlInSeconds);
+        } else {
+            log.debug("Access token for user {} already expired, skipping blacklist", userEmail);
+        }
+    }
 }
+

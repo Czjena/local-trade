@@ -2,20 +2,18 @@ package io.github.adrian.wieczorek.local_trade.unit;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.adrian.wieczorek.local_trade.controller.ReviewController;
+import io.github.adrian.wieczorek.local_trade.security.JwtBlacklistService;
 import io.github.adrian.wieczorek.local_trade.service.review.ReviewEntity;
 import io.github.adrian.wieczorek.local_trade.service.review.service.ReviewFinder;
 import io.github.adrian.wieczorek.local_trade.service.trade.TradeEntity;
-import io.github.adrian.wieczorek.local_trade.service.review.ReviewRepository;
 import io.github.adrian.wieczorek.local_trade.service.review.dto.ReviewRequestDto;
 import io.github.adrian.wieczorek.local_trade.service.review.dto.ReviewResponseDto;
-import io.github.adrian.wieczorek.local_trade.service.user.service.JwtService;
+import io.github.adrian.wieczorek.local_trade.security.JwtService;
 import io.github.adrian.wieczorek.local_trade.service.review.service.ReviewService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.MediaType;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -51,6 +49,8 @@ public class ReviewFeatureControllerUnitTests {
     JpaMetamodelMappingContext jpaMetamodelMappingContext;
     @MockitoBean
     private ReviewFinder reviewFinder;
+    @MockitoBean
+    private JwtBlacklistService jwtBlacklistService;
 
 
     private ReviewResponseDto reviewResponseDto;
