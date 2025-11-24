@@ -1,5 +1,5 @@
 [![CI Build Status](https://img.shields.io/github/actions/workflow/status/WieczorekAdrian/local-trade/build-and-test.yml?branch=main&style=for-the-badge)](https://github.com/WieczorekAdrian/local-trade/actions)
-[![Test Coverage](https://img.shields.io/badge/coverage-84%25-brightgreen?style=for-the-badge)](https://shields.io)
+[![Test Coverage](https://img.shields.io/badge/coverage-88%25-brightgreen?style=for-the-badge)](https://shields.io)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
 [![Java 17](https://img.shields.io/badge/Java-17-blue.svg?style=for-the-badge)](https://www.java.com)
 [![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.x-brightgreen.svg?style=for-the-badge)](https://spring.io/projects/spring-boot)
@@ -14,7 +14,7 @@ It supports user listings, messaging, ratings, and media management — designed
 - **PostgreSQL** – relational database
 - **RabbitMQ** – asynchronous message broker
 - **Azure Blob Storage** – **target cloud storage solution**
-- **Redis** – caching and token storage  
+- **Redis** – caching and distributed JWT Blacklist (for secure logout)
 - **MinIO / AWS S3** – image storage and thumbnail generation  
 - **Testcontainers** – integration testing environment  
 - **Maven** – build and dependency management  
@@ -24,7 +24,7 @@ It supports user listings, messaging, ratings, and media management — designed
 
 
 ## Core Features
-- JWT authentication with access and refresh tokens
+- Advanced Security: Stateless JWT authentication implementing Refresh Token Rotation (prevents replay attacks) and Redis-based Blacklisting for immediate token revocation (True Logout).
 - S3/MinIO integration with automatic image thumbnail generation
 - "Add to favourites" and user listing tracking
 - Real-time chat using WebSockets
@@ -39,7 +39,7 @@ It supports user listings, messaging, ratings, and media management — designed
 ## Testing & Quality Assurance
 This project places a strong emphasis on code quality and reliability.
 
-- 86% Code Test Coverage (verified by Jacoco).
+- 88% Code Test Coverage (verified by Jacoco).
 - Over 200 unit and integration tests.
 - Testcontainers are used for full end-to-end integration tests with real instances of PostgreSQL, Redis, MinIO, and RabbitMQ in isolated containers.
 - CI/CD Pipeline (GitHub Actions) automatically builds and tests the application on every commit.
@@ -137,6 +137,7 @@ Swagger UI: /swagger-ui.html
 - **Modular & Domain-Centric:** The core service enforces **strict domain isolation**. Cross-domain repository access is prohibited (e.g., *Trade Domain* interacts with *Advertisement Domain* only via Service interfaces), which prevents tight coupling and ensures clean boundaries.
 - **Infrastructure-as-Code (Local):** The entire stack (DB, Cache, Broker, Storage) is fully containerized using Docker.
 - **Reliability First:** Integration tests run against real infrastructure instances using **Testcontainers**, not mocks, guaranteeing production-like behavior during testing.
+- **Security-First Approach:** Implements defense-in-depth strategies. Access tokens are short-lived, refresh tokens are rotated upon every use, and logout actions instantaneously invalidate tokens via Redis, mitigating token theft risks.
 
 ### License
 This project is licensed under the MIT License.

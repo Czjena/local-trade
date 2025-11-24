@@ -18,7 +18,6 @@ public class LoginFacade {
     private final RefreshTokenService refreshTokenService;
 
 
-
     public LoginResponse authenticateAndAssignNewRefreshToken(LoginDto loginDto){
         UsersEntity authenticatedUser  = authenticationService.authenticate(loginDto);
         String jwtToken = jwtService.generateToken(authenticatedUser);
