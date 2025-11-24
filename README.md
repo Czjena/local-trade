@@ -153,8 +153,7 @@ See the LICENSE file for details.
 
 [PLANNED] Adding user notification preferences.
 
-
-*[PLANNED] Azure Deployment and Storage Pivot:*
+[PLANNED] Azure Deployment and Storage Pivot.
 
 [PLANNED] **Full migration of the target production environment to the Azure platform (e.g., Azure App Service / AKS).**
 
