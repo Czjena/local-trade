@@ -9,7 +9,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 @Slf4j
 @SpringBootApplication
 @EnableCaching
-@EnableJpaAuditing
 public class LocalTradeApplication {
 
 	public static void main(String[] args) {

@@ -1,9 +1,11 @@
 package io.github.adrian.wieczorek.local_trade.service.user;
 
 import io.github.adrian.wieczorek.local_trade.service.advertisement.AdvertisementEntity;
+import io.github.adrian.wieczorek.local_trade.service.audit.BaseAuditableEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -16,7 +18,7 @@ import java.util.*;
 
 @Data
 @Entity
-public class UsersEntity implements UserDetails {
+public class UsersEntity extends BaseAuditableEntity implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,15 +37,6 @@ public class UsersEntity implements UserDetails {
     @ToString.Exclude
     @ManyToMany(mappedBy = "favoritedByUsers", fetch = FetchType.LAZY )
     private Set<AdvertisementEntity> favoritedAdvertisementEntities = new HashSet<>();
-
-    @CreationTimestamp
-    @Column(updatable = false, name ="created_at")
-    private Date createdAt;
-
-    @UpdateTimestamp
-    @Column(name = "updated_at")
-    private Date updatedAt;
-
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
