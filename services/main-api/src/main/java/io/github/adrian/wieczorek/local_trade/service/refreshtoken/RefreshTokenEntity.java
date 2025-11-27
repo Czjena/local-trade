@@ -22,7 +22,7 @@ public class RefreshTokenEntity {
     private Instant expires;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "users_id", nullable = false)// FK do tej encj
+    @JoinColumn(name = "users_id", nullable = false) 
     private UsersEntity usersEntity;
 
 }
