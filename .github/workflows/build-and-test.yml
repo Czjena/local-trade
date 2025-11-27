@@ -9,7 +9,6 @@ jobs:
   build-and-test:
     runs-on: ubuntu-latest
 
-
     services:
       minio:
         image: minio/minio:latest
@@ -30,8 +29,8 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      - name: Run Maven Tests (with Testcontainers)
 
+      - name: Run Maven Tests (with Testcontainers)
         run: mvn -B verify
         env:
           S3_ENDPOINT: http://minio:9000
@@ -48,12 +47,14 @@ jobs:
           path: '**/target/site/jacoco/'
           retention-days: 7
 
+      - name: Create dummy .env file
+        run: |
+          touch .env
+          echo "DB_NAME=test" >> .env
+          echo "DB_USER=test" >> .env
+          echo "DB_PASSWORD=test" >> .env
+          echo "MINIO_ROOT_USER=test" >> .env
+          echo "MINIO_ROOT_PASSWORD=test" >> .env
 
-
-      - name: 1. Build the 'builder' image
-
-        run: docker compose build builder
-
-      - name: 2. Build the final service images
-
-        run: docker compose build main-api notification-service
+      - name: Build Docker images
+        run: docker compose build
