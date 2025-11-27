@@ -1,8 +1,8 @@
-package io.github.adrian.wieczorek.local_trade.configs;
+package io.github.adrian.wieczorek.local_trade.security;
 
-import io.github.adrian.wieczorek.local_trade.security.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -49,7 +49,9 @@ public class SecurityConfiguration {
                                 "/webjars/**",
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",
-                                "/api/test-notification") .permitAll().anyRequest() .authenticated()
+                                "/api/test-notification") .permitAll()
+                        .requestMatchers(HttpMethod.GET, "/categories", "/advertisements/**", "/advertisements/search").permitAll()
+                        .anyRequest() .authenticated()
 
                 )
                 .sessionManagement(sessionManagement -> sessionManagement
